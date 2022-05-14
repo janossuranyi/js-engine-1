@@ -32,9 +32,51 @@
 using namespace jse;
 using namespace std::chrono;
 
-#define WINDOW_WIDTH 1280
-#define WINDOW_HEIGHT 720
+#define WINDOW_WIDTH 1920
+#define WINDOW_HEIGHT 1080
 #define WINDOW_ASPECT (float(WINDOW_WIDTH)/float(WINDOW_HEIGHT))
+
+/*
+   Tension: 1 is high, 0 normal, -1 is low
+   Bias: 0 is even,
+		 positive is towards first segment,
+		 negative towards the other
+*/
+vec3 HermiteInterpolate(
+	const vec3& y0, const vec3& y1,
+	const vec3& y2, const vec3& y3,
+	const float mu,
+	const float tension,
+	const float bias)
+{
+	float mu2, mu3, a0, a1, a2, a3;
+	vec3 m1, m0;
+
+	mu2 = mu * mu;
+	mu3 = mu2 * mu;
+	m0 = (y1 - y0) * (1.0f + bias) * (1.0f - tension) / 2.f;
+	m0 += (y2 - y1) * (1.0f - bias) * (1.0f - tension) / 2.f;
+	m1 = (y2 - y1) * (1.0f + bias) * (1.0f - tension) / 2.f;
+	m1 += (y3 - y2) * (1.0f - bias) * (1.0f - tension) / 2.f;
+	a0 = 2.0f * mu3 - 3.0f * mu2 + 1.0f;
+	a1 = mu3 - 2.0f * mu2 + mu;
+	a2 = mu3 - mu2;
+	a3 = -2.0f * mu3 + 3.0f * mu2;
+
+	return(a0 * y1 + a1 * m0 + a2 * m1 + a3 * y2);
+}
+
+inline vec3 lerp(const vec3& p1, const vec3& p2, const float f)
+{
+	return (1.f - f) * p1 + f * p2;
+}
+
+inline vec3 cerp(const vec3& p1, const vec3& p2, const float f)
+{
+	const float f2 = (1 - cosf(f * M_PI)) / 2;
+	return lerp(p1, p2, f2);
+}
+
 
 void X_add_light_cube(Scene& aScene, const Vector3f& aPos, const Color3 aColor, int aLightNum)
 {
@@ -79,7 +121,7 @@ int main(int argc, char** argv)
 	const Color clearColor(0.f, 0.f, 0.3f, 1.f);
 	int n = 0;
 
-	gl->Init(WINDOW_WIDTH, WINDOW_HEIGHT, 0, 32, 0, 4, GpuProgramFormat_GLSL, "Hello OpenGL", pos, true);
+	gl->Init(WINDOW_WIDTH, WINDOW_HEIGHT, 0, 32, 1, 0, GpuProgramFormat_GLSL, "Hello OpenGL", pos, true);
 
 	ShaderManager sm(gl, &fs);
 
@@ -98,7 +140,6 @@ int main(int argc, char** argv)
 	GpuShaderStage* s_vtx	= gl->CreateGpuShaderStage(ShaderStage_Vertex, "simple_vtx.glsl");
 	GpuShaderStage* s_frg	= gl->CreateGpuShaderStage(ShaderStage_Fragment, "simple_frag.glsl");
 
-	u32 frameNum = 0;
 
 	n = gl->GetCaps(GraphicsCaps_MaxTextureImageUnits);
 	Info("Max texture units: %d", n);
@@ -156,11 +197,21 @@ int main(int argc, char** argv)
 
 	scene.Compile();
 
-	Quat q1 = glm::angleAxis(0.0f, AxisY);
-	Quat q2 = glm::angleAxis(glm::radians(300.f), AxisY);
-
 	float f = 0.0f;
-	float fd = 0.02f;
+	int kf = 1;
+
+	vec3 path[] = {
+		{-14.0f, -10.0f, 0.0f},
+		{-7.0f, -5.0f, 0.0f},
+		{-1.0f, 0.0f, -0.3f},
+		{1.0f, 0.5f, -0.6f},
+		{2.0f, 6.0f, -2.0f},
+		{4.0f, 12.0f, -4.0f}
+	};
+
+	vec3 p0 = path[0], p1 = path[1], p2 = path[2], p3 = path[3];
+
+	const int pathLen = (sizeof(path) / sizeof(vec3));
 
 	while (running && !runOnce)
 	{
@@ -172,16 +223,19 @@ int main(int argc, char** argv)
 		frametime = SDL_GetTicks64();
 
 
-		Vector3f viewPos(vX, vY, vZ);
+		vec3 viewPos(vX, vY, vZ);
 
-		scene.SetCameraPos(viewPos, Vector3f(0.0f), Vector3f(0.0f, 1.0f, 0.0f));
+		scene.SetCameraPos(viewPos, vec3(0.0f), vec3(0.0f, 1.0f, 0.0f));
 
 
-		Quat q = glm::slerp(q1, q2, f);
 		Quat z = glm::angleAxis(glm::radians(2*icoRotY), AxisZ);
 		Quat y = glm::angleAxis(glm::radians(icoRotY), AxisY);
 		Quat x = glm::angleAxis(glm::radians(-icoRotY), AxisX);
-		Icosphere->SetPosition(vec3(0.0f, 1.2f * glm::sin(glm::radians(icoRotY)), 0.0f));
+
+		vec3 pt = HermiteInterpolate(path[kf - 1], path[kf], path[kf + 1], path[kf + 2], f, -0.3f, 0.4f);
+		//vec3 pt = cerp(path[kf], path[kf + 1], f);
+
+		Icosphere->SetPosition(pt);
 		Icosphere->SetRotation(z*y*x);
 
 //		Icosphere->UpdateWorldTransform(true);
@@ -197,7 +251,15 @@ int main(int argc, char** argv)
 		Torus02->UpdateWorldTransform(true);
 
 		*/
-		frameNum++;
+
+		f += 0.02f * Dt;
+
+		if (f > 1.0f) {
+			f = f - 1.f;
+			kf++;
+			if (kf > pathLen - 3)
+				kf = 1;
+		}
 
 		scene.Draw(prog);
 
@@ -206,17 +268,6 @@ int main(int argc, char** argv)
 		icoRotY -= Dt * 1.0f;
 		icoRotY = fmod(icoRotY, 360.0f);
 
-		f += fd * Dt;
-		if (f > 1.0f) {
-			fd *= -1.f;
-			f = 1.0f;
-		};
-
-		if (f < 0.f)
-		{
-			fd *= -1.f;
-			f = 0.0f;
-		}
 		//gl->FlushCommandBuffers();
 
 
