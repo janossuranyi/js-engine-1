@@ -108,6 +108,15 @@ void X_add_light_cube(Scene& aScene, const Vector3f& aPos, const Color3 aColor, 
 	}
 }
 
+Quat createQuaternion(const float rX, const float rY, const float rZ)
+{
+	Quat qx = glm::angleAxis(glm::radians(rX), vec3(1.f, 0.f, 0.f));
+	Quat qy = glm::angleAxis(glm::radians(rY), vec3(0.f, 1.f, 0.f));
+	Quat qz = glm::angleAxis(glm::radians(rZ), vec3(0.f, 0.f, 1.f));
+
+	return qz * qy * qx;
+}
+
 int main(int argc, char** argv)
 {
 
@@ -211,11 +220,12 @@ int main(int argc, char** argv)
 	};
 
 	Quat orients[] = {
-		glm::angleAxis(glm::radians(0.f), AxisY),
-		glm::angleAxis(glm::radians(240.f), AxisY),
-		glm::angleAxis(glm::radians(360.f), AxisY),
-		glm::angleAxis(glm::radians(360.f), AxisY)
+		createQuaternion(0.f, 0.f, 0.f),
+		createQuaternion(0.f, 180.f, 0.f),
+		createQuaternion(0.f, 180.f, 180.f),
+		createQuaternion(90.f, 180.f, 180.f)
 	};
+
 	const int pathLen = (sizeof(path) / sizeof(vec3));
 
 	while (running && !runOnce)
