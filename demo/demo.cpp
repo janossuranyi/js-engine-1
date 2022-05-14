@@ -197,7 +197,7 @@ int main(int argc, char** argv)
 
 	scene.Compile();
 
-	float f = 0.0f;
+	int f = 0;
 	int kf = 1;
 
 	vec3 path[] = {
@@ -232,7 +232,7 @@ int main(int argc, char** argv)
 		Quat y = glm::angleAxis(glm::radians(icoRotY), AxisY);
 		Quat x = glm::angleAxis(glm::radians(-icoRotY), AxisX);
 
-		vec3 pt = HermiteInterpolate(path[kf - 1], path[kf], path[kf + 1], path[kf + 2], f, -0.3f, 0.4f);
+		vec3 pt = HermiteInterpolate(path[kf - 1], path[kf], path[kf + 1], path[kf + 2], f/200.f, -0.3f, 0.4f);
 		//vec3 pt = cerp(path[kf], path[kf + 1], f);
 
 		Icosphere->SetPosition(pt);
@@ -252,10 +252,10 @@ int main(int argc, char** argv)
 
 		*/
 
-		f += 0.02f * Dt;
+		f += 1;
 
-		if (f > 1.0f) {
-			f = f - 1.f;
+		if (f > 200) {
+			f = f - 200;
 			kf++;
 			if (kf > pathLen - 3)
 				kf = 1;
