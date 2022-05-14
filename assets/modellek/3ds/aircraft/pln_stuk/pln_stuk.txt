@@ -1,0 +1,51 @@
+PLN_STUK.3DS - Stuka fighter pin
+
+Mesh Objects: Total vertices:  11726
+              Total faces:     23893
+
+Demonstration file from one of the Acuris ClipModel (TM) libraries.
+
+Acuris
+125 University Ave Suite 125 * Palo Alto CA 94301-1630
+(415) 329 1920
+
+  Object    Verts  Faces      Material        Mapping   Hidden
+----------  -----  -----  ----------------  ----------- ------
+BOMBWING01    556   1264  DO17_WHEELS       None         No
+NOSECONE01    160    288  YELLOW_O PLASTIC  None         No
+SCOOP01        60     56  DO17_METAL        None         No
+SCOOP02        30     26  DO17_METAL        None         No
+FUSEUNDR01    288    404  DO17_BOT          None         No
+FUSELAGE01    604   1050  DO17_GREEN        None         No
+LEG01         750   1272  DO17_GREEN        None         No
+TAIL_TOP01     78    106  DO17_GREEN        None         No
+WHEEL01       648   1152  DO17_WHEELS       None         No
+TSPARTOP01     42     52  DO17_GREEN        None         No
+RSPAR01        14     24  DO17_METAL        None         No
+RSPAR02        32     56  DO17_METAL        None         No
+WHEEL_R01      48     90  DO17_WHEELS       None         No
+BOMBCRDL01     66    110  DO17_BOT          None         No
+FLAP01         44     64  DO17_GREEN        None         No
+WING_TOP01    200    352  DO17_GREEN        None         No
+FLAP02         32     42  DO17_GREEN        None         No
+FLAP03         32     44  DO17_GREEN        None         No
+WINGCRDL01    234    404  DO17_BOT          None         No
+BOMB01        278    632  DO17_WHEELS       None         No
+ANTENNA01      14     24  DO17_GREEN        None         No
+EXH_01         44     80  DO17_METAL        None         No
+EXH01          72     96  DO17_WHEELS       None         No
+SCOOPENG01     76    131  DO17_GREEN        None         No
+PROP01         16     14  DO17_PROP         None         No
+SCOOPWNG01     64    116  DO17_BOT          None         No
+WINGBOTM01    132    216  DO17_BOT          None         No
+TAILBOTM01     38     32  DO17_BOT          None         No
+TSPARBOT01     30     28  DO17_BOT          None         No
+FLP1_BOT01     24     24  DO17_BOT          None         No
+FLP2BOTM01     16     12  DO17_BOT          None         No
+FLP3BOTM01     18     14  DO17_BOT          None         No
+Object01        5      2  Default           None         Yes
+GLASS2        104    204  DO17_PROP         None         No
+CANOPYBARS   6877  15412  DO17_GREEN        None         No
+----------  -----  -----  ----------------  ----------- ------
+Total       11726  23893
+

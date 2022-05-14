@@ -1,0 +1,80 @@
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+   
+   This was one of my first attempts at modelling, and, as such, is horribly  
+basic.  I hope you can find some sort of use for it, it was simply an
+experiment for me.  I grant everyone the right to freely use this file.
+
+   If you, for some reason unknown to me, have any trouble with this object,
+please feel free to contact me, Kevin R. Townsend, at "celtic@nbnet.nb.ca".
+  
+-Kevin-
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  
+
+  Object    Verts  Faces      Material        Mapping   Hidden
+----------  -----  -----  ----------------  ----------- ------
+tbl base       48     92  Default           Applied      No
+cholder a    2538   4884  BRASS             Applied      No
+                          WHITE PLSTC BMP   Applied      
+                          BLACK PLSTC       Applied      
+
+Mesh Objects: Total vertices:2586  Total faces:4976
+
+tbl base  
+  Vertices:48   Faces:92
+  Mapping coordinates applied.
+  Smoothing:
+     1, 10, 11, 12, 17
+cholder a  
+  Vertices:2538   Faces:4884
+  Mapping coordinates applied.
+  Materials:
+    BRASS
+    WHITE PLSTC BMP
+    BLACK PLSTC
+  Smoothing:
+     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+
+Materials summary:
+
+  BRASS
+  Maps: T1:None/None
+        T2:None/None
+         O:None/None
+         B:None/None
+        SP:None/None
+        SH:None/None
+        SI:None/None
+         R:REFMAP.GIF/None
+  WHITE PLSTC BMP
+  Maps: T1:None/None
+        T2:None/None
+         O:None/None
+         B:SAND.CEL/None
+        SP:None/None
+        SH:None/None
+        SI:None/None
+         R:None/None
+  BLACK PLSTC
+
+Lights:
+
+Light05 
+Light01 
+
+Cameras:
+
+Camera01 (50.00mm)
+*** END OF FILE ***
+
+
+
+
+
+
+
+                                     Page 1
+
+
+

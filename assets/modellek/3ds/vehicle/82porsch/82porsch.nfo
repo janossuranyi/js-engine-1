@@ -1,0 +1,132 @@
+Mesh objects:  Total vertices:6306    Total faces:10474
+
+82PORSCH	 
+  Vertices:0    Faces:0
+default	 
+  Vertices:0    Faces:0
+body	 
+  Vertices:1583    Faces:2451
+  Materials:
+		default body
+redlgt	 
+  Vertices:20    Faces:16
+  Materials:
+		default redlgt
+amberlgt	 
+  Vertices:48    Faces:36
+  Materials:
+		default amberlg
+rubber	 
+  Vertices:1015    Faces:1329
+  Materials:
+		default rubber
+windows	 
+  Vertices:100    Faces:84
+  Materials:
+		default windows
+bottom	 
+  Vertices:356    Faces:562
+  Materials:
+		default bottom
+headlgt	 
+  Vertices:64    Faces:92
+  Materials:
+		default headlgt
+rtires	 
+  Vertices:482    Faces:880
+  Materials:
+		default rtires
+rrims	 
+  Vertices:1078    Faces:2072
+  Materials:
+		default rrims
+lftire	 
+  Vertices:241    Faces:440
+  Materials:
+		default lftire
+lfrim	 
+  Vertices:539    Faces:1036
+  Materials:
+		default lfrim
+rftire	 
+  Vertices:241    Faces:440
+  Materials:
+		default rftire
+rfrim	 
+  Vertices:539    Faces:1036
+  Materials:
+		default rfrim
+
+
+
+
+                                     Page 1
+
+
+
+
+Materials summary:
+
+	default body
+	default redlgt
+	default amberlg
+	default rubber
+	default windows
+	default bottom
+	default headlgt
+	default rtires
+	default rrims
+	default lftire
+	default lfrim
+	default rftire
+	default rfrim
+
+Lights:
+
+Light01	
+Light02	
+
+Cameras:
+
+Camera01	(50.00mm)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Page 2
+
+
+

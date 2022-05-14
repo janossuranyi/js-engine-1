@@ -1,0 +1,75 @@
+3D Studio dataset of a Bell Ranger helicopter
+by Viewpoint DataLabs
+
+Mesh Objects: Total vertices:   7854
+              Total faces:     14167
+
+  Object    Verts  Faces      Material        Mapping   Hidden
+----------  -----  -----  ----------------  ----------- ------
+tail02         73    136  BLUE METALIC      None         No
+glass02       700   1214  VP BLUE GLASS     None         No
+body02       2470   4525  BLUE METALIC      None         No
+shroud02      121    175  BLUE METALIC      None         No
+intake02       56     92  NEW CHROME        None         No
+fdoor02       294    488  BLUE METALIC      None         No
+wtrim02       414    418  BLACK MATTE       None         No
+vents02        40     20  NEW CHROME        None         No
+rdoor02       320    541  BLUE METALIC      None         No
+vtrim02        40     40  BLACK MATTE       None         No
+trim02         64     80  BLACK MATTE       None         No
+shaft02       568   1132  NEW CHROME        None         No
+rotor02       482    960  BLACK MATTE       None         No
+skid02        540   1080  NEW CHROME        None         No
+gear02        180    356  NEW CHROME        None         No
+rrotor02      482    960  BLACK MATTE       None         No
+rshaft02      568   1132  NEW CHROME        None         No
+exhaust02     400    792  NEW CHROME        None         No
+doorglas01     42     26  VP BLUE GLASS     None         No
+----------  -----  -----  ----------------  ----------- ------
+Total        7854  14167
+
+Save Time With Viewpoint Datasets(tm)
+Modeling or digitizing the 3D objects you want to place within your
+animation or real-time scenario is time consuming. That's where
+Viewpoint comes in. Go ahead, experiment with the sample Datasets
+provided here. Discover why many of the top animation and special-effects
+houses rely on accurate, modifiable Viewpoint data.
+
+Why re-invent 3D object data that has already been created? Especially
+when it can be yours right away. Viewpoint has hundreds of precision
+ready-to-use Datasets available for use with over fifty different 3D
+software packages, with more Datasets being added daily. We also can
+create custom Datasets to your specifications. Use Viewpoint on your next
+3D project and find out how we can simplify your life. 
+
+In the Format You Need
+Viewpoint Datasets(tm) can be imported into and manipulated with dozens
+of 3D software applications that run across a variety of hardware
+platforms. Over fifty major 3D applications and all platforms are
+supported by Viewpoint, allowing you to work in the computing
+environment that you are most comfortable with. 
+
+Available Now - DATASHOP (tm) CD ROM
+With fast overnight Dataset delivery, you can be animating tomorrow. Get
+Viewpoint's DataShop(tm) CD ROM, available for select software
+applications, and instant access to the data you need is only a phone call
+away. And you can reuse Datasets again and again. One Dataset can be used
+for several projects. The only restriction is that the data not be resold or
+redistributed in original or modified form. 
+
+
+Call 1 800 DATASET (328-2738) now and ask for your free Dataset catalog
+and DataShop (tm) CD ROM
+
+Demonstration Datasets included with this product are copyrighted
+commercial property of Viewpoint DataLabs, Inc. Users rights are limited
+to in-house use in one location. Users may not distribute these files in
+modified or unmodified form outside their organization or location
+without written permission from Viewpoint DataLabs, Inc.
+
+Viewpoint DataLabs
+870 West Center
+Orem, Utah  84057 
+Phone 801-224-2222 
+Fax 801-224-2272
+

@@ -1,0 +1,19 @@
+FRAME.3DS - picture frame
+
+Mesh Objects: Total vertices:   1708
+              Total faces:      2306
+
+Demonstration file from one of the Acuris ClipModel (TM) libraries.
+
+Acuris
+125 University Ave Suite 125 * Palo Alto CA 94301-1630
+(415) 329 1920
+
+  Object    Verts  Faces      Material        Mapping   Hidden
+----------  -----  -----  ----------------  ----------- ------
+frame          16     32  LIGHT WOOD        Applied      No
+squiggle     1688   2272  MAROON PEARL      Applied      No
+canvas          4      2  JUPITER TEXMAP    Applied      No
+----------  -----  -----  ----------------  ----------- ------
+Total        1708   2306
+

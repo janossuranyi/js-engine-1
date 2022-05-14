@@ -1,0 +1,132 @@
+Mesh objects:  Total vertices:2124    Total faces:3875
+
+WHEELS_R	 
+  Vertices:224    Faces:384
+  Materials:
+		WHEELS_REAR ver
+WHEEL.F	 
+  Vertices:112    Faces:192
+  Materials:
+		WHEEL.F very da
+SIDEWI1	 
+  Vertices:109    Faces:214
+  Materials:
+		SIDEWINDER.R li
+SIDEWIND	 
+  Vertices:109    Faces:214
+  Materials:
+		SIDEWINDER.L li
+RUDDER	 
+  Vertices:40    Faces:72
+  Materials:
+		RUDDER light gr
+REARDUCT	 
+  Vertices:48    Faces:96
+  Materials:
+		REARDUCT dark g
+GEARDO2	 
+  Vertices:12    Faces:24
+  Materials:
+		GEARDOORS.R lig
+GEARDO3	 
+  Vertices:12    Faces:24
+  Materials:
+		GEARDOORS.L lig
+GEARDOOR	 
+  Vertices:9    Faces:16
+  Materials:
+		GEARDOORS.F gra
+GEAR.F	 
+  Vertices:102    Faces:166
+  Materials:
+		GEAR.F light gr
+GEAR_ASM	 
+  Vertices:98    Faces:192
+  Materials:
+		GEAR_ASM light 
+FUSELAGE	 
+  Vertices:817    Faces:1539
+  Materials:
+		FUSELAGE_WING1
+		FUSELAGE_WINGS 
+FARRIN4	 
+  Vertices:156    Faces:224
+  Materials:
+		FARRING_REAR li
+FARRING_	 
+  Vertices:142    Faces:178
+  Materials:
+		FARRING_FRONT b
+COCKPIT	 
+  Vertices:69    Faces:164
+
+                                     Page 1
+
+
+
+  Materials:
+		COCKPIT gray 15
+CANOPY	 
+  Vertices:65    Faces:176
+  Materials:
+		CANOPY white 16
+
+Materials summary:
+
+	WHEELS_REAR ver
+	WHEEL.F very da
+	SIDEWINDER.R li
+	SIDEWINDER.L li
+	RUDDER light gr
+	REARDUCT dark g
+	GEARDOORS.R lig
+	GEARDOORS.L lig
+	GEARDOORS.F gra
+	GEAR.F light gr
+	GEAR_ASM light 
+	FUSELAGE_WING1
+	FUSELAGE_WINGS 
+	FARRING_REAR li
+	FARRING_FRONT b
+	COCKPIT gray 15
+	CANOPY white 16
+
+Lights:
+
+Light01	
+Light02	
+
+Cameras:
+
+Camera01	(50.00mm)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Page 2
+
+
+

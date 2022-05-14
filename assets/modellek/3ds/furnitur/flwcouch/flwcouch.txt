@@ -1,0 +1,20 @@
+FLWCOUCH.3DS - Frank Lloyd Wright couch
+
+Mesh Objects: Total vertices:   1942
+              Total faces:      3243
+
+Demonstration file from one of the Acuris ClipModel (TM) libraries.
+
+Acuris
+125 University Ave Suite 125 * Palo Alto CA 94301-1630
+(415) 329 1920
+
+  Object    Verts  Faces      Material        Mapping   Hidden
+----------  -----  -----  ----------------  ----------- ------
+back01        560    580  DARK BROWN MATTE  None         No
+trim01        288    516  BRIGHT OLIVE      Applied      No
+frame01       898   1730  OLIVE METAL       Applied      No
+seat01        196    417  DARK BROWN MATTE  None         No
+----------  -----  -----  ----------------  ----------- ------
+Total        1942   3243
+

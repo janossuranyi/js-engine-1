@@ -1,0 +1,19 @@
+PINECON2.3DS - pine tree
+
+Mesh Objects: Total vertices:  17782
+              Total faces:      7779
+
+Demonstration file from one of the Acuris ClipModel (TM) libraries.
+
+Acuris
+125 University Ave Suite 125 * Palo Alto CA 94301-1630
+(415) 329 1920
+
+  Object    Verts  Faces      Material        Mapping   Hidden
+----------  -----  -----  ----------------  ----------- ------
+PINC2_TRNK     10     10  PINC2-BRANCH      None         No
+PINC2_BRNC   1963   2499  PINC2-BRANCH      None         No
+PINC2_LEAF  15809   5270  PINC2-LEAF 2      None         No
+----------  -----  -----  ----------------  ----------- ------
+Total       17782   7779
+

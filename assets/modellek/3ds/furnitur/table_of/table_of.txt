@@ -1,0 +1,19 @@
+TABLE_OF.3DS - designer table
+
+Mesh Objects: Total vertices:    294
+              Total faces:       539
+
+Demonstration file from one of the Acuris ClipModel (TM) libraries.
+
+Acuris
+125 University Ave Suite 125 * Palo Alto CA 94301-1630
+(415) 329 1920
+
+  Object    Verts  Faces      Material        Mapping   Hidden
+----------  -----  -----  ----------------  ----------- ------
+legs          104    179  CHROME GIFMAP     Applied      No
+mid_sectio     96    176  LIGHT WOOD        Applied      No
+top            94    184  DARK WOOD INLAY   Applied      No
+----------  -----  -----  ----------------  ----------- ------
+Total         294    539
+
