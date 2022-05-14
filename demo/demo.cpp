@@ -199,6 +199,7 @@ int main(int argc, char** argv)
 
 	int f = 0;
 	int kf = 1;
+	const int keyframeNum = 512;
 
 	vec3 path[] = {
 		{-14.0f, -10.0f, 0.0f},
@@ -209,8 +210,12 @@ int main(int argc, char** argv)
 		{4.0f, 12.0f, -4.0f}
 	};
 
-	vec3 p0 = path[0], p1 = path[1], p2 = path[2], p3 = path[3];
-
+	Quat orients[] = {
+		glm::angleAxis(glm::radians(0.f), AxisY),
+		glm::angleAxis(glm::radians(240.f), AxisY),
+		glm::angleAxis(glm::radians(360.f), AxisY),
+		glm::angleAxis(glm::radians(360.f), AxisY)
+	};
 	const int pathLen = (sizeof(path) / sizeof(vec3));
 
 	while (running && !runOnce)
@@ -218,6 +223,7 @@ int main(int argc, char** argv)
 //		SimpleTimer timer;
 
 		float fTime = SDL_GetTicks64() / 1000.0;
+		const float kT = f / float(keyframeNum);
 		
 		float Dt = (SDL_GetTicks64() - frametime) / 60.0f;
 		frametime = SDL_GetTicks64();
@@ -227,16 +233,10 @@ int main(int argc, char** argv)
 
 		scene.SetCameraPos(viewPos, vec3(0.0f), vec3(0.0f, 1.0f, 0.0f));
 
-
-		Quat z = glm::angleAxis(glm::radians(2*icoRotY), AxisZ);
-		Quat y = glm::angleAxis(glm::radians(icoRotY), AxisY);
-		Quat x = glm::angleAxis(glm::radians(-icoRotY), AxisX);
-
-		vec3 pt = HermiteInterpolate(path[kf - 1], path[kf], path[kf + 1], path[kf + 2], f/200.f, -0.3f, 0.4f);
-		//vec3 pt = cerp(path[kf], path[kf + 1], f);
-
+		vec3 pt = HermiteInterpolate(path[kf - 1], path[kf], path[kf + 1], path[kf + 2], kT, -0.3f, 0.4f);
+		Quat r = glm::mix(orients[kf - 1], orients[kf], kT);
 		Icosphere->SetPosition(pt);
-		Icosphere->SetRotation(z*y*x);
+		Icosphere->SetRotation(r);
 
 //		Icosphere->UpdateWorldTransform(true);
 
@@ -254,8 +254,8 @@ int main(int argc, char** argv)
 
 		f += 1;
 
-		if (f > 200) {
-			f = f - 200;
+		if (f > keyframeNum) {
+			f = f - keyframeNum;
 			kf++;
 			if (kf > pathLen - 3)
 				kf = 1;
