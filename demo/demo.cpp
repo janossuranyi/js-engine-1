@@ -24,6 +24,7 @@
 #include <glm/gtx/quaternion.hpp>
 #include "system/Heap.hpp"
 #include "impl/InputServiceSDL.hpp"
+#include "math/Interp.hpp"
 
 #include "cube.hpp"
 
@@ -32,50 +33,9 @@
 using namespace jse;
 using namespace std::chrono;
 
-#define WINDOW_WIDTH 1920
-#define WINDOW_HEIGHT 1080
+#define WINDOW_WIDTH 1440
+#define WINDOW_HEIGHT 900
 #define WINDOW_ASPECT (float(WINDOW_WIDTH)/float(WINDOW_HEIGHT))
-
-/*
-   Tension: 1 is high, 0 normal, -1 is low
-   Bias: 0 is even,
-		 positive is towards first segment,
-		 negative towards the other
-*/
-vec3 HermiteInterpolate(
-	const vec3& y0, const vec3& y1,
-	const vec3& y2, const vec3& y3,
-	const float mu,
-	const float tension,
-	const float bias)
-{
-	float mu2, mu3, a0, a1, a2, a3;
-	vec3 m1, m0;
-
-	mu2 = mu * mu;
-	mu3 = mu2 * mu;
-	m0 = (y1 - y0) * (1.0f + bias) * (1.0f - tension) / 2.f;
-	m0 += (y2 - y1) * (1.0f - bias) * (1.0f - tension) / 2.f;
-	m1 = (y2 - y1) * (1.0f + bias) * (1.0f - tension) / 2.f;
-	m1 += (y3 - y2) * (1.0f - bias) * (1.0f - tension) / 2.f;
-	a0 = 2.0f * mu3 - 3.0f * mu2 + 1.0f;
-	a1 = mu3 - 2.0f * mu2 + mu;
-	a2 = mu3 - mu2;
-	a3 = -2.0f * mu3 + 3.0f * mu2;
-
-	return(a0 * y1 + a1 * m0 + a2 * m1 + a3 * y2);
-}
-
-inline vec3 lerp(const vec3& p1, const vec3& p2, const float f)
-{
-	return (1.f - f) * p1 + f * p2;
-}
-
-inline vec3 cerp(const vec3& p1, const vec3& p2, const float f)
-{
-	const float f2 = (1 - cosf(f * M_PI)) / 2;
-	return lerp(p1, p2, f2);
-}
 
 
 void X_add_light_cube(Scene& aScene, const Vector3f& aPos, const Color3 aColor, int aLightNum)
@@ -207,16 +167,14 @@ int main(int argc, char** argv)
 	scene.Compile();
 
 	int f = 0;
-	int kf = 1;
+	int kf = 0;
 	const int keyframeNum = 512;
 
 	vec3 path[] = {
-		{-14.0f, -10.0f, 0.0f},
 		{-7.0f, -5.0f, 0.0f},
 		{-1.0f, 0.0f, -0.3f},
 		{1.0f, 0.5f, -0.6f},
 		{2.0f, 6.0f, -2.0f},
-		{4.0f, 12.0f, -4.0f}
 	};
 
 	Quat orients[] = {
@@ -243,32 +201,32 @@ int main(int argc, char** argv)
 
 		scene.SetCameraPos(viewPos, vec3(0.0f), vec3(0.0f, 1.0f, 0.0f));
 
-		vec3 pt = HermiteInterpolate(path[kf - 1], path[kf], path[kf + 1], path[kf + 2], kT, -0.3f, 0.4f);
-		Quat r = glm::mix(orients[kf - 1], orients[kf], kT);
+		vec3 pt;
+
+		if (kf == 0)
+		{
+			pt = CubicInterp(path[kf], path[kf], path[kf + 1], path[kf + 2], kT);
+		}
+		else if (kf == pathLen - 2)
+		{
+			pt = CubicInterp(path[kf - 1], path[kf], path[kf + 1], path[kf + 1], kT);
+		}
+		else 
+		{
+			pt = CubicInterp(path[kf - 1], path[kf], path[kf + 1], path[kf + 2], kT);
+		}
+
+		Quat r = glm::mix(orients[kf], orients[kf + 1], kT);
 		Icosphere->SetPosition(pt);
 		Icosphere->SetRotation(r);
-
-//		Icosphere->UpdateWorldTransform(true);
-
-
-		//Torus01->SetRotation(qRot);
-		/*
-		Torus01->UpdateMatrix(true);
-
-		Torus02->SetRotation(-qX * qY);
-		
-		Torus02->SetRotation(qRot);
-		Torus02->UpdateWorldTransform(true);
-
-		*/
 
 		f += 1;
 
 		if (f > keyframeNum) {
 			f = f - keyframeNum;
 			kf++;
-			if (kf > pathLen - 3)
-				kf = 1;
+			if (kf > pathLen - 2)
+				kf = 0;
 		}
 
 		scene.Draw(prog);

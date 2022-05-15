@@ -30,8 +30,8 @@ file(GLOB ENGINE_INPUT_SOURCE  JSE/core/source/input/*.cpp)
 file(GLOB ENGINE_INPUT_INCLUDE JSE/core/include/input/*.hpp)
 
 # Math
-# file(GLOB ENGINE_MATH_SOURCE  JSE/core/source/math/*.cpp)
-# file(GLOB ENGINE_MATH_INCLUDE JSE/core/include/math/*.hpp)
+file(GLOB ENGINE_MATH_SOURCE  JSE/core/source/math/*.cpp)
+file(GLOB ENGINE_MATH_INCLUDE JSE/core/include/math/*.hpp)
 # Resources
 # file(GLOB ENGINE_RESOURCES_SOURCE  JSE/core/source/resources/*.cpp)
 # file(GLOB ENGINE_RESOURCES_INCLUDE JSE/core/include/resources/*.hpp)
@@ -135,7 +135,7 @@ endif()
 
 source_group("Engine" FILES ${ENGINE_ENGINE_SOURCE} ${ENGINE_ENGINE_INCLUDE})
 source_group("Graphics" FILES ${ENGINE_GRAPHICS_SOURCE} ${ENGINE_GRAPHICS_INCLUDE})
-#source_group("Math" FILES ${ENGINE_MATH_SOURCE} ${ENGINE_MATH_INCLUDE})
+source_group("Math" FILES ${ENGINE_MATH_SOURCE} ${ENGINE_MATH_INCLUDE})
 #source_group("Resources" FILES ${ENGINE_RESOURCES_SOURCE} ${ENGINE_RESOURCES_INCLUDE})
 source_group("Scene" FILES ${ENGINE_SCENE_SOURCE} ${ENGINE_SCENE_INCLUDE})
 source_group("System" FILES ${ENGINE_SYSTEM_SOURCE} ${ENGINE_SYSTEM_INCLUDE})
