@@ -130,7 +130,7 @@ int main(int argc, char** argv)
 	const Color clearColor(0.f, 0.f, 0.3f, 1.f);
 	int n = 0;
 
-	gl->Init(WINDOW_WIDTH, WINDOW_HEIGHT, 0, 32, 1, 0, GpuProgramFormat_GLSL, "Hello OpenGL", pos, true);
+	gl->Init(WINDOW_WIDTH, WINDOW_HEIGHT, 0, 32, /*fullScreen*/0, 0, GpuProgramFormat_GLSL, "Hello OpenGL", pos, true);
 
 	ShaderManager sm(gl, &fs);
 
