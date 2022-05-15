@@ -545,9 +545,9 @@ namespace jse {
 		return n;
 	}
 
-	void GraphicsDriverOGL::SetVSyncEnabled(bool aEnabled, bool aAdaptiv)
+	void GraphicsDriverOGL::SetVSyncEnabled(int aEnabled, bool aAdaptiv)
 	{
-		SDL_GL_SetSwapInterval(aEnabled && aAdaptiv ? -1 : (aEnabled ? 1 : 0));
+		SDL_GL_SetSwapInterval(aEnabled && aAdaptiv ? -1 : aEnabled);
 	}
 
 	void GraphicsDriverOGL::SetGammaCorrection(float a0)

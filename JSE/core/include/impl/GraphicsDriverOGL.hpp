@@ -58,7 +58,7 @@ namespace jse {
         void SwapBuffers() const;
         void SetBlendEnabled(const bool aEnabled);
         int GetCaps(GraphicsCaps aType) const;
-        void SetVSyncEnabled(bool aEnabled, bool aAdaptiv = false);
+        void SetVSyncEnabled(int aEnabled, bool aAdaptiv = false);
         void SetGammaCorrection(float a0);
         void ClearFrameBuffer(const ClearFBFlags aFlags);
         void SetViewport(const Vector2l& aPos, const Vector2l aSize);

@@ -43,7 +43,7 @@ namespace jse
 
         virtual bool GetFullScreenEnabled() const = 0;
 
-        virtual void SetVSyncEnabled(bool aEnabled, bool aAdaptiv = false) = 0;
+        virtual void SetVSyncEnabled(int aEnabled, bool aAdaptiv = false) = 0;
 
         virtual void SetGammaCorrection(float a0) = 0;
 

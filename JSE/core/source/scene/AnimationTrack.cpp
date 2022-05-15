@@ -1,12 +1,12 @@
+#include <glm/gtc/quaternion.hpp>
 
 #include "system/SystemTypes.hpp"
+#include "graphics/GraphicsTypes.hpp"
+#include "math/Interp.hpp"
 #include "scene/AnimationTrack.hpp"
 #include "scene/Animation.hpp"
 #include "scene/Node3d.hpp"
-#include "graphics/GraphicsTypes.hpp"
-#include "math/Interp.hpp"
 
-#include <glm/gtc/quaternion.hpp>
 
 namespace jse 
 {
@@ -68,10 +68,11 @@ namespace jse
 
 		Keyframe Frame = GetInterpolatedKeyframe(aTime, aLoop);
 
-		Quat rot = glm::slerp(Quat(), Frame.rotation, aWeight);
-		Vector3f trans = aWeight * Frame.position;
-		aNode->AddPosition(trans);
-		aNode->AddRotation(rot);
+		//Quat rot = glm::normalize( glm::slerp(Quat(), Frame.rotation, aWeight) );
+		//Vector3f trans = aWeight * Frame.position;
+
+		aNode->SetPosition(Frame.position);
+		aNode->SetRotation(Frame.rotation);
 	}
 	
 	Keyframe AnimationTrack::GetInterpolatedKeyframe(const float aTime, bool aLoop)
@@ -121,7 +122,7 @@ namespace jse
 			}
 		}
 
-		r.rotation = QuatNormalize(r.rotation);
+		r.rotation = glm::normalize(r.rotation);
 
 		return r;
 	}

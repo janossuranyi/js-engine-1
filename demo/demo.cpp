@@ -17,6 +17,8 @@
 #include "system/Timer.hpp"
 #include "system/Logger.hpp"
 #include "scene/Scene.hpp"
+#include "scene/Animation.hpp"
+#include "scene/AnimationTrack.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -77,9 +79,35 @@ Quat createQuaternion(const float rX, const float rY, const float rZ)
 	return qz * qy * qx;
 }
 
+std::vector<Keyframe> keyframes = {
+	{
+		{-7.0f, -5.0f, 0.0f},
+		createQuaternion(0.f, 0.f, 0.f),
+		0.0f
+	},
+	{
+		{-1.0f, 0.0f, -0.3f},
+		createQuaternion(0.f, 180.f, 0.f),
+		10.0f
+	},
+	{
+		{1.0f, 0.5f, -0.6f},
+		createQuaternion(0.f, 180.f, 180.f),
+		20.0f
+	},
+	{
+		{2.0f, 6.0f, -2.0f},
+		createQuaternion(90.f, 180.f, 180.f),
+		30.0f
+	}
+};
+
+Animation anim("Anim1");
+
+AnimationTrack* track1 = anim.CreateTrack("track1");
+
 int main(int argc, char** argv)
 {
-
 	FileSystem fs;
 
     fs.SetWorkingDir("d:/src/js-engine-1/assets");
@@ -90,7 +118,7 @@ int main(int argc, char** argv)
 	const Color clearColor(0.f, 0.f, 0.3f, 1.f);
 	int n = 0;
 
-	gl->Init(WINDOW_WIDTH, WINDOW_HEIGHT, 0, 32, /*fullScreen*/0, 0, GpuProgramFormat_GLSL, "Hello OpenGL", pos, true);
+	gl->Init(WINDOW_WIDTH, WINDOW_HEIGHT, 0, 32, /*fullScreen*/0, /*MS*/4, GpuProgramFormat_GLSL, "Hello OpenGL", pos, true);
 
 	ShaderManager sm(gl, &fs);
 
@@ -117,7 +145,7 @@ int main(int argc, char** argv)
 	Info("AutoGenerateMipMaps: %d", n);
 
 	gl->SetClearColor(clearColor);
-	gl->SetVSyncEnabled(true, false);
+	gl->SetVSyncEnabled(1, true);
 
 	bool runOnce = false;
 
@@ -126,10 +154,7 @@ int main(int argc, char** argv)
 	uint64_t frametime = SDL_GetTicks64();
 
 	
-	float lastf = 0.0f;
-	float x = 0.0f;
-	float z = 30.0f;
-	float lPower = 100.f;
+	//float lPower = 100.f;
 	float Rl = 0.2f;
 
 	bool running = true;
@@ -146,13 +171,6 @@ int main(int argc, char** argv)
 	Node3d* Torus02 = scene.GetNodeByName("Torus02");
 	Node3d* Torus01 = scene.GetNodeByName("Torus01");
 
-	float torusRotX = 0.0f;
-	float icoRotY = 0.0f;
-
-	const Vector3f AxisX(1.f, 0.f, 0.f);
-	const Vector3f AxisY(0.f, 1.f, 0.f);
-	const Vector3f AxisZ(0.f, 0.f, 1.f);
-
 	const LightVec& lights = scene.GetLights();
 
 	int ln = 1;
@@ -166,82 +184,44 @@ int main(int argc, char** argv)
 
 	scene.Compile();
 
-	int f = 0;
-	int kf = 0;
-	const int keyframeNum = 512;
+	float f = 0.f;
+		
+	std::for_each(keyframes.begin(), keyframes.end(), [&](const Keyframe& k) {
+		Keyframe* x = track1->CreateKeyframe(k.time);
+		x->position = k.position;
+		x->rotation = k.rotation;
 
-	vec3 path[] = {
-		{-7.0f, -5.0f, 0.0f},
-		{-1.0f, 0.0f, -0.3f},
-		{1.0f, 0.5f, -0.6f},
-		{2.0f, 6.0f, -2.0f},
-	};
+		f = k.time;
+	});
 
-	Quat orients[] = {
-		createQuaternion(0.f, 0.f, 0.f),
-		createQuaternion(0.f, 180.f, 0.f),
-		createQuaternion(0.f, 180.f, 180.f),
-		createQuaternion(90.f, 180.f, 180.f)
-	};
+	anim.SetLength(f);
+	f = 0.0f;
 
 
-	const int pathLen = (sizeof(path) / sizeof(vec3));
+//	double clock = SimpleTimer::GetTime(true);
+	float clock = float(SDL_GetTicks64()) / 1e3;
+	float lastf = clock;
 
 	while (running && !runOnce)
 	{
-//		SimpleTimer timer;
+		float now = double(SDL_GetTicks64()) / 1e3;
+		float DDT = now - clock;
 
-		float fTime = SDL_GetTicks64() / 1000.0;
-		const float kT = f / float(keyframeNum);
-		
-		float Dt = (SDL_GetTicks64() - frametime) / 60.0f;
-		frametime = SDL_GetTicks64();
-
+		clock = now;
 
 		vec3 viewPos(vX, vY, vZ);
 
 		scene.SetCameraPos(viewPos, vec3(0.0f), vec3(0.0f, 1.0f, 0.0f));
 
-		vec3 pt;
-		Quat r;
+		track1->ApplyOnNode(Icosphere, f, 0.5f);
 
-		if (kf == 0)
-		{
-			pt = CatmullRomInterp(path[kf], path[kf], path[kf + 1], path[kf + 2], kT);
-			r = CatmullRomInterp(orients[kf], orients[kf], orients[kf + 1], orients[kf + 2], kT);
-		}
-		else if (kf == pathLen - 2)
-		{
-			pt = CatmullRomInterp(path[kf - 1], path[kf], path[kf + 1], path[kf + 1], kT);
-			r = CatmullRomInterp(orients[kf - 1], orients[kf], orients[kf + 1], orients[kf + 1], kT);
-		}
-		else
-		{
-			pt = CatmullRomInterp(path[kf - 1], path[kf], path[kf + 1], path[kf + 2], kT);
-			r = CatmullRomInterp(orients[kf - 1], orients[kf], orients[kf + 1], orients[kf + 2], kT);
-		}
+		f += 1.f * DDT;
 
-		r = glm::normalize(r);
-		
-
-		Icosphere->SetPosition(pt);
-		Icosphere->SetRotation(r);
-
-		f += 1;
-
-		if (f > keyframeNum) {
-			f = f - keyframeNum;
-			kf++;
-			if (kf > pathLen - 2)
-				kf = 0;
+		if (f > anim.GetLength()) {
+			f -= anim.GetLength();
 		}
 
 		scene.Draw(prog);
-
-		torusRotX += Dt * 1.0f;
-		torusRotX = fmod(torusRotX, 360.0f);
-		icoRotY -= Dt * 1.0f;
-		icoRotY = fmod(icoRotY, 360.0f);
 
 		//gl->FlushCommandBuffers();
 
@@ -256,13 +236,13 @@ int main(int argc, char** argv)
 
 		if (input->IsKeyDown(Key_I))
 		{
-			Rl -= 0.01;
+			Rl -= 0.2 * DDT;
 			scene.SetDefaultLightRadius(Rl);
 			Info("R.light: %.2f", Rl);
 		}
 		else if (input->IsKeyDown(Key_O))
 		{
-			Rl += 0.01;
+			Rl += 0.2 * DDT;
 			scene.SetDefaultLightRadius(Rl);
 			Info("R.light: %.2f", Rl);
 		}
@@ -271,20 +251,20 @@ int main(int argc, char** argv)
 
 		if (input->IsWheelDownMoved())
 		{
-			vZ -= 2.5f * Dt;
+			vZ -= 10.f * DDT;
 		}
 		else if (input->IsWheelUpMoved())
 		{
-			vZ += 2.5f * Dt;
+			vZ += 10.f * DDT;
 		}
 
-		vX += mPos.x / 100.0f * Dt;
-		vY += mPos.y / 100.0f * Dt;
+		vX += mPos.x * DDT;
+		vY += mPos.y * DDT;
 
-		if (fTime - lastf > 1)
+		if (now - lastf > 1)
 		{
-			lastf = fTime;
-		
+			lastf = now;
+			Info("f = %.4f, DDT = %.4f", f, DDT);
 			//timer.PrintElapsedTime("frame time");
 		}
 
