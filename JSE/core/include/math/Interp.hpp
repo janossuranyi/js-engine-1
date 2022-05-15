@@ -2,6 +2,7 @@
 #define JSE_INTERP_H
 
 #include <cmath>
+#include "system/SystemTypes.hpp"
 
 namespace jse {
 
@@ -67,6 +68,33 @@ namespace jse {
 		//a3 = y1;
 
 		return(a0 * mu * mu2 + a1 * mu2 + a2 * mu + y1 /*a3*/);
+	}
+
+	template<class T, class Q>
+	inline T CatmullRomInterp(
+		const T& y0, const T& y1,
+		const T& y2, const T& y3,
+		const Q mu)
+	{
+		const Q _0_5 = static_cast<Q>(0.5);
+		const Q _1_5 = static_cast<Q>(1.5);
+		const Q _2_5 = static_cast<Q>(2.5);
+		const Q _2 = static_cast<Q>(2);
+
+		const Q mu2 = mu * mu;
+		const T a0 = -_0_5 * y0 + _1_5 * y1 - _1_5 * y2 + _0_5 * y3;
+		const T a1 = y0 - _2_5 * y1 + _2 * y2 - _0_5 * y3;
+		const T a2 = -_0_5 * y0 + _0_5 * y2;		
+		//a3 = y1;
+
+		return(a0 * mu * mu2 + a1 * mu2 + a2 * mu + y1 /*a3*/);
+	}
+
+	Quat QuatNormalize(const Quat& a0)
+	{
+		const float lenght = 1.0f / sqrtf(a0.x * a0.x + a0.y * a0.y + a0.z * a0.z + a0.w * a0.w);
+
+		return a0 * lenght;
 	}
 }
 

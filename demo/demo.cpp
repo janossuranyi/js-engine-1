@@ -202,21 +202,27 @@ int main(int argc, char** argv)
 		scene.SetCameraPos(viewPos, vec3(0.0f), vec3(0.0f, 1.0f, 0.0f));
 
 		vec3 pt;
+		Quat r;
 
 		if (kf == 0)
 		{
-			pt = CubicInterp(path[kf], path[kf], path[kf + 1], path[kf + 2], kT);
+			pt = CatmullRomInterp(path[kf], path[kf], path[kf + 1], path[kf + 2], kT);
+			r = CatmullRomInterp(orients[kf], orients[kf], orients[kf + 1], orients[kf + 2], kT);
 		}
 		else if (kf == pathLen - 2)
 		{
-			pt = CubicInterp(path[kf - 1], path[kf], path[kf + 1], path[kf + 1], kT);
+			pt = CatmullRomInterp(path[kf - 1], path[kf], path[kf + 1], path[kf + 1], kT);
+			r = CatmullRomInterp(orients[kf - 1], orients[kf], orients[kf + 1], orients[kf + 1], kT);
 		}
-		else 
+		else
 		{
-			pt = CubicInterp(path[kf - 1], path[kf], path[kf + 1], path[kf + 2], kT);
+			pt = CatmullRomInterp(path[kf - 1], path[kf], path[kf + 1], path[kf + 2], kT);
+			r = CatmullRomInterp(orients[kf - 1], orients[kf], orients[kf + 1], orients[kf + 2], kT);
 		}
 
-		Quat r = glm::mix(orients[kf], orients[kf + 1], kT);
+		r = glm::normalize(r);
+		
+
 		Icosphere->SetPosition(pt);
 		Icosphere->SetRotation(r);
 
