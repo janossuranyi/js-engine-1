@@ -48,7 +48,6 @@ namespace jse
 			file = nullptr;
 		}
 
-		//file = fopen(fileName.c_str(), "a");
 		file = fopen(fileName.c_str(), "a");
 	}
 
@@ -66,9 +65,8 @@ namespace jse
 		char text[100];
 
 		time_t now = time(NULL);
-		struct tm my_time;
-		localtime_s(&my_time, &now);
-		strftime(text, 100, "[%Y-%m-%d %H:%M:%S]", &my_time);
+		const tm *my_time = localtime(&now);
+		strftime(text, 100, "[%Y-%m-%d %H:%M:%S]", my_time);
 
 		return std::string(text);
 	}
