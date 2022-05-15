@@ -109,9 +109,11 @@ AnimationTrack* track1 = anim.CreateTrack("track1");
 int main(int argc, char** argv)
 {
 	FileSystem fs;
-
+#ifdef __APPLE__
+    fs.SetWorkingDir("/Users/johnny/tmp/js-engine-1/assets");
+#else
     fs.SetWorkingDir("d:/src/js-engine-1/assets");
-
+#endif
 	GraphicsDriver* gl = new GraphicsDriverOGL();
 	
 	const Vector2l pos(0);
@@ -123,6 +125,7 @@ int main(int argc, char** argv)
 	ShaderManager sm(gl, &fs);
 
 	if (!sm.Init()) {
+        Info("Shader manager init failed !");
 		return 255;
 	}
 
@@ -146,6 +149,7 @@ int main(int argc, char** argv)
 
 	gl->SetClearColor(clearColor);
 	gl->SetVSyncEnabled(1, true);
+    gl->SetCullFaceEnable(true);
 
 	bool runOnce = false;
 

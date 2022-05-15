@@ -91,8 +91,8 @@ namespace jse {
 			mShaderByNameMap.insert(tProgramByNamePair(program_defs[i].mName, program));
 			mMaterialShaderMap.insert(tMaterialShaderPair(program_defs[i].mMaterial, program));
 		}
-
-		
+        
+        return true;
 	}
 
 	GpuShader* ShaderManager::GetShaderByName(const String& aName)

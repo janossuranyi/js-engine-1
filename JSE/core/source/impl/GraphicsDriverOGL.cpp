@@ -11,10 +11,21 @@ namespace jse {
 
 	void GLAPIENTRY OGLDebugOutputCallback(GLenum alSource, GLenum alType, GLuint alID, GLenum alSeverity, GLsizei alLength, const GLchar* apMessage, const void* apUserParam)
 	{
-		jse::Info("Source: %d Type: %d Id: %d Severity: %d '%s'", alSource, alType, alID, alSeverity, apMessage);
+		Info("Source: %d Type: %d Id: %d Severity: %d '%s'", alSource, alType, alID, alSeverity, apMessage);
 	}
 
-	GLenum GetGLFrontFaceEnum(const FrontFace aFace)
+    GLenum GetGLFrontFaceEnum(const FrontFace aFace)
+    {
+        switch(aFace)
+        {
+            case FrontFace_CW:          return GL_CW;
+            case FrontFace_CCW:         return GL_CCW;
+            default:
+                return GL_CCW;
+        }
+    }
+
+	GLenum GetGLCullFaceEnum(const CullFace aFace)
 	{
 		switch (aFace)
 		{
@@ -283,7 +294,10 @@ namespace jse {
 
 	void GraphicsDriverOGL::SetCullFaceEnable(const bool aEnable)
 	{
-		glEnable(GL_CULL_FACE);
+        if (aEnable)
+            glEnable(GL_CULL_FACE);
+        else
+            glDisable(GL_CULL_FACE);
 	}
 
 	void GraphicsDriverOGL::SetFrontFace(const FrontFace aParam)
