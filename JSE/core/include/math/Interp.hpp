@@ -92,9 +92,11 @@ namespace jse {
 
 	Quat QuatNormalize(const Quat& a0)
 	{
-		const float lenght = 1.0f / sqrtf(a0.x * a0.x + a0.y * a0.y + a0.z * a0.z + a0.w * a0.w);
+		const float length = 1.0f / sqrtf(a0.x * a0.x + a0.y * a0.y + a0.z * a0.z + a0.w * a0.w);
 
-		return a0 * lenght;
+		if (length <= 0.0f) return Quat(1.0f, 0.0f, 0.0f, 0.0f);
+
+		return a0 * length;
 	}
 }
 

@@ -49,15 +49,33 @@ namespace jse {
 		SetTransformUpdated();
 	}
 
+	void Node3d::AddPosition(const Vector3f& aPos)
+	{
+		mPosition += aPos;
+		SetTransformUpdated();
+	}
+
 	void Node3d::SetRotation(const Quaternion& aRot)
 	{
 		mRotation = aRot;
 		SetTransformUpdated();
 	}
 
+	void Node3d::AddRotation(const Quaternion& aRot)
+	{
+		mRotation *= aRot;
+		SetTransformUpdated();
+	}
+
 	void Node3d::SetScale(const Vector3f& aScale)
 	{
 		mScale = aScale;
+		SetTransformUpdated();
+	}
+
+	void Node3d::AddScale(const Vector3f& aScale)
+	{
+		mScale *= aScale;
 		SetTransformUpdated();
 	}
 

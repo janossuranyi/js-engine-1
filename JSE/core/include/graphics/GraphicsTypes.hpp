@@ -317,6 +317,13 @@ namespace jse {
 		};
 	};
 
+	class Keyframe
+	{
+	public:
+		Vector3f position;
+		Quat rotation;
+		float time;
+	};
 }
 
 #endif

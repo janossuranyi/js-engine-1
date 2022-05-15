@@ -25,8 +25,12 @@ namespace jse {
 		Node3d(const String& aName, Node3d* aParent, const unsigned int aMesh);
 
 		void SetPosition(const Vector3f& aPos);
+		void AddPosition(const Vector3f& aPos);
 		void SetRotation(const Quaternion& aRot);
+		void AddRotation(const Quaternion& aRot);
+		
 		void SetScale(const Vector3f& aScale);
+		void AddScale(const Vector3f& aScale);
 		void SetScale(const float aUniformScale);
 		void SetScale(const float aX, const float aY, const float aZ);
 		void SetTransform(const Matrix& aTransform, const bool aUpdate);

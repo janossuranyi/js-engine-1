@@ -184,6 +184,7 @@ int main(int argc, char** argv)
 		createQuaternion(90.f, 180.f, 180.f)
 	};
 
+
 	const int pathLen = (sizeof(path) / sizeof(vec3));
 
 	while (running && !runOnce)
