@@ -203,12 +203,12 @@ int main(int argc, char** argv)
 
 
 //	double clock = SimpleTimer::GetTime(true);
-	float clock = float(SDL_GetTicks64()) / 1e3;
+	float clock = float(SDL_GetTicks64()) / 1000.f;
 	float lastf = clock;
 
 	while (running && !runOnce)
 	{
-		float now = double(SDL_GetTicks64()) / 1e3;
+		float now = double(SDL_GetTicks64()) / 1000.f;
 		float DDT = now - clock;
 
 		clock = now;
@@ -217,13 +217,25 @@ int main(int argc, char** argv)
 
 		scene.SetCameraPos(viewPos, vec3(0.0f), vec3(0.0f, 1.0f, 0.0f));
 
-		track1->ApplyOnNode(Icosphere, f, 0.5f);
+		//track1->ApplyOnNode(Icosphere, f, 0.5f);
+		if (Icosphere->HasAnimation())
+		{
+			Animation* an = Icosphere->GetAnimation();
 
-		f += 1.f * DDT;
+			for (int t = 0; t < an->GetTrackNum(); t++)
+			{
+				AnimationTrack* track = an->GetTrack(t);
+				track->ApplyOnNode(Icosphere, f, 1.0f);
+			}
 
-		if (f > anim.GetLength()) {
-			f -= anim.GetLength();
+			f += 5.f * DDT;
+
+			if (f > an->GetLength()) {
+				f -= an->GetLength();
+			}
+
 		}
+
 
 		scene.Draw(prog);
 

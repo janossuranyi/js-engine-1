@@ -6,6 +6,7 @@
 #include "graphics/GraphicsTypes.hpp"
 #include "system/SystemTypes.hpp"
 #include "scene/Mesh3d.hpp"
+#include "scene/Animation.hpp"
 
 namespace jse {
 
@@ -52,6 +53,11 @@ namespace jse {
 		inline const Vector3f& GetScale() const { return mScale; }
 		inline const Quaternion& GetRotation() const { return mRotation; }
 		inline const bool IsVisible() const { return mVisible; }
+
+		Animation* CreateAnimation(const String& aName);
+		bool HasAnimation() const { return mAnimation != nullptr; }
+		Animation* GetAnimation() const { return mAnimation; }
+
 	private:
 		void SetTransformUpdated();
 
@@ -68,6 +74,7 @@ namespace jse {
 		Node3d* mParentNode;
 		Node3dPtrVec mChildNodes;
 
+		Animation* mAnimation;
 		MeshIdxVec mMeshes;
 		bool mTransformUpdated;
 		bool mVisible;

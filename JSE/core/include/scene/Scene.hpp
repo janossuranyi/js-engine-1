@@ -12,6 +12,7 @@
 #include "scene/Mesh3d.hpp"
 #include "scene/Light.hpp"
 #include <list>
+#include <map>
 #include <assimp/Importer.hpp>
 
 class aiNode;
@@ -121,6 +122,10 @@ namespace jse {
 		RenderPass mRPass;
 
 		DrawEntityVec mDrawList;
+
+		std::map<String, Node3d*> mNodeByName;
+
+		typedef std::map<String, Node3d*>::value_type tNodeByNamePair;
 	};
 }
 #endif

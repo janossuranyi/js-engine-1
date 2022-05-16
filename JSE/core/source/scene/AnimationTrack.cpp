@@ -1,5 +1,5 @@
 #include <glm/gtc/quaternion.hpp>
-
+#include <algorithm>
 #include "system/SystemTypes.hpp"
 #include "graphics/GraphicsTypes.hpp"
 #include "math/Interp.hpp"
@@ -19,32 +19,34 @@ namespace jse
 	
 	AnimationTrack::~AnimationTrack()
 	{
+		std::for_each(mKeyframes.begin(), mKeyframes.end(), [](const Keyframe* p) {delete p; });
 	}
 
 	Keyframe* AnimationTrack::CreateKeyframe(const float aTime)
 	{
-		Keyframe n;
+		Keyframe* n = new Keyframe();
 
-		n.time = aTime;
+		n->time = aTime;
 
 		if (aTime > mMaxFrameTime || mKeyframes.empty())
 		{
 			mKeyframes.push_back(n);
 			mMaxFrameTime = aTime;
-			return &mKeyframes.back();
+			return mKeyframes.back();
 		}
 		else
 		{
 			auto it = mKeyframes.begin();
 			for (; it != mKeyframes.end(); it++)
 			{
-				if (it->time > aTime)
+				if ((*it)->time > aTime)
 				{
 					break;
 				}
 			}
 			auto e = mKeyframes.insert(it, n);
-			return &(*e);
+
+			return *e;
 		}
 		
 	}
@@ -58,7 +60,7 @@ namespace jse
 	{
 		assert(aIndex >= 0 && aIndex < mKeyframes.size());
 
-		return &mKeyframes[aIndex];
+		return mKeyframes[aIndex];
 	}
 
 	void AnimationTrack::ApplyOnNode(Node3d* aNode, const float aTime, const float aWeight, const bool aLoop)
@@ -102,23 +104,23 @@ namespace jse
 		{
 			if (keyIndex == 0)
 			{
-				r.rotation = CubicInterp(mKeyframes[0].rotation, kA->rotation, kB->rotation, mKeyframes[2].rotation, T);
-				r.position = CubicInterp(mKeyframes[0].position, kA->position, kB->position, mKeyframes[2].position, T);
+				r.rotation = CubicInterp(mKeyframes[0]->rotation, kA->rotation, kB->rotation, mKeyframes[2]->rotation, T);
+				r.position = CubicInterp(mKeyframes[0]->position, kA->position, kB->position, mKeyframes[2]->position, T);
 			}
 			else if (keyIndex == mKeyframes.size() - 2)
 			{
-				r.rotation = CubicInterp(mKeyframes[keyIndex - 1].rotation, kA->rotation, kB->rotation, mKeyframes[keyIndex + 1].rotation, T);
-				r.position = CubicInterp(mKeyframes[keyIndex - 1].position, kA->position, kB->position, mKeyframes[keyIndex + 1].position, T);
+				r.rotation = CubicInterp(mKeyframes[keyIndex - 1]->rotation, kA->rotation, kB->rotation, mKeyframes[keyIndex + 1]->rotation, T);
+				r.position = CubicInterp(mKeyframes[keyIndex - 1]->position, kA->position, kB->position, mKeyframes[keyIndex + 1]->position, T);
 			}
 			else if (keyIndex == mKeyframes.size() - 1)
 			{
-				r.rotation = CubicInterp(mKeyframes[keyIndex - 2].rotation, kA->rotation, kB->rotation, mKeyframes[keyIndex].rotation, T);
-				r.position = CubicInterp(mKeyframes[keyIndex - 2].position, kA->position, kB->position, mKeyframes[keyIndex].position, T);
+				r.rotation = CubicInterp(mKeyframes[keyIndex - 2]->rotation, kA->rotation, kB->rotation, mKeyframes[keyIndex]->rotation, T);
+				r.position = CubicInterp(mKeyframes[keyIndex - 2]->position, kA->position, kB->position, mKeyframes[keyIndex]->position, T);
 			}
 			else
 			{
-				r.rotation = CubicInterp(mKeyframes[keyIndex - 1].rotation, kA->rotation, kB->rotation, mKeyframes[keyIndex + 2].rotation, T);
-				r.position = CubicInterp(mKeyframes[keyIndex - 1].position, kA->position, kB->position, mKeyframes[keyIndex + 2].position, T);
+				r.rotation = CubicInterp(mKeyframes[keyIndex - 1]->rotation, kA->rotation, kB->rotation, mKeyframes[keyIndex + 2]->rotation, T);
+				r.position = CubicInterp(mKeyframes[keyIndex - 1]->position, kA->position, kB->position, mKeyframes[keyIndex + 2]->position, T);
 			}
 		}
 
@@ -135,8 +137,8 @@ namespace jse
 
 		if (time >= mMaxFrameTime)
 		{
-			*aKeyframeA = &mKeyframes[mKeyframes.size() - 1];
-			*aKeyframeB = &mKeyframes[0];
+			*aKeyframeA = mKeyframes[mKeyframes.size() - 1];
+			*aKeyframeB = mKeyframes[0];
 			aIndex = mKeyframes.size();
 			return 0.0f;
 
@@ -146,7 +148,7 @@ namespace jse
 		int idxB = -1;
 		for (int i = 0; i < lsize; i++)
 		{
-			if (time < mKeyframes[i].time)
+			if (time < mKeyframes[i]->time)
 			{
 				idxB = i;
 				break;
@@ -158,15 +160,15 @@ namespace jse
 		if (idxB == 0)
 		{
 			aIndex = 0;
-			*aKeyframeA = &mKeyframes[0];
-			*aKeyframeB = &mKeyframes[0];
+			*aKeyframeA = mKeyframes[0];
+			*aKeyframeB = mKeyframes[0];
 
 			return 0.0f;
 		}
 
 		aIndex = idxB - 1;
-		*aKeyframeA = &mKeyframes[idxB - 1];
-		*aKeyframeB = &mKeyframes[idxB];
+		*aKeyframeA = mKeyframes[idxB - 1];
+		*aKeyframeB = mKeyframes[idxB];
 
 		const float dt = (*aKeyframeB)->time - (*aKeyframeA)->time;
 

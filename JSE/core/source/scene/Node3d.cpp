@@ -1,5 +1,6 @@
 #include "system/SystemTypes.hpp"
 #include "scene/Node3d.hpp"
+#include "scene/Animation.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -26,6 +27,7 @@ namespace jse {
 		mTransformUpdated = false;
 		mVisible = false;
 		mParentNode = NULL;
+		mAnimation = NULL;
 	}
 
 	Node3d::Node3d(const String& aName, const unsigned int aMesh) : Node3d(aName)
@@ -155,6 +157,17 @@ namespace jse {
 				it->UpdateMatrix(aUpdateChildren); 
 			});
 		}
+	}
+
+	Animation* Node3d::CreateAnimation(const String& aName)
+	{
+		if (!mAnimation)
+		{
+			mAnimation = new Animation(aName);
+			return mAnimation;
+		}
+
+		return nullptr;
 	}
 
 	void Node3d::SetTransformUpdated()

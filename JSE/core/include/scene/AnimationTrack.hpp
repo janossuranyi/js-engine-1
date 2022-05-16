@@ -9,7 +9,7 @@ namespace jse {
 	class Keyframe;
 	class Node3d;
 
-	typedef std::vector<Keyframe> tKeyframeVec;
+	typedef std::vector<Keyframe*> tKeyframeVec;
 
 	class AnimationTrack
 	{

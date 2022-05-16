@@ -12,6 +12,8 @@
 #include "scene/Scene.hpp"
 #include "scene/Mesh3d.hpp"
 #include "scene/Node3d.hpp"
+#include "scene/Animation.hpp"
+#include "scene/AnimationTrack.hpp"
 #include "system/Logger.hpp"
 #include "system/Strings.hpp"
 
@@ -265,6 +267,63 @@ namespace jse {
 			}
 		}
 
+		if (scene->HasAnimations())
+		{
+			Info("Has animation: %d", scene->mNumAnimations);
+			for (int a = 0; a < scene->mNumAnimations; a++)
+			{
+				aiAnimation* e = scene->mAnimations[a];
+				Info("name: %s, dur: %.2f, chan: %d, mesh.chan: %d, ticks/sec: %.2f", e->mName.C_Str(), e->mDuration, e->mNumChannels, e->mNumMeshChannels, e->mTicksPerSecond);
+				for (int i = 0; i < e->mNumChannels; i++)
+				{
+					aiNodeAnim* anim = e->mChannels[i];
+					auto search = mNodeByName.find(anim->mNodeName.C_Str());
+					Node3d* myNode = search != mNodeByName.end() ? search->second : nullptr;
+
+					if (myNode == nullptr) continue;
+
+					Animation* myAnim = myNode->CreateAnimation(e->mName.C_Str());
+					myAnim->SetLength(e->mDuration);
+
+					Info("channel %d, nodeName: %s, pos-keys: %d, rot-keys: %d", i, anim->mNodeName.C_Str(), anim->mNumPositionKeys, anim->mNumRotationKeys);
+					if (anim->mNumPositionKeys > 0)
+					{
+						AnimationTrack* track = myAnim->CreateTrack("Position");
+						for (int k = 0; k < anim->mNumPositionKeys; k++)
+						{
+							aiVectorKey p_key = anim->mPositionKeys[k];
+							Info("Key %d, Time: %.2f, Pos:(%.2f, %.2f, %.2f)", k, p_key.mTime,
+								p_key.mValue.x,
+								p_key.mValue.y,
+								p_key.mValue.z);
+
+							Keyframe* kf = track->CreateKeyframe(p_key.mTime);
+							kf->position = vec3_cast(p_key.mValue);
+							kf->rotation = Quat();
+						}
+					}
+
+					if (anim->mNumRotationKeys > 0)
+					{
+						AnimationTrack* track = myAnim->CreateTrack("Rotation");
+						for (int k = 0; k < anim->mNumRotationKeys; k++)
+						{
+							aiQuatKey q_key = anim->mRotationKeys[k];
+							Info("Key %d, Time: %.2f, Q:(%.2f, %.2f, %.2f, %.2f)", k, q_key.mTime,
+								q_key.mValue.w,
+								q_key.mValue.x,
+								q_key.mValue.y,
+								q_key.mValue.z);
+
+							Keyframe* kf = track->CreateKeyframe(q_key.mTime);
+							kf->position = Vector3f(0.0f);
+							kf->rotation = Quat(q_key.mValue.w, q_key.mValue.x, q_key.mValue.y, q_key.mValue.z);
+						}
+					}
+				}
+			}
+		}
+
 		return true;
 	}
 
@@ -461,6 +520,7 @@ namespace jse {
 			
 			// create node
 			Node3d* nNode = new Node3d(nameVec[0]);
+			mNodeByName.insert(tNodeByNamePair(name, nNode));
 
 			const Matrix M = mat4_cast(node->mTransformation);
 			nNode->SetWorldTransform(M * accTransform);
