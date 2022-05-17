@@ -105,7 +105,12 @@
                 3
             ],
             "mesh" : 2,
-            "name" : "Icosphere"
+            "name" : "Icosphere",
+            "translation" : [
+                -6,
+                0,
+                0
+            ]
         },
         {
             "extensions" : {
@@ -134,7 +139,7 @@
         },
         {
             "mesh" : 3,
-            "name" : "Cube_i"
+            "name" : "Cube"
         }
     ],
     "animations" : [
@@ -155,7 +160,7 @@
                     }
                 }
             ],
-            "name" : "IcosphereAction",
+            "name" : "IcosphereAction.001",
             "samplers" : [
                 {
                     "input" : 20,
@@ -392,14 +397,14 @@
             "componentType" : 5126,
             "count" : 24,
             "max" : [
-                0.5,
-                0.5,
-                0.5
+                0.18623954057693481,
+                0.18623954057693481,
+                0.18623954057693481
             ],
             "min" : [
-                -0.5,
-                -0.5,
-                -0.5
+                -0.18623954057693481,
+                -0.18623954057693481,
+                -0.18623954057693481
             ],
             "type" : "VEC3"
         },
@@ -430,9 +435,9 @@
         {
             "bufferView" : 20,
             "componentType" : 5126,
-            "count" : 10,
+            "count" : 200,
             "max" : [
-                7.541666666666667
+                8.333333333333334
             ],
             "min" : [
                 0.041666666666666664
@@ -442,13 +447,13 @@
         {
             "bufferView" : 21,
             "componentType" : 5126,
-            "count" : 10,
+            "count" : 200,
             "type" : "VEC3"
         },
         {
             "bufferView" : 22,
             "componentType" : 5126,
-            "count" : 10,
+            "count" : 200,
             "type" : "VEC4"
         }
     ],
@@ -555,23 +560,23 @@
         },
         {
             "buffer" : 0,
-            "byteLength" : 40,
+            "byteLength" : 800,
             "byteOffset" : 248232
         },
         {
             "buffer" : 0,
-            "byteLength" : 120,
-            "byteOffset" : 248272
+            "byteLength" : 2400,
+            "byteOffset" : 249032
         },
         {
             "buffer" : 0,
-            "byteLength" : 160,
-            "byteOffset" : 248392
+            "byteLength" : 3200,
+            "byteOffset" : 251432
         }
     ],
     "buffers" : [
         {
-            "byteLength" : 248552,
+            "byteLength" : 254632,
             "uri" : "test2.bin"
         }
     ]

@@ -27,8 +27,8 @@ namespace jse {
 
 	static inline Vector3f color3_cast(const aiColor3D& v) { return Vector3f(v.r, v.g, v.b); }
 	static inline Vector3f vec3_cast(const aiVector3D& v) { return Vector3f(v.x, v.y, v.z); }
+	static inline Quat quat_cast(const aiQuaternion& q) { return Quat(q.w, q.x, q.y, q.z); }
 	static inline Vector2f vec2_cast(const aiVector3D& v) { return Vector2f(v.x, v.y); } // it's aiVector3D because assimp's texture coordinates use that
-	static inline Quaternion quat_cast(const aiQuaternion& q) { return Quaternion(q.w, q.x, q.y, q.z); }
 	static inline Matrix mat4_cast(const aiMatrix4x4& m) { return glm::transpose(glm::make_mat4(&m.a1)); }
 
 	bool Scene_MeshOrderComparator(const DrawEntityDef_t& a0, const DrawEntityDef_t& a1)
@@ -273,6 +273,7 @@ namespace jse {
 			for (int a = 0; a < scene->mNumAnimations; a++)
 			{
 				aiAnimation* e = scene->mAnimations[a];
+
 				Info("name: %s, dur: %.2f, chan: %d, mesh.chan: %d, ticks/sec: %.2f", e->mName.C_Str(), e->mDuration, e->mNumChannels, e->mNumMeshChannels, e->mTicksPerSecond);
 				for (int i = 0; i < e->mNumChannels; i++)
 				{
@@ -292,14 +293,15 @@ namespace jse {
 						for (int k = 0; k < anim->mNumPositionKeys; k++)
 						{
 							aiVectorKey p_key = anim->mPositionKeys[k];
-							Info("Key %d, Time: %.2f, Pos:(%.2f, %.2f, %.2f)", k, p_key.mTime,
-								p_key.mValue.x,
-								p_key.mValue.y,
-								p_key.mValue.z);
+							
+							//Info("Key %d, Time: %.2f, Pos:(%.2f, %.2f, %.2f)", k, p_key.mTime,
+							//	p_key.mValue.x,
+							//	p_key.mValue.y,
+							//	p_key.mValue.z);
 
 							Keyframe* kf = track->CreateKeyframe(p_key.mTime);
 							kf->position = vec3_cast(p_key.mValue);
-							kf->rotation = Quat();
+							kf->rotation = Quat(1, 0, 0, 0);
 						}
 					}
 
@@ -309,15 +311,16 @@ namespace jse {
 						for (int k = 0; k < anim->mNumRotationKeys; k++)
 						{
 							aiQuatKey q_key = anim->mRotationKeys[k];
-							Info("Key %d, Time: %.2f, Q:(%.2f, %.2f, %.2f, %.2f)", k, q_key.mTime,
-								q_key.mValue.w,
-								q_key.mValue.x,
-								q_key.mValue.y,
-								q_key.mValue.z);
+
+							//Info("Key %d, Time: %.2f, Q:(%.2f, %.2f, %.2f, %.2f)", k, q_key.mTime,
+							//	q_key.mValue.w,
+							//	q_key.mValue.x,
+							//	q_key.mValue.y,
+							//	q_key.mValue.z);
 
 							Keyframe* kf = track->CreateKeyframe(q_key.mTime);
 							kf->position = Vector3f(0.0f);
-							kf->rotation = Quat(q_key.mValue.w, q_key.mValue.x, q_key.mValue.y, q_key.mValue.z);
+							kf->rotation = quat_cast(q_key.mValue);
 						}
 					}
 				}

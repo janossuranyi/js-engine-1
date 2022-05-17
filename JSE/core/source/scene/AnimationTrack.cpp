@@ -1,6 +1,7 @@
 #include <glm/gtc/quaternion.hpp>
 #include <algorithm>
 #include "system/SystemTypes.hpp"
+#include "system/Logger.hpp"
 #include "graphics/GraphicsTypes.hpp"
 #include "math/Interp.hpp"
 #include "scene/AnimationTrack.hpp"
@@ -73,8 +74,10 @@ namespace jse
 		//Quat rot = glm::normalize( glm::slerp(Quat(), Frame.rotation, aWeight) );
 		//Vector3f trans = aWeight * Frame.position;
 
-		aNode->SetPosition(Frame.position);
-		aNode->SetRotation(Frame.rotation);
+		aNode->AddPosition(Frame.position);
+		aNode->AddRotation(Frame.rotation);
+
+		//Info("Time: %.2f, Pos: [%.2f,%.2f,%.2f]", aTime, Frame.position.x, Frame.position.y, Frame.position.z);
 	}
 	
 	Keyframe AnimationTrack::GetInterpolatedKeyframe(const float aTime, bool aLoop)
@@ -85,7 +88,7 @@ namespace jse
 		if (mKeyframes.empty())
 		{
 			r.position = Vector3f(0.0f);
-			r.rotation = Quat();
+			r.rotation = Quat(1, 0, 0, 0);
 			return r;
 		}
 
@@ -102,6 +105,8 @@ namespace jse
 		}
 		else
 		{
+			//Info("T != 0.0 (%.4f)", T);
+			/*
 			if (keyIndex == 0)
 			{
 				r.rotation = CubicInterp(mKeyframes[0]->rotation, kA->rotation, kB->rotation, mKeyframes[2]->rotation, T);
@@ -122,6 +127,10 @@ namespace jse
 				r.rotation = CubicInterp(mKeyframes[keyIndex - 1]->rotation, kA->rotation, kB->rotation, mKeyframes[keyIndex + 2]->rotation, T);
 				r.position = CubicInterp(mKeyframes[keyIndex - 1]->position, kA->position, kB->position, mKeyframes[keyIndex + 2]->position, T);
 			}
+			*/
+
+			r.rotation = glm::slerp(kA->rotation, kB->rotation, T);
+			r.position = LinearInterp(kA->position, kB->position, T);
 		}
 
 		r.rotation = glm::normalize(r.rotation);
@@ -167,7 +176,7 @@ namespace jse
 		}
 
 		aIndex = idxB - 1;
-		*aKeyframeA = mKeyframes[idxB - 1];
+		*aKeyframeA = mKeyframes[aIndex];
 		*aKeyframeB = mKeyframes[idxB];
 
 		const float dt = (*aKeyframeB)->time - (*aKeyframeA)->time;

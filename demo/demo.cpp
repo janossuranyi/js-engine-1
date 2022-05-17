@@ -16,6 +16,7 @@
 #include "system/Filesystem.hpp"
 #include "system/Timer.hpp"
 #include "system/Logger.hpp"
+#include "scene/Node3d.hpp"
 #include "scene/Scene.hpp"
 #include "scene/Animation.hpp"
 #include "scene/AnimationTrack.hpp"
@@ -131,7 +132,7 @@ int main(int argc, char** argv)
 
 	Scene scene("Scene1", &sm, gl, &fs);
 
-	//scene.LoadScene(fs.Resolve("test.dae"), true);
+	//scene.LoadScene(fs.Resolve("test2.dae"), 0);
 	scene.LoadScene(fs.Resolve("test2.gltf"));
 	scene.Compile();
 
@@ -148,7 +149,7 @@ int main(int argc, char** argv)
 	Info("AutoGenerateMipMaps: %d", n);
 
 	gl->SetClearColor(clearColor);
-	gl->SetVSyncEnabled(1, true);
+	gl->SetVSyncEnabled(1,false);
     gl->SetCullFaceEnable(true);
 
 	bool runOnce = false;
@@ -218,9 +219,12 @@ int main(int argc, char** argv)
 		scene.SetCameraPos(viewPos, vec3(0.0f), vec3(0.0f, 1.0f, 0.0f));
 
 		//track1->ApplyOnNode(Icosphere, f, 0.5f);
+
 		if (Icosphere->HasAnimation())
 		{
 			Animation* an = Icosphere->GetAnimation();
+			Icosphere->SetPosition(Vector3f(0.0f));
+			Icosphere->SetRotation(Quat(1,0,0,0));
 
 			for (int t = 0; t < an->GetTrackNum(); t++)
 			{
@@ -228,7 +232,7 @@ int main(int argc, char** argv)
 				track->ApplyOnNode(Icosphere, f, 1.0f);
 			}
 
-			f += 5.f * DDT;
+			f += 1000.f * DDT;
 
 			if (f > an->GetLength()) {
 				f -= an->GetLength();
