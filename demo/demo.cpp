@@ -207,6 +207,9 @@ int main(int argc, char** argv)
 	float clock = float(SDL_GetTicks64()) / 1000.f;
 	float lastf = clock;
 
+	const Matrix mtx = Icosphere->GetWorldTransform();
+	Info("Icosphere model pos: (%.2f, %.2f, %.2f)", mtx[3].x, mtx[3].y, mtx[3].z);
+
 	while (running && !runOnce)
 	{
 		float now = double(SDL_GetTicks64()) / 1000.f;

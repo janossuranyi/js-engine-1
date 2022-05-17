@@ -147,9 +147,18 @@ namespace jse {
 		m_mtxModel = glm::scale(m_mtxModel, mScale);
 		m_mtxModel = m_mtxModel * glm::mat4_cast(mRotation);
 
-		m_mtxWorld = mParentNode
-			? mParentNode->m_mtxWorld * m_mtxLocal * m_mtxModel
-			: m_mtxLocal * m_mtxModel;
+		if (!HasAnimation())
+		{
+			m_mtxWorld = mParentNode
+				? mParentNode->m_mtxWorld * m_mtxLocal * m_mtxModel
+				: m_mtxLocal * m_mtxModel;
+		}
+		else
+		{
+			m_mtxWorld = mParentNode
+				? mParentNode->m_mtxWorld * m_mtxModel
+				: m_mtxModel;
+		}
 
 		if (aUpdateChildren)
 		{
