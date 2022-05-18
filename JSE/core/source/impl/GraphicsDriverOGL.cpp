@@ -289,7 +289,7 @@ namespace jse {
 
 	void GraphicsDriverOGL::SetDepthMask(const bool aFlag)
 	{
-		glDepthMask(aFlag);
+		glDepthMask(static_cast<GLboolean>(aFlag));
 	}
 
 	void GraphicsDriverOGL::SetCullFaceEnable(const bool aEnable)
@@ -307,47 +307,7 @@ namespace jse {
 
 	bool GraphicsDriverOGL::WaitForExit()
 	{
-		SDL_Event e;
-		bool quit = false;
-
-		while (SDL_PollEvent(&e) != 0)
-		{
-			//User requests quit
-			if (e.type == SDL_QUIT)
-			{
-				quit = true;
-			}
-			else if (e.type == SDL_KEYDOWN)
-			{
-				switch (e.key.keysym.sym)
-				{
-				case SDLK_ESCAPE:
-					quit = true;
-					break;
-				}
-			}
-			else if (e.type == SDL_WINDOWEVENT)
-			{
-				switch (e.window.event)
-				{
-				case SDL_WINDOWEVENT_RESIZED:
-				case SDL_WINDOWEVENT_SIZE_CHANGED:
-					Info("Window %d resized to %dx%d",
-						e.window.windowID, e.window.data1,
-						e.window.data2);
-					//framebuffer_size_callback(e.window.data1, e.window.data2);
-					const Vector2l origin(0, 0);
-					const Vector2l size(e.window.data1, e.window.data2);
-
-					SetViewport(origin, size);
-
-					break;
-				}
-
-			}
-		}
-
-		return quit;
+		return false;
 	}
 
 	void GraphicsDriverOGL::UseShader(GpuShader* aShader) const
