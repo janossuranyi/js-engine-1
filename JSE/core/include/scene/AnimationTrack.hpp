@@ -24,11 +24,13 @@ namespace jse {
 		Keyframe GetInterpolatedKeyframe(const float aTime, bool aLoop = true);
 		float GetKeyframesAtTime(const float aTime, Keyframe** aKeyframeA, Keyframe** aKeyframeB, int& aIndex, const bool aLoop = true);
 		const String& GetName() const { return mName; }
+
 	private:
 		String mName;
 		tKeyframeVec mKeyframes;
 		float mMaxFrameTime;
 		Animation* mParent;
+		bool mUseLinearInterp;
 	};
 }
 

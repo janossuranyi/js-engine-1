@@ -16,6 +16,7 @@ namespace jse
 		mName = aName;
 		mParent = aParent;
 		mMaxFrameTime = 0.0f;
+		mUseLinearInterp = true;
 	}
 	
 	AnimationTrack::~AnimationTrack()
@@ -33,7 +34,6 @@ namespace jse
 		{
 			mKeyframes.push_back(n);
 			mMaxFrameTime = aTime;
-			return mKeyframes.back();
 		}
 		else
 		{
@@ -47,9 +47,9 @@ namespace jse
 			}
 			auto e = mKeyframes.insert(it, n);
 
-			return *e;
 		}
-		
+
+		return n;
 	}
 
 	void AnimationTrack::Clear()
@@ -106,31 +106,24 @@ namespace jse
 		else
 		{
 			//Info("T != 0.0 (%.4f)", T);
-			/*
-			if (keyIndex == 0)
+			if (!mUseLinearInterp)
 			{
-				r.rotation = CubicInterp(mKeyframes[0]->rotation, kA->rotation, kB->rotation, mKeyframes[2]->rotation, T);
-				r.position = CubicInterp(mKeyframes[0]->position, kA->position, kB->position, mKeyframes[2]->position, T);
-			}
-			else if (keyIndex == mKeyframes.size() - 2)
-			{
-				r.rotation = CubicInterp(mKeyframes[keyIndex - 1]->rotation, kA->rotation, kB->rotation, mKeyframes[keyIndex + 1]->rotation, T);
-				r.position = CubicInterp(mKeyframes[keyIndex - 1]->position, kA->position, kB->position, mKeyframes[keyIndex + 1]->position, T);
-			}
-			else if (keyIndex == mKeyframes.size() - 1)
-			{
-				r.rotation = CubicInterp(mKeyframes[keyIndex - 2]->rotation, kA->rotation, kB->rotation, mKeyframes[keyIndex]->rotation, T);
-				r.position = CubicInterp(mKeyframes[keyIndex - 2]->position, kA->position, kB->position, mKeyframes[keyIndex]->position, T);
+				if (keyIndex == 0 || keyIndex == mKeyframes.size() - 1)
+				{
+					r.rotation = glm::slerp(kA->rotation, kB->rotation, T);
+					r.position = LinearInterp(kA->position, kB->position, T);
+				}
+				else
+				{
+					r.rotation = HermiteInterp(mKeyframes[keyIndex - 1]->rotation, kA->rotation, kB->rotation, mKeyframes[keyIndex + 1]->rotation, T, 0.f,0.f);
+					r.position = HermiteInterp(mKeyframes[keyIndex - 1]->position, kA->position, kB->position, mKeyframes[keyIndex + 1]->position, T, 0.f,0.f);
+				}
 			}
 			else
 			{
-				r.rotation = CubicInterp(mKeyframes[keyIndex - 1]->rotation, kA->rotation, kB->rotation, mKeyframes[keyIndex + 2]->rotation, T);
-				r.position = CubicInterp(mKeyframes[keyIndex - 1]->position, kA->position, kB->position, mKeyframes[keyIndex + 2]->position, T);
+				r.rotation = glm::slerp(kA->rotation, kB->rotation, T);
+				r.position = LinearInterp(kA->position, kB->position, T);
 			}
-			*/
-
-			r.rotation = glm::slerp(kA->rotation, kB->rotation, T);
-			r.position = LinearInterp(kA->position, kB->position, T);
 		}
 
 		r.rotation = glm::normalize(r.rotation);

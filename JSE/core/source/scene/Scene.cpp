@@ -273,8 +273,8 @@ namespace jse {
 			for (int a = 0; a < scene->mNumAnimations; a++)
 			{
 				aiAnimation* e = scene->mAnimations[a];
-
 				Info("name: %s, dur: %.2f, chan: %d, mesh.chan: %d, ticks/sec: %.2f", e->mName.C_Str(), e->mDuration, e->mNumChannels, e->mNumMeshChannels, e->mTicksPerSecond);
+
 				for (int i = 0; i < e->mNumChannels; i++)
 				{
 					aiNodeAnim* anim = e->mChannels[i];
@@ -284,12 +284,15 @@ namespace jse {
 					if (myNode == nullptr) continue;
 
 					Animation* myAnim = myNode->CreateAnimation(e->mName.C_Str());
+					myAnim->SetTicksPerSec(e->mTicksPerSecond);
 					myAnim->SetLength(e->mDuration);
+					myAnim->SetNode(myNode);
 
 					Info("channel %d, nodeName: %s, pos-keys: %d, rot-keys: %d", i, anim->mNodeName.C_Str(), anim->mNumPositionKeys, anim->mNumRotationKeys);
 					if (anim->mNumPositionKeys > 0)
 					{
 						AnimationTrack* track = myAnim->CreateTrack("Position");
+
 						for (int k = 0; k < anim->mNumPositionKeys; k++)
 						{
 							aiVectorKey p_key = anim->mPositionKeys[k];

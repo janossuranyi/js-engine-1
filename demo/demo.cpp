@@ -132,8 +132,8 @@ int main(int argc, char** argv)
 
 	Scene scene("Scene1", &sm, gl, &fs);
 
-	//scene.LoadScene(fs.Resolve("test2.dae"), 0);
-	scene.LoadScene(fs.Resolve("test2.gltf"));
+	scene.LoadScene(fs.Resolve("test2.dae"));
+	//scene.LoadScene(fs.Resolve("test2.gltf"));
 	scene.Compile();
 
 
@@ -225,21 +225,7 @@ int main(int argc, char** argv)
 
 		if (Icosphere->HasAnimation())
 		{
-			Animation* an = Icosphere->GetAnimation();
-			Icosphere->SetPosition(Vector3f(0.0f));
-			Icosphere->SetRotation(Quat(1,0,0,0));
-
-			for (int t = 0; t < an->GetTrackNum(); t++)
-			{
-				AnimationTrack* track = an->GetTrack(t);
-				track->ApplyOnNode(Icosphere, f, 1.0f);
-			}
-
-			f += 1000.f * DDT;
-
-			if (f > an->GetLength()) {
-				f -= an->GetLength();
-			}
+			Icosphere->GetAnimation()->ApplyFrame(f);
 
 		}
 
@@ -248,6 +234,12 @@ int main(int argc, char** argv)
 
 		//gl->FlushCommandBuffers();
 
+
+		f += .5 * DDT;
+
+		if (f > 10.f) {
+			f -= 10.f;
+		}
 
 		input->Update();
 
