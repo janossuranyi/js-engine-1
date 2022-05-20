@@ -1,8 +1,10 @@
+#include <algorithm>
+#include <cassert>
+
 #include "scene/Animation.hpp"
 #include "scene/AnimationTrack.hpp"
 #include "scene/Node3d.hpp"
 
-#include <algorithm>
 
 namespace jse {
 
@@ -15,7 +17,7 @@ namespace jse {
 
 	Animation::~Animation()
 	{
-		std::for_each(mTracks.begin(), mTracks.end(), [](AnimationTrack* _t) { delete _t; });
+		//std::for_each(mTracks.begin(), mTracks.end(), [](AnimationTrack* _t) { delete _t; });
 	}
 
 	void Animation::SetTicksPerSec(const float a0)
@@ -23,27 +25,29 @@ namespace jse {
 		mTicksPerSec = a0;
 	}
 
-	AnimationTrack* Animation::CreateTrack(const String& aName)
+	AnimationTrack& Animation::CreateTrack(const String& aName)
 	{
-		AnimationTrack* t = new AnimationTrack(aName, this);
+		AnimationTrack t(aName, this);
 		mTracks.push_back(t);
 
-		return t;
+		return mTracks.back();
 
 	}
 
-	AnimationTrack* Animation::GetTrack(const int aIdx)
+	AnimationTrack& Animation::GetTrack(const int aIdx)
 	{
+		assert(aIdx < mTracks.size());
+
 		return mTracks[aIdx];
 	}
 
-	AnimationTrack* Animation::GetTrackByName(const String& aName)
+	AnimationTrack const* Animation::GetTrackByName(const String& aName)
 	{
 		auto it = mTracks.begin();
 		for (; it != mTracks.end(); it++)
 		{
-			if ((*it)->GetName() == aName)
-				return *it;
+			if ((it)->GetName() == aName)
+				return &(*it);
 		}
 
 		return nullptr;
@@ -54,9 +58,9 @@ namespace jse {
 		mNode->SetPosition(Vector3f(0.0f));
 		mNode->SetRotation(Quat(1, 0, 0, 0));
 
-		std::for_each(mTracks.begin(), mTracks.end(), [&](AnimationTrack* const t)
+		std::for_each(mTracks.begin(), mTracks.end(), [&](AnimationTrack& t)
 		{
-			t->ApplyOnNode(mNode, aTime, 1.0f);
+			t.ApplyOnNode(mNode, aTime, 1.0f);
 		});
 	}
 

@@ -3,13 +3,12 @@
 
 #include <vector>
 #include "system/SystemTypes.hpp"
+#include "scene/AnimationTrack.hpp"
 
 namespace jse {
 
-	class AnimationTrack;
-	class Node3d;
 
-	typedef std::vector<AnimationTrack*> tAnimationTrackVec;
+	typedef std::vector<AnimationTrack> tAnimationTrackVec;
 
 	class Animation {
 	public:
@@ -19,10 +18,10 @@ namespace jse {
 		inline float GetLength() const { return mLength; }
 		void SetLength(const float aLength) { mLength = aLength; }
 		void SetTicksPerSec(const float a0);
-		AnimationTrack* CreateTrack(const String& aName);
-		AnimationTrack* GetTrack(const int aIdx);
-		AnimationTrack* GetTrackByName(const String& aName);
-		inline int GetTrackNum() const { return mTracks.size(); };
+		AnimationTrack& CreateTrack(const String& aName);
+		AnimationTrack& GetTrack(const int aIdx);
+		const AnimationTrack* GetTrackByName(const String& aName);
+		size_t GetTrackNum() const { return mTracks.size(); };
 		inline float GetTicksPerSec() const { return mTicksPerSec; }
 		inline const String& GetName() const { return mName; }
 		void ApplyFrame(const float aTime);

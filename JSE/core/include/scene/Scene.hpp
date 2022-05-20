@@ -15,7 +15,7 @@
 #include <map>
 #include <assimp/Importer.hpp>
 
-class aiNode;
+struct aiNode;
 struct aiString;
 
 namespace jse {
@@ -75,7 +75,7 @@ namespace jse {
 		void SetCameraPos(const Vector3f& aPos, const Vector3f& aTarget, const Vector3f& aUp);
 		void SetPerspectiveCameraLens(const float aFOV, const float aAspect, const float aZNear, const float aZFar);
 		void AddNode(Node3d* aNode, Node3d* aParent = nullptr);
-		int AddMesh(const Mesh3d& aSrc);
+		size_t AddMesh(const Mesh3d& aSrc);
 		Mesh3d* GetMeshByIndex(const int aIdx);
 		bool LoadScene(const String& aFileName, const bool aToYUp = false);
 		bool Compile();

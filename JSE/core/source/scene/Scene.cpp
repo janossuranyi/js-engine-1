@@ -96,14 +96,14 @@ namespace jse {
 			mRootNode.AddChildNode(aNode);
 	}
 
-	int Scene::AddMesh(const Mesh3d& aSrc)
+	size_t Scene::AddMesh(const Mesh3d& aSrc)
 	{
 		Mesh3d* newMesh = new Mesh3d(aSrc.mName);
 		newMesh->vertices = aSrc.vertices;
 		newMesh->indices = aSrc.indices;
 		newMesh->mMaterial = aSrc.mMaterial;
 
-		const int res = mMeshes.size();
+		const size_t res = mMeshes.size();
 		mMeshes.push_back(newMesh);
 
 		return res;
@@ -284,14 +284,14 @@ namespace jse {
 					if (myNode == nullptr) continue;
 
 					Animation* myAnim = myNode->CreateAnimation(e->mName.C_Str());
-					myAnim->SetTicksPerSec(e->mTicksPerSecond);
-					myAnim->SetLength(e->mDuration);
+					myAnim->SetTicksPerSec(float(e->mTicksPerSecond));
+					myAnim->SetLength(float(e->mDuration));
 					myAnim->SetNode(myNode);
 
 					Info("channel %d, nodeName: %s, pos-keys: %d, rot-keys: %d", i, anim->mNodeName.C_Str(), anim->mNumPositionKeys, anim->mNumRotationKeys);
 					if (anim->mNumPositionKeys > 0)
 					{
-						AnimationTrack* track = myAnim->CreateTrack("Position");
+						AnimationTrack& track = myAnim->CreateTrack("Position");
 
 						for (int k = 0; k < anim->mNumPositionKeys; k++)
 						{
@@ -302,7 +302,7 @@ namespace jse {
 							//	p_key.mValue.y,
 							//	p_key.mValue.z);
 
-							Keyframe& kf = track->CreateKeyframe(p_key.mTime);
+							Keyframe& kf = track.CreateKeyframe(float(p_key.mTime));
 							kf.position = vec3_cast(p_key.mValue);
 							kf.rotation = Quat(1, 0, 0, 0);
 						}
@@ -310,18 +310,18 @@ namespace jse {
 
 					if (anim->mNumRotationKeys > 0)
 					{
-						AnimationTrack* track = myAnim->CreateTrack("Rotation");
+						AnimationTrack& track = myAnim->CreateTrack("Rotation");
 						for (int k = 0; k < anim->mNumRotationKeys; k++)
 						{
 							aiQuatKey q_key = anim->mRotationKeys[k];
 
-							//Info("Key %d, Time: %.2f, Q:(%.2f, %.2f, %.2f, %.2f)", k, q_key.mTime,
-							//	q_key.mValue.w,
-							//	q_key.mValue.x,
-							//	q_key.mValue.y,
-							//	q_key.mValue.z);
+							Info("Key %d, Time: %.2f, Q:(%.2f, %.2f, %.2f, %.2f)", k, q_key.mTime,
+								q_key.mValue.w,
+								q_key.mValue.x,
+								q_key.mValue.y,
+								q_key.mValue.z);
 
-							Keyframe& kf = track->CreateKeyframe(q_key.mTime);
+							Keyframe& kf = track.CreateKeyframe(q_key.mTime);
 							kf.position = Vector3f(0.0f);
 							kf.rotation = quat_cast(q_key.mValue);
 						}

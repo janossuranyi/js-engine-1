@@ -39,6 +39,7 @@ using namespace std::chrono;
 #define WINDOW_WIDTH 1440
 #define WINDOW_HEIGHT 900
 #define WINDOW_ASPECT (float(WINDOW_WIDTH)/float(WINDOW_HEIGHT))
+const float TicksPerFrame = 1000.f;
 
 
 void X_add_light_cube(Scene& aScene, const Vector3f& aPos, const Color3 aColor, int aLightNum)
@@ -106,7 +107,7 @@ int main(int argc, char** argv)
 
 	Scene scene("Scene1", &sm, gl, &fs);
 
-	scene.LoadScene(fs.Resolve("test2.dae"));
+	scene.LoadScene(fs.Resolve("test2.gltf"));
 	//scene.LoadScene(fs.Resolve("test2.gltf"));
 	scene.Compile();
 
@@ -164,16 +165,10 @@ int main(int argc, char** argv)
 	scene.Compile();
 
 	float f = 0.f;
-		
-	f = 0.0f;
-
 
 //	double clock = SimpleTimer::GetTime(true);
 	float clock = float(SDL_GetTicks64()) / 1000.f;
 	float lastf = clock;
-
-	const Matrix mtx = Icosphere->GetWorldTransform();
-	Info("Icosphere model pos: (%.2f, %.2f, %.2f)", mtx[3].x, mtx[3].y, mtx[3].z);
 
 	while (running && !runOnce)
 	{
@@ -200,10 +195,10 @@ int main(int argc, char** argv)
 		//gl->FlushCommandBuffers();
 
 
-		f += 1 * dt;
+		f += TicksPerFrame * dt;
 
-		if (f > 10.f) {
-			f -= 10.f;
+		if (f > 10.f * TicksPerFrame) {
+			f -= 10.f * TicksPerFrame;
 		}
 
 		input->Update();
