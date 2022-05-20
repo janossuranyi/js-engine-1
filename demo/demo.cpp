@@ -80,32 +80,6 @@ Quat createQuaternion(const float rX, const float rY, const float rZ)
 	return qz * qy * qx;
 }
 
-std::vector<Keyframe> keyframes = {
-	{
-		{-7.0f, -5.0f, 0.0f},
-		createQuaternion(0.f, 0.f, 0.f),
-		0.0f
-	},
-	{
-		{-1.0f, 0.0f, -0.3f},
-		createQuaternion(0.f, 180.f, 0.f),
-		10.0f
-	},
-	{
-		{1.0f, 0.5f, -0.6f},
-		createQuaternion(0.f, 180.f, 180.f),
-		20.0f
-	},
-	{
-		{2.0f, 6.0f, -2.0f},
-		createQuaternion(90.f, 180.f, 180.f),
-		30.0f
-	}
-};
-
-Animation anim("Anim1");
-
-AnimationTrack* track1 = anim.CreateTrack("track1");
 
 int main(int argc, char** argv)
 {
@@ -191,15 +165,6 @@ int main(int argc, char** argv)
 
 	float f = 0.f;
 		
-	std::for_each(keyframes.begin(), keyframes.end(), [&](const Keyframe& k) {
-		Keyframe* x = track1->CreateKeyframe(k.time);
-		x->position = k.position;
-		x->rotation = k.rotation;
-
-		f = k.time;
-	});
-
-	anim.SetLength(f);
 	f = 0.0f;
 
 
@@ -213,7 +178,7 @@ int main(int argc, char** argv)
 	while (running && !runOnce)
 	{
 		float now = double(SDL_GetTicks64()) / 1000.f;
-		float DDT = now - clock;
+		float dt = now - clock;
 
 		clock = now;
 
@@ -235,7 +200,7 @@ int main(int argc, char** argv)
 		//gl->FlushCommandBuffers();
 
 
-		f += .5 * DDT;
+		f += 1 * dt;
 
 		if (f > 10.f) {
 			f -= 10.f;
@@ -251,13 +216,13 @@ int main(int argc, char** argv)
 
 		if (input->IsKeyDown(Key_I))
 		{
-			Rl -= 0.2 * DDT;
+			Rl -= 0.2 * dt;
 			scene.SetDefaultLightRadius(Rl);
 			Info("R.light: %.2f", Rl);
 		}
 		else if (input->IsKeyDown(Key_O))
 		{
-			Rl += 0.2 * DDT;
+			Rl += 0.2 * dt;
 			scene.SetDefaultLightRadius(Rl);
 			Info("R.light: %.2f", Rl);
 		}
@@ -266,20 +231,20 @@ int main(int argc, char** argv)
 
 		if (input->IsWheelDownMoved())
 		{
-			vZ -= 10.f * DDT;
+			vZ -= 10.f * dt;
 		}
 		else if (input->IsWheelUpMoved())
 		{
-			vZ += 10.f * DDT;
+			vZ += 10.f * dt;
 		}
 
-		vX += mPos.x * DDT;
-		vY += mPos.y * DDT;
+		vX += mPos.x * dt;
+		vY += mPos.y * dt;
 
 		if (now - lastf > 1)
 		{
 			lastf = now;
-			Info("f = %.4f, DDT = %.4f", f, DDT);
+			Info("f = %.4f, DDT = %.4f", f, dt);
 			//timer.PrintElapsedTime("frame time");
 		}
 

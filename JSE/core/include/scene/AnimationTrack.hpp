@@ -9,7 +9,7 @@ namespace jse {
 	class Keyframe;
 	class Node3d;
 
-	typedef std::vector<Keyframe*> tKeyframeVec;
+	typedef std::vector<Keyframe> tKeyframeVec;
 
 	class AnimationTrack
 	{
@@ -17,9 +17,9 @@ namespace jse {
 		AnimationTrack(const String& aName, Animation* aParent);
 		~AnimationTrack();
 
-		Keyframe* CreateKeyframe(const float aTime);
+		Keyframe& CreateKeyframe(const float aTime);
 		void Clear();
-		Keyframe* GetKey(const int aIndex);
+		Keyframe& GetKey(const int aIndex);
 		void ApplyOnNode(Node3d* aNode, const float aTime, const float aWeight, const bool aLoop = true);
 		Keyframe GetInterpolatedKeyframe(const float aTime, bool aLoop = true);
 		float GetKeyframesAtTime(const float aTime, Keyframe** aKeyframeA, Keyframe** aKeyframeB, int& aIndex, const bool aLoop = true);

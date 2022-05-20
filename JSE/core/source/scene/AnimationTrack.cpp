@@ -21,35 +21,35 @@ namespace jse
 	
 	AnimationTrack::~AnimationTrack()
 	{
-		std::for_each(mKeyframes.begin(), mKeyframes.end(), [](const Keyframe* p) {delete p; });
+		//std::for_each(mKeyframes.begin(), mKeyframes.end(), [](const Keyframe* p) {delete p; });
 	}
 
-	Keyframe* AnimationTrack::CreateKeyframe(const float aTime)
+	Keyframe& AnimationTrack::CreateKeyframe(const float aTime)
 	{
-		Keyframe* n = new Keyframe();
+		Keyframe n;
 
-		n->time = aTime;
+		n.time = aTime;
 
 		if (aTime > mMaxFrameTime || mKeyframes.empty())
 		{
 			mKeyframes.push_back(n);
 			mMaxFrameTime = aTime;
+
+			return mKeyframes.back();
 		}
 		else
 		{
 			auto it = mKeyframes.begin();
 			for (; it != mKeyframes.end(); it++)
 			{
-				if ((*it)->time > aTime)
+				if ((it)->time > aTime)
 				{
 					break;
 				}
 			}
 			auto e = mKeyframes.insert(it, n);
-
+			return *e;
 		}
-
-		return n;
 	}
 
 	void AnimationTrack::Clear()
@@ -57,7 +57,7 @@ namespace jse
 		mKeyframes.clear();
 		mMaxFrameTime = 0.0;
 	}
-	Keyframe* AnimationTrack::GetKey(const int aIndex)
+	Keyframe& AnimationTrack::GetKey(const int aIndex)
 	{
 		assert(aIndex >= 0 && aIndex < mKeyframes.size());
 
@@ -115,8 +115,8 @@ namespace jse
 				}
 				else
 				{
-					r.rotation = HermiteInterp(mKeyframes[keyIndex - 1]->rotation, kA->rotation, kB->rotation, mKeyframes[keyIndex + 1]->rotation, T, 0.f,0.f);
-					r.position = HermiteInterp(mKeyframes[keyIndex - 1]->position, kA->position, kB->position, mKeyframes[keyIndex + 1]->position, T, 0.f,0.f);
+					r.rotation = HermiteInterp(mKeyframes[keyIndex - 1].rotation, kA->rotation, kB->rotation, mKeyframes[keyIndex + 1].rotation, T, 0.f,0.f);
+					r.position = HermiteInterp(mKeyframes[keyIndex - 1].position, kA->position, kB->position, mKeyframes[keyIndex + 1].position, T, 0.f,0.f);
 				}
 			}
 			else
@@ -139,8 +139,8 @@ namespace jse
 
 		if (time >= mMaxFrameTime)
 		{
-			*aKeyframeA = mKeyframes[mKeyframes.size() - 1];
-			*aKeyframeB = mKeyframes[0];
+			*aKeyframeA = &mKeyframes[mKeyframes.size() - 1];
+			*aKeyframeB = &mKeyframes[0];
 			aIndex = mKeyframes.size();
 			return 0.0f;
 
@@ -150,7 +150,7 @@ namespace jse
 		int idxB = -1;
 		for (int i = 0; i < lsize; i++)
 		{
-			if (time < mKeyframes[i]->time)
+			if (time < mKeyframes[i].time)
 			{
 				idxB = i;
 				break;
@@ -162,15 +162,15 @@ namespace jse
 		if (idxB == 0)
 		{
 			aIndex = 0;
-			*aKeyframeA = mKeyframes[0];
-			*aKeyframeB = mKeyframes[0];
+			*aKeyframeA = &mKeyframes[0];
+			*aKeyframeB = &mKeyframes[0];
 
 			return 0.0f;
 		}
 
 		aIndex = idxB - 1;
-		*aKeyframeA = mKeyframes[aIndex];
-		*aKeyframeB = mKeyframes[idxB];
+		*aKeyframeA = &mKeyframes[aIndex];
+		*aKeyframeB = &mKeyframes[idxB];
 
 		const float dt = (*aKeyframeB)->time - (*aKeyframeA)->time;
 

@@ -302,9 +302,9 @@ namespace jse {
 							//	p_key.mValue.y,
 							//	p_key.mValue.z);
 
-							Keyframe* kf = track->CreateKeyframe(p_key.mTime);
-							kf->position = vec3_cast(p_key.mValue);
-							kf->rotation = Quat(1, 0, 0, 0);
+							Keyframe& kf = track->CreateKeyframe(p_key.mTime);
+							kf.position = vec3_cast(p_key.mValue);
+							kf.rotation = Quat(1, 0, 0, 0);
 						}
 					}
 
@@ -321,9 +321,9 @@ namespace jse {
 							//	q_key.mValue.y,
 							//	q_key.mValue.z);
 
-							Keyframe* kf = track->CreateKeyframe(q_key.mTime);
-							kf->position = Vector3f(0.0f);
-							kf->rotation = quat_cast(q_key.mValue);
+							Keyframe& kf = track->CreateKeyframe(q_key.mTime);
+							kf.position = Vector3f(0.0f);
+							kf.rotation = quat_cast(q_key.mValue);
 						}
 					}
 				}
