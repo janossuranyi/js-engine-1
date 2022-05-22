@@ -11,6 +11,8 @@
 #include "scene/Node3d.hpp"
 #include "scene/Mesh3d.hpp"
 #include "scene/Light.hpp"
+#include "scene/AnimationManager.hpp"
+
 #include <list>
 #include <map>
 #include <assimp/Importer.hpp>
@@ -85,6 +87,8 @@ namespace jse {
 		Node3d* GetNodeByName(const String& aName);
 		const LightVec& GetLights() const { return mLights; }
 
+		void UpdateAnimation(const float aFrameStep);
+
 		MeshQueryResult GetMeshByName(const String& aName);
 
 	private:
@@ -95,6 +99,8 @@ namespace jse {
 		void DrawMesh(const unsigned aMesh) const;
 		void Init();
 		aiNode* FindAINodeByName(const aiString& aName, aiNode* aNode, aiMatrix4x4& aTrans);
+
+		AnimationManager mAnimMgr;
 
 		String mName;
 		Node3d mRootNode;

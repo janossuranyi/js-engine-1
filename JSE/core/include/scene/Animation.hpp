@@ -7,9 +7,6 @@
 
 namespace jse {
 
-
-	typedef std::vector<AnimationTrack> tAnimationTrackVec;
-
 	class Animation {
 	public:
 		Animation(const String& aName);
@@ -19,8 +16,8 @@ namespace jse {
 		void SetLength(const float aLength) { mLength = aLength; }
 		void SetTicksPerSec(const float a0);
 		AnimationTrack& CreateTrack(const String& aName);
-		AnimationTrack& GetTrack(const int aIdx);
-		const AnimationTrack* GetTrackByName(const String& aName);
+		AnimationTrack& GetTrack(const size_t aIdx);
+		const AnimationTrack* GetTrackByName(const String& aName) const;
 		size_t GetTrackNum() const { return mTracks.size(); };
 		inline float GetTicksPerSec() const { return mTicksPerSec; }
 		inline const String& GetName() const { return mName; }
@@ -34,7 +31,7 @@ namespace jse {
 		float mLength;
 		float mTicksPerSec;
 		String mName;
-		tAnimationTrackVec mTracks;
+		std::vector<AnimationTrack> mTracks;
 	};
 }
 

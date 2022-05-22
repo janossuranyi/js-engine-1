@@ -19,11 +19,6 @@ namespace jse
 		mUseLinearInterp = true;
 	}
 	
-	AnimationTrack::~AnimationTrack()
-	{
-		//std::for_each(mKeyframes.begin(), mKeyframes.end(), [](const Keyframe* p) {delete p; });
-	}
-
 	Keyframe& AnimationTrack::CreateKeyframe(const float aTime)
 	{
 		Keyframe n;

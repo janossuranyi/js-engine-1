@@ -3,10 +3,11 @@
 
 #include <vector>
 #include "system/SystemTypes.hpp"
+#include "scene/AnimationTrack.hpp"
+#include "graphics/GraphicsTypes.hpp"
 
 namespace jse {
 	class Animation;
-	class Keyframe;
 	class Node3d;
 
 	typedef std::vector<Keyframe> tKeyframeVec;
@@ -15,8 +16,8 @@ namespace jse {
 	{
 	public:
 		AnimationTrack(const String& aName, Animation* aParent);
-		~AnimationTrack();
 
+		size_t GetKeyframeNum() const { return mKeyframes.size(); }
 		Keyframe& CreateKeyframe(const float aTime);
 		void Clear();
 		Keyframe& GetKey(const int aIndex);
@@ -24,6 +25,7 @@ namespace jse {
 		Keyframe GetInterpolatedKeyframe(const float aTime, bool aLoop = true);
 		float GetKeyframesAtTime(const float aTime, Keyframe& aKeyframeA, Keyframe& aKeyframeB, size_t& aIndex, const bool aLoop = true);
 		const String& GetName() const { return mName; }
+		const tKeyframeVec& GetKeyframes() const { return mKeyframes; }
 
 	private:
 		String mName;

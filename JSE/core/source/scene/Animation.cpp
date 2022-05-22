@@ -27,27 +27,27 @@ namespace jse {
 
 	AnimationTrack& Animation::CreateTrack(const String& aName)
 	{
-		AnimationTrack t(aName, this);
-		mTracks.push_back(t);
+		mTracks.emplace_back(aName, this);
 
 		return mTracks.back();
 
 	}
 
-	AnimationTrack& Animation::GetTrack(const int aIdx)
+	AnimationTrack& Animation::GetTrack(const size_t aIdx)
 	{
 		assert(aIdx < mTracks.size());
 
 		return mTracks[aIdx];
 	}
 
-	AnimationTrack const* Animation::GetTrackByName(const String& aName)
+	const AnimationTrack* Animation::GetTrackByName(const String& aName) const
 	{
-		auto it = mTracks.begin();
-		for (; it != mTracks.end(); it++)
+		for (auto it = mTracks.begin(); it != mTracks.end(); it++)
 		{
-			if ((it)->GetName() == aName)
+			if (it->GetName() == aName)
+			{
 				return &(*it);
+			}
 		}
 
 		return nullptr;

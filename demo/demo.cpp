@@ -126,6 +126,7 @@ int main(int argc, char** argv)
 	gl->SetClearColor(clearColor);
 	gl->SetVSyncEnabled(1,false);
     gl->SetCullFaceEnable(true);
+	gl->SetFrontFace(FrontFace_CCW);
 
 	bool runOnce = false;
 
@@ -140,7 +141,7 @@ int main(int argc, char** argv)
 	bool running = true;
 	InputService* input = new InputServiceSDL();
 
-	float vX = 0.0f, vY = 0.0f, vZ = 5.0f;
+	float vX = 0.0f, vY = 18.0f, vZ = 5.0f;
 
 	input->SetRelativeMouseMode(true);
 
@@ -181,25 +182,11 @@ int main(int argc, char** argv)
 
 		scene.SetCameraPos(viewPos, vec3(0.0f), vec3(0.0f, 1.0f, 0.0f));
 
-		//track1->ApplyOnNode(Icosphere, f, 0.5f);
-
-		if (Icosphere->HasAnimation())
-		{
-			Icosphere->GetAnimation()->ApplyFrame(f);
-
-		}
-
+		scene.UpdateAnimation(dt);
 
 		scene.Draw(prog);
 
 		//gl->FlushCommandBuffers();
-
-
-		f += TicksPerFrame * dt;
-
-		if (f > 10.f * TicksPerFrame) {
-			f -= 10.f * TicksPerFrame;
-		}
 
 		input->Update();
 
@@ -239,7 +226,7 @@ int main(int argc, char** argv)
 		if (now - lastf > 1)
 		{
 			lastf = now;
-			Info("f = %.4f, DDT = %.4f", f, dt);
+			//Info("DT = %.4f", dt);
 			//timer.PrintElapsedTime("frame time");
 		}
 

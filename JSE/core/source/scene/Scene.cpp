@@ -145,6 +145,8 @@ namespace jse {
 		}
 
 		const int numMeshes = scene->mNumMeshes;
+		Info("Number of meshes: %d", numMeshes);
+
 		for (int i = 0; i < numMeshes; i++)
 		{
 			aiMesh* src = scene->mMeshes[i];
@@ -287,6 +289,7 @@ namespace jse {
 					myAnim->SetTicksPerSec(float(e->mTicksPerSecond));
 					myAnim->SetLength(float(e->mDuration));
 					myAnim->SetNode(myNode);
+					mAnimMgr.AddAnimation(myAnim);
 
 					Info("channel %d, nodeName: %s, pos-keys: %d, rot-keys: %d", i, anim->mNodeName.C_Str(), anim->mNumPositionKeys, anim->mNumRotationKeys);
 					if (anim->mNumPositionKeys > 0)
@@ -315,11 +318,11 @@ namespace jse {
 						{
 							aiQuatKey q_key = anim->mRotationKeys[k];
 
-							Info("Key %d, Time: %.2f, Q:(%.2f, %.2f, %.2f, %.2f)", k, q_key.mTime,
-								q_key.mValue.w,
-								q_key.mValue.x,
-								q_key.mValue.y,
-								q_key.mValue.z);
+							//Info("Key %d, Time: %.2f, Q:(%.2f, %.2f, %.2f, %.2f)", k, q_key.mTime,
+							//	q_key.mValue.w,
+							//	q_key.mValue.x,
+							//	q_key.mValue.y,
+							//	q_key.mValue.z);
 
 							Keyframe& kf = track.CreateKeyframe(q_key.mTime);
 							kf.position = Vector3f(0.0f);
@@ -494,7 +497,17 @@ namespace jse {
 
 	Node3d* Scene::GetNodeByName(const String& aName)
 	{
-		return Scene_recurse_search(&mRootNode, aName);
+		//return Scene_recurse_search(&mRootNode, aName);
+		auto it = mNodeByName.find(aName);
+		if (it == mNodeByName.end())
+			return nullptr;
+
+		return it->second;
+	}
+
+	void Scene::UpdateAnimation(const float aFrameStep)
+	{
+		mAnimMgr.UpdateState(aFrameStep);
 	}
 
 	MeshQueryResult Scene::GetMeshByName(const String& aName)
