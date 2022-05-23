@@ -81,7 +81,7 @@ namespace jse {
 		Mesh3d* GetMeshByIndex(const int aIdx);
 		bool LoadScene(const String& aFileName, const bool aToYUp = false);
 		bool Compile();
-		void Draw(GpuShader* aShader);
+		void Draw();
 		inline float GetDefaultLightRadius() const { return mDefaultLightRadius; }
 		float SetDefaultLightRadius(const float a0);
 		Node3d* GetNodeByName(const String& aName);
@@ -96,7 +96,7 @@ namespace jse {
 		void processNodesRecursive(const aiNode* node, Node3d* parent, Matrix aMatrix);
 		void BuildDrawList(Node3d* node);
 		void DrawList();
-		void DrawMesh(const unsigned aMesh) const;
+		void DrawMesh(const unsigned aMesh);
 		void Init();
 		aiNode* FindAINodeByName(const aiString& aName, aiNode* aNode, aiMatrix4x4& aTrans);
 
@@ -132,6 +132,10 @@ namespace jse {
 		std::map<String, Node3d*> mNodeByName;
 
 		typedef std::map<String, Node3d*>::value_type tNodeByNamePair;
+
+		int m_drawCallsPerFrame{ 0 };
+		int m_stateChangePerFrame{ 0 };
+		int m_sampleCount{ 0 };
 	};
 }
 #endif

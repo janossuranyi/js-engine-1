@@ -405,12 +405,21 @@ namespace jse {
 		return true;
 	}
 
-	void Scene::Draw(GpuShader* aShader)
+	void Scene::Draw()
 	{
+
+		if (m_sampleCount++ > 100) {
+			Info("m_drawCallsPerFrame: %d, m_stateChangePerFrame: %d", m_drawCallsPerFrame, m_stateChangePerFrame);
+			m_sampleCount = 0;
+		}
+
+		m_drawCallsPerFrame = 0;
+		m_stateChangePerFrame = 0;
 
 		mDrawList.clear();
 		BuildDrawList(&mRootNode);
 		std::sort(mDrawList.begin(), mDrawList.end(), Scene_MeshOrderComparator);
+
 
 		/************************************
 		Render Z-Pass
@@ -465,7 +474,6 @@ namespace jse {
 		}
 
 		mGd->UseShader(NULL);
-		mGd->SwapBuffers();
 
 	}
 
@@ -621,6 +629,8 @@ namespace jse {
 			
 			if (mtCurrent != ent.mMaterial && mtCurrent != MaterialType_ZPass)
 			{
+				m_stateChangePerFrame++;
+
 				mtCurrent = ent.mMaterial;
 				mCurrentShader = mSm->GetShaderByMaterial(mtCurrent);
 				mCurrentShader->Use();
@@ -635,7 +645,7 @@ namespace jse {
 				else if (mRPass == RenderPass_Light)
 				{
 					PointLight* p = reinterpret_cast<PointLight*> (mCurrentLight);
-					p->SetAttenuation(1.0f, 2.0f / mDefaultLightRadius, 1.0f / (mDefaultLightRadius2));
+					p->SetAttenuation(1.0f, 2.0f / mDefaultLightRadius, 1.0f / mDefaultLightRadius2);
 
 					mCurrentShader->SetVector3("light.position", &(p->GetPosition())[0]);
 					mCurrentShader->SetVector3("light.diffuse", &(p->GetDiffuse())[0]);
@@ -655,7 +665,7 @@ namespace jse {
 		}
 	}
 
-	void Scene::DrawMesh(const unsigned aMesh) const
+	void Scene::DrawMesh(const unsigned aMesh)
 	{
 		const Mesh3d* m = mMeshes[aMesh];
 		const Vector3f kBlack(0.0f);
@@ -678,6 +688,8 @@ namespace jse {
 			mCurrentShader->SetVector3("material.specular", &kBlack[0]);
 			mCurrentShader->SetFloat("material.shininess", 1.0f);
 		}
+
+		m_drawCallsPerFrame++;
 
 		mGd->DrawPrimitivesWithBase(PrimitiveType_Triangles, m->indices.size(), idxH.offset, baseVert);
 	}

@@ -55,7 +55,7 @@ void main() {
     attenuation = (attenuation - cutoff) / (1.0 - cutoff);
     attenuation = max(attenuation, 0.0);
      
-    vec3 ambient = material.diffuse * 0.03;
+    vec3 ambient = material.diffuse * 0.01;
     float diff = max(dot(L, N), 0);
     vec3 H = normalize(L + E);
     //float spec = pow(max(dot(E, R), 0), material.shininess);

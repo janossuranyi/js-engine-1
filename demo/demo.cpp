@@ -17,9 +17,9 @@
 #include "system/Timer.hpp"
 #include "system/Logger.hpp"
 #include "scene/Node3d.hpp"
-#include "scene/Scene.hpp"
 #include "scene/Animation.hpp"
 #include "scene/AnimationTrack.hpp"
+#include "scene/Scene.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -112,11 +112,6 @@ int main(int argc, char** argv)
 	scene.Compile();
 
 
-	GpuShader*		prog	= gl->CreateGpuShader();
-	GpuShaderStage* s_vtx	= gl->CreateGpuShaderStage(ShaderStage_Vertex, "simple_vtx.glsl");
-	GpuShaderStage* s_frg	= gl->CreateGpuShaderStage(ShaderStage_Fragment, "simple_frag.glsl");
-
-
 	n = gl->GetCaps(GraphicsCaps_MaxTextureImageUnits);
 	Info("Max texture units: %d", n);
 
@@ -124,9 +119,7 @@ int main(int argc, char** argv)
 	Info("AutoGenerateMipMaps: %d", n);
 
 	gl->SetClearColor(clearColor);
-	gl->SetVSyncEnabled(1,false);
-    gl->SetCullFaceEnable(true);
-	gl->SetFrontFace(FrontFace_CCW);
+	gl->SetVSyncEnabled(1, false);
 
 	bool runOnce = false;
 
@@ -171,6 +164,9 @@ int main(int argc, char** argv)
 	float clock = float(SDL_GetTicks64()) / 1000.f;
 	float lastf = clock;
 
+	gl->SetCullFaceEnable(true);
+	gl->SetFrontFace(FrontFace_CCW);
+
 	while (running && !runOnce)
 	{
 		float now = double(SDL_GetTicks64()) / 1000.f;
@@ -184,9 +180,9 @@ int main(int argc, char** argv)
 
 		scene.UpdateAnimation(dt);
 
-		scene.Draw(prog);
+		scene.Draw();
 
-		//gl->FlushCommandBuffers();
+		gl->SwapBuffers();
 
 		input->Update();
 
@@ -235,9 +231,6 @@ int main(int argc, char** argv)
 	gl->UseShader(nullptr);
 
 	delete input;
-	delete prog;
-	delete s_vtx;
-	delete s_frg;
 	delete gl;
 	return 0;
 }
