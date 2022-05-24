@@ -463,6 +463,7 @@ namespace jse {
 		Info("GL Version: %s", gl_version);
 		Info("GL Extensions: %d", n);
 
+        initHasBeenRun = true;
 		//SDL_SetRelativeMouseMode(SDL_TRUE);
 		//SDL_CaptureMouse(SDL_TRUE);
 
