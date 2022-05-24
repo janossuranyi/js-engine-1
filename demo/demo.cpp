@@ -166,6 +166,7 @@ int main(int argc, char** argv)
 
 	gl->SetCullFaceEnable(true);
 	gl->SetFrontFace(FrontFace_CCW);
+    gl->SetsRGBFrameBufferEnabled(true);
 
 	while (running && !runOnce)
 	{

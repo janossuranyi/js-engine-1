@@ -127,11 +127,6 @@ namespace jse {
         * ===========================
         */
 
-        GLenum stDepthFunc;
-        GLenum stBlendFunc;
-        bool stDepthTestEnabled;
-        bool stBlendEnabled;
-
     };
 }
 

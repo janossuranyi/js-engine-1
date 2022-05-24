@@ -133,7 +133,8 @@ namespace jse {
 		Assimp::Importer importer;
 		// put my custom IO handling in place
 		const aiScene* scene = importer.ReadFile(aFileName,
-			aiProcess_CalcTangentSpace |
+			//aiProcess_CalcTangentSpace |
+            //aiProcess_GenNormals |
 			aiProcess_Triangulate |
 			aiProcess_FlipUVs |
 			aiProcess_JoinIdenticalVertices |
@@ -424,8 +425,6 @@ namespace jse {
 		/************************************
 		Render Z-Pass
 		*************************************/
-
-		mGd->SetsRGBFrameBufferEnabled(true);
 
 		mVA->Bind();
 

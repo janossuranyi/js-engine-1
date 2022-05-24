@@ -243,21 +243,13 @@ namespace jse {
 
 	void GraphicsDriverOGL::SetDepthTestEnable(const bool aEnable)
 	{
-		if (noStateCache || aEnable != stDepthTestEnabled)
-		{
-			stDepthTestEnabled = aEnable;
-			if (aEnable) glEnable(GL_DEPTH_TEST);
-			else glDisable(GL_DEPTH_TEST);
-		}
+        if (aEnable) glEnable(GL_DEPTH_TEST);
+        else glDisable(GL_DEPTH_TEST);
 	}
 
 	void GraphicsDriverOGL::SetDepthTestFunc(const DepthTestFunc aFunc)
 	{
-		if (noStateCache || stDepthFunc != aFunc)
-		{
-			stDepthFunc = aFunc;
-			glDepthFunc(GetGLDepthFuncEnum(aFunc));
-		}
+        glDepthFunc(GetGLDepthFuncEnum(aFunc));
 	}
 
 	void GraphicsDriverOGL::SetBlendFunc(const BlendFunc aSF, const BlendFunc aDF)
@@ -484,12 +476,8 @@ namespace jse {
 
 	void GraphicsDriverOGL::SetBlendEnabled(const bool aEnabled)
 	{
-		if (noStateCache || stBlendEnabled != aEnabled)
-		{
-			stBlendEnabled = aEnabled;
-			if (aEnabled) glEnable(GL_BLEND);
-			else glDisable(GL_BLEND);
-		}
+        if (aEnabled) glEnable(GL_BLEND);
+        else glDisable(GL_BLEND);
 	}
 
 	int GraphicsDriverOGL::GetCaps(GraphicsCaps aType) const
