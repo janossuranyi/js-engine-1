@@ -23,16 +23,14 @@ struct Light {
     vec3 diffuse;
     vec3 specular;
 
-    float kc;
     float kl;
     float kq;
+    float cutoff;
 };
 
 uniform Light light;
 uniform vec3 viewPos;
 uniform Material material;
-
-const float cutoff = 0.0005;
 
 void main() {
 
@@ -40,19 +38,21 @@ void main() {
     vec3 L = light.position - vofi.worldPosition;
     vec3 E = normalize(viewPos - vofi.worldPosition);
   	float distance = length( L );
+    float distance2 = distance*distance;
+
     L /= distance;
 
     //vec3 R = reflect(-L, N);  
 
-
     // calculate basic attenuation
-    float denom = light.kc + light.kl * distance + light.kq * distance * distance;
-    float attenuation = 1.0 / denom;
+    // 3.3-ban van ? float denom = fma(light.kq, distance2, fma(light.kl, distance, light.kc));
+
+    float attenuation = 1.0 / (1.0 + light.kl * distance + light.kq * distance2);
 
     // scale and bias attenuation such that:
     //   attenuation == 0 at extent of max influence
     //   attenuation == 1 when d == 0
-    attenuation = (attenuation - cutoff) / (1.0 - cutoff);
+    attenuation = (attenuation - light.cutoff) / (1.0 - light.cutoff);
     attenuation = max(attenuation, 0.0);
      
     vec3 ambient = material.diffuse * 0.01;

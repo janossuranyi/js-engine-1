@@ -3,15 +3,15 @@
 
 namespace jse {
 
-	PointLight::PointLight(const String& aName, const Vector3f& aPosition, const Vector3f& aDiffuse, const Vector3f& aSpecular, const float aConstantAtt, const float aLinearAtt, const float aQuadraticAtt)
+	PointLight::PointLight(const String& aName, const Vector3f& aPosition, const Vector3f& aDiffuse, const Vector3f& aSpecular, const float aLinearAtt, const float aQuadraticAtt, const float aCutoff)
 		: Light(aName, LightType_Point)
 	{
 		mPosition = aPosition;
 		mDiffuse = aDiffuse;
 		mSpecular = aSpecular;
-		mConstantAtt = aConstantAtt;
 		mLinearAtt = aLinearAtt;
 		mQuadraticAtt = aQuadraticAtt;
+		mCutoff = aCutoff;
 	}
 
 	void PointLight::SetPosition(const Vector3f& aPosition)
@@ -29,9 +29,13 @@ namespace jse {
 		mSpecular = aSpecular;
 	}
 
-	void PointLight::SetAttenuation(const float aConstantAtt, const float aLinearAtt, const float aQuadraticAtt)
+	void PointLight::SetCutOff(const float aCutoff)
 	{
-		mConstantAtt = aConstantAtt;
+		mCutoff = aCutoff;
+	}
+
+	void PointLight::SetAttenuation(const float aLinearAtt, const float aQuadraticAtt)
+	{
 		mLinearAtt = aLinearAtt;
 		mQuadraticAtt = aQuadraticAtt;
 	}
@@ -50,7 +54,7 @@ namespace jse {
 	}
 	float PointLight::GetConstantAtt() const
 	{
-		return mConstantAtt;
+		return 1.0f;
 	}
 	float PointLight::GetLinearAtt() const
 	{
@@ -59,5 +63,9 @@ namespace jse {
 	float PointLight::GetQuadraticAtt() const
 	{
 		return mQuadraticAtt;
+	}
+	float PointLight::GetCutOff() const
+	{
+		return mCutoff;
 	}
 }

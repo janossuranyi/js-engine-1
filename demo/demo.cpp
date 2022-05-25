@@ -170,7 +170,7 @@ int main(int argc, char** argv)
 
 	while (running && !runOnce)
 	{
-		float now = double(SDL_GetTicks64()) / 1000.f;
+		float now = float(SDL_GetTicks64()) / 1000.f;
 		float dt = now - clock;
 
 		clock = now;
@@ -195,13 +195,14 @@ int main(int argc, char** argv)
 
 		if (input->IsKeyDown(Key_I))
 		{
-			Rl -= 0.2 * dt;
+			//Rl = std::fmaf(-0.2f, dt, Rl);
+			Rl = -0.2f * dt + Rl;
 			scene.SetDefaultLightRadius(Rl);
 			Info("R.light: %.2f", Rl);
 		}
 		else if (input->IsKeyDown(Key_O))
 		{
-			Rl += 0.2 * dt;
+			Rl = 0.2f * dt + Rl;
 			scene.SetDefaultLightRadius(Rl);
 			Info("R.light: %.2f", Rl);
 		}

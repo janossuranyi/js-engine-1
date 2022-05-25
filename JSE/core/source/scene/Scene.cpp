@@ -133,8 +133,8 @@ namespace jse {
 		Assimp::Importer importer;
 		// put my custom IO handling in place
 		const aiScene* scene = importer.ReadFile(aFileName,
-			//aiProcess_CalcTangentSpace |
-            //aiProcess_GenNormals |
+			aiProcess_CalcTangentSpace |
+            aiProcess_GenNormals |
 			aiProcess_Triangulate |
 			aiProcess_FlipUVs |
 			aiProcess_JoinIdenticalVertices |
@@ -153,8 +153,8 @@ namespace jse {
 			aiMesh* src = scene->mMeshes[i];
 			Mesh3d* dst = new Mesh3d(src->mName.C_Str());
 
-			int numVerts = src->mNumVertices;
-			int numFaces = src->mNumFaces;
+			const auto numVerts = src->mNumVertices;
+			const auto numFaces = src->mNumFaces;
 
 			for (int v = 0; v < numVerts; v++)
 			{
@@ -257,9 +257,7 @@ namespace jse {
 				const Vector3f ldiff = color3_cast(light->mColorDiffuse);
 				const Vector3f lspec = color3_cast(light->mColorSpecular);
 				// Fatt = 1 / (1 + 2/r * d + 1/r2 * d2)
-				PointLight* p = new PointLight(light->mName.C_Str(), lpos, ldiff, lspec);
-
-				p->SetAttenuation(1.0f, 2.0f/mDefaultLightRadius, 1.0f/(mDefaultLightRadius2));
+				PointLight* p = new PointLight(light->mName.C_Str(), lpos, ldiff, lspec, 2.0f / mDefaultLightRadius, 1.0f / mDefaultLightRadius2, 0.0001);
 
 				Info("light %s  diffuse color: %.2f %.2f %.2f", p->GetName().c_str(), ldiff.r, ldiff.g, ldiff.b);
 				Info("Light %s attenuation: %.2f %.2f %.2f", p->GetName().c_str(), p->GetConstantAtt(), p->GetLinearAtt(), p->GetQuadraticAtt());
@@ -600,11 +598,9 @@ namespace jse {
 
 		for (auto it = list.begin(); it != list.end(); it++)
 		{
-			const int idx = *it;
-			const Mesh3d* mesh = mMeshes[idx];
-			DrawEntityDef_t entity(idx, mesh->mMaterial.type, NM, M, MVP);
+			const Mesh3d* mesh = mMeshes[*it];
 
-			mDrawList.push_back(entity);
+			mDrawList.emplace_back(*it, mesh->mMaterial.type, NM, M, MVP);
 		}
 	}
 
@@ -644,14 +640,14 @@ namespace jse {
 				else if (mRPass == RenderPass_Light)
 				{
 					PointLight* p = reinterpret_cast<PointLight*> (mCurrentLight);
-					p->SetAttenuation(1.0f, 2.0f / mDefaultLightRadius, 1.0f / mDefaultLightRadius2);
+					p->SetAttenuation(2.0f / mDefaultLightRadius, 1.0f / mDefaultLightRadius2);
 
 					mCurrentShader->SetVector3("light.position", &(p->GetPosition())[0]);
 					mCurrentShader->SetVector3("light.diffuse", &(p->GetDiffuse())[0]);
 					mCurrentShader->SetVector3("light.specular", &(p->GetSpecular())[0]);
-					mCurrentShader->SetFloat("light.kc", p->GetConstantAtt());
 					mCurrentShader->SetFloat("light.kl", p->GetLinearAtt());
 					mCurrentShader->SetFloat("light.kq", p->GetQuadraticAtt());
+					mCurrentShader->SetFloat("light.cutoff", p->GetCutOff());
 				}
 			}
 

@@ -31,15 +31,15 @@ namespace jse {
 			const Vector3f& aPosition = Vector3f(0.0f),
 			const Vector3f& aDiffuse = Vector3f(0.0f),
 			const Vector3f& aSpecular = Vector3f(0.0f),
-			const float aConstantAtt = 0,
 			const float aLinearAtt = 1,
-			const float aQuadraticAtt = 1);
+			const float aQuadraticAtt = 1,
+			const float aCutoff = 0.0005);
 
 		void SetPosition(const Vector3f& aPosition);
 		void SetDiffuse(const Vector3f& aDiffuse);
 		void SetSpecular(const Vector3f& aSpecular);
+		void SetCutOff(const float aCutoff);
 		void SetAttenuation(
-			const float aConstantAtt,
 			const float aLinearAtt,
 			const float aQuadraticAtt);
 
@@ -50,15 +50,16 @@ namespace jse {
 		float GetConstantAtt() const;
 		float GetLinearAtt() const;
 		float GetQuadraticAtt() const;
+		float GetCutOff() const;
 
 	private:
 		Vector3f mPosition;
 		Vector3f mDiffuse;
 		Vector3f mSpecular;
 
-		float mConstantAtt;
 		float mLinearAtt;
 		float mQuadraticAtt;
+		float mCutoff;
 	};
 }
 #endif
