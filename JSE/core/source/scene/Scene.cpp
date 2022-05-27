@@ -348,16 +348,14 @@ namespace jse {
 
 		mCompiled = false;
 
-		const unsigned int kVertexSize = sizeof(VertexData);
-
-		assert((kVertexSize & 15) == 0);
+		assert((kVertexDataSize & 15) == 0);
 
 		size_t l_requiredVertexBufferSize = 0;
 		size_t l_requiredIndexBufferSize = 0;
 
 		for (int i = 0; i < mMeshes.size(); i++)
 		{
-			l_requiredVertexBufferSize += (mMeshes[i]->vertices.size() * kVertexSize);
+			l_requiredVertexBufferSize += (mMeshes[i]->vertices.size() * kVertexDataSize);
 			l_requiredIndexBufferSize += SCENE_ALIGN16(mMeshes[i]->indices.size() * sizeof(unsigned short));
 		}
 
@@ -375,7 +373,7 @@ namespace jse {
 			const Mesh3d* m = mMeshes[i];
 			FlatBufferHandle_t vtxH, idxH;
 
-			vtxH.size = m->vertices.size() * kVertexSize;
+			vtxH.size = m->vertices.size() * kVertexDataSize;
 			vtxH.offset = vb->GetAlloced();
 			vb->Alloc(vtxH.size, m->vertices.data());
 
@@ -391,11 +389,11 @@ namespace jse {
 		
 		// Create Vertex array
 		VertexArrayAttributes vAttr;
-		vAttr.AddVertexAttrib(VertexBufferElement_Position, VtxAttribType_Float, 3, kVertexSize, 0, vb);
-		vAttr.AddVertexAttrib(VertexBufferElement_Normal, VtxAttribType_Float, 3, kVertexSize, 0, vb);
-		vAttr.AddVertexAttrib(VertexBufferElement_Tangent, VtxAttribType_Float, 3, kVertexSize, 0, vb);
-		vAttr.AddVertexAttrib(VertexBufferElement_BiTangent, VtxAttribType_Float, 3, kVertexSize, 0, vb);
-		vAttr.AddVertexAttrib(VertexBufferElement_Texture0, VtxAttribType_Float, 2, kVertexSize, 0, vb);
+		vAttr.AddVertexAttrib(VertexBufferElement_Position,	VtxAttribType_Float, 3, kVertexDataSize, 0, vb);
+		vAttr.AddVertexAttrib(VertexBufferElement_Normal,	VtxAttribType_Float, 3, kVertexDataSize, 0, vb);
+		vAttr.AddVertexAttrib(VertexBufferElement_Tangent,	VtxAttribType_Float, 3, kVertexDataSize, 0, vb);
+		vAttr.AddVertexAttrib(VertexBufferElement_BiTangent,VtxAttribType_Float, 3, kVertexDataSize, 0, vb);
+		vAttr.AddVertexAttrib(VertexBufferElement_Texture0,	VtxAttribType_Float, 2, kVertexDataSize, 0, vb);
 		mVA = mGd->CreateVertexArray(ib, vAttr);
 
 		mVA->Compile();

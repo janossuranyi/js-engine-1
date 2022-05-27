@@ -32,6 +32,8 @@ namespace jse {
 		float pad[2]; // padding to 64 byte
 	};
 
+	const unsigned int kVertexDataSize = sizeof(VertexData);
+
 	typedef std::vector<VertexData> VertexDataVec;
 	typedef VertexDataVec::iterator VertexDataVecIt;
 	typedef std::vector<unsigned short> ShortPrimitiveIndices;
