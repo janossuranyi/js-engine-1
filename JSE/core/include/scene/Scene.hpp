@@ -70,6 +70,8 @@ namespace jse {
 
 	class Scene
 	{
+		friend class AssimpLoader;
+
 	public:
 		Scene(const String& aName, ShaderManager* aShaderManager, GraphicsDriver* aGraphDrv, FileSystem* aFileSystem);
 		~Scene();
