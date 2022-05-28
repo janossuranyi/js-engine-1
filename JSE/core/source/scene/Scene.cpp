@@ -16,6 +16,7 @@
 #include "scene/Animation.hpp"
 #include "scene/AnimationTrack.hpp"
 #include "scene/AssimpLoader.hpp"
+#include "scene/GltfLoader.hpp"
 #include "system/Logger.hpp"
 #include "system/Strings.hpp"
 
@@ -118,16 +119,7 @@ namespace jse {
 
 	bool Scene::LoadScene(const String& aFileName, const bool aToYUp)
 	{
-		std::unique_ptr<SceneLoader> loader;
-
-		if (aFileName.find(".gltf") == String::npos)
-		{
-			loader = std::make_unique<AssimpLoader>(*this);
-		}
-		else
-		{
-			loader = std::make_unique<AssimpLoader>(*this);
-		}
+		std::unique_ptr<SceneLoader> loader = std::make_unique<AssimpLoader>(*this);
 
 		return loader->LoadScene(aFileName);
 	}

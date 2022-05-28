@@ -97,6 +97,7 @@ namespace jse {
 
 		const int numMeshes = scene->mNumMeshes;
 		Info("Number of meshes: %d", numMeshes);
+		Info("Number of textures: %d", scene->mNumTextures);
 
 		for (int i = 0; i < numMeshes; i++)
 		{
@@ -141,6 +142,31 @@ namespace jse {
 			m.type = MaterialType_Specular;
 
 			aiMaterial* material = scene->mMaterials[src->mMaterialIndex];
+			for (unsigned int i = 0; i < material->GetTextureCount(aiTextureType_DIFFUSE); i++)
+			{
+				aiString str;
+				material->GetTexture(aiTextureType_DIFFUSE, i, &str);
+				Info("Diffuse-Texture: %s", str.C_Str());
+			}
+			for (unsigned int i = 0; i < material->GetTextureCount(aiTextureType_DIFFUSE_ROUGHNESS); i++)
+			{
+				aiString str;
+				material->GetTexture(aiTextureType_DIFFUSE_ROUGHNESS, i, &str);
+				Info("Roughness-Texture: %s", str.C_Str());
+			}
+			for (unsigned int i = 0; i < material->GetTextureCount(aiTextureType_NORMALS); i++)
+			{
+				aiString str;
+				material->GetTexture(aiTextureType_NORMALS, i, &str);
+				Info("Normals-Texture: %s", str.C_Str());
+			}
+			for (unsigned int i = 0; i < material->GetTextureCount(aiTextureType_METALNESS); i++)
+			{
+				aiString str;
+				material->GetTexture(aiTextureType_METALNESS, i, &str);
+				Info("METALNESS-Texture: %s", str.C_Str());
+			}
+
 
 #if 0
 			for (int pi = 0; pi < material->mNumProperties; pi++)
@@ -173,7 +199,6 @@ namespace jse {
 				//m.specularIntesity = f > 0.0001f ? f : 1.0f;
 				Info("%s: roughness = %f", material->GetName().C_Str(), f);
 			}
-
 			dst->SetMaterial(m);
 
 			mScene.mMeshes.push_back(dst);
