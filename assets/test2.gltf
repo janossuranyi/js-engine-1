@@ -350,7 +350,7 @@
             "name" : "Camera",
             "perspective" : {
                 "aspectRatio" : 1.7777777777777777,
-                "yfov" : 0.39959652046304894,
+                "yfov" : 0.39959648408210363,
                 "zfar" : 100,
                 "znear" : 0.10000000149011612
             },
@@ -437,9 +437,9 @@
             "name" : "Material",
             "pbrMetallicRoughness" : {
                 "baseColorFactor" : [
-                    0.18844254314899445,
-                    0.2900483310222626,
-                    0.3581523895263672,
+                    0.1079021543264389,
+                    0.1640966236591339,
+                    0.20158004760742188,
                     1
                 ],
                 "metallicFactor" : 0,
@@ -570,19 +570,19 @@
     ],
     "images" : [
         {
-            "mimeType" : "image/jpeg",
-            "name" : "MetalCorrodedHeavy001_NRM_1K_METALNESS.jpg",
-            "uri" : "textures/MetalCorrodedHeavy001_NRM_1K_METALNESS.jpg"
+            "mimeType" : "image/png",
+            "name" : "space-crate1-normal-ogl.png",
+            "uri" : "plane/tex/space-crate1-normal-ogl.png"
         },
         {
-            "mimeType" : "image/jpeg",
-            "name" : "MetalCorrodedHeavy001_COL_1K_METALNESS.jpg",
-            "uri" : "textures/MetalCorrodedHeavy001_COL_1K_METALNESS.jpg"
+            "mimeType" : "image/png",
+            "name" : "space-crate1-albedo.png",
+            "uri" : "plane/tex/space-crate1-albedo.png"
         },
         {
-            "mimeType" : "image/jpeg",
-            "name" : "MetalCorrodedHeavy001_ROUGHNESS_1K_METALNESS.jpg",
-            "uri" : "textures/MetalCorrodedHeavy001_ROUGHNESS_1K_METALNESS.jpg"
+            "mimeType" : "image/png",
+            "name" : "space-crate1-metallic-space-crate1-roughness.png",
+            "uri" : "plane/tex/space-crate1-metallic-space-crate1-roughness.png"
         }
     ],
     "accessors" : [
@@ -869,9 +869,9 @@
         {
             "bufferView" : 35,
             "componentType" : 5126,
-            "count" : 200,
+            "count" : 100,
             "max" : [
-                8.333333333333334
+                8.291666666666666
             ],
             "min" : [
                 0.041666666666666664
@@ -881,19 +881,19 @@
         {
             "bufferView" : 36,
             "componentType" : 5126,
-            "count" : 200,
+            "count" : 100,
             "type" : "VEC4"
         },
         {
             "bufferView" : 37,
             "componentType" : 5126,
-            "count" : 200,
+            "count" : 100,
             "type" : "VEC4"
         },
         {
             "bufferView" : 38,
             "componentType" : 5126,
-            "count" : 200,
+            "count" : 100,
             "type" : "VEC4"
         }
     ],
@@ -1075,23 +1075,23 @@
         },
         {
             "buffer" : 0,
-            "byteLength" : 800,
+            "byteLength" : 400,
             "byteOffset" : 112164
         },
         {
             "buffer" : 0,
-            "byteLength" : 3200,
-            "byteOffset" : 112964
+            "byteLength" : 1600,
+            "byteOffset" : 112564
         },
         {
             "buffer" : 0,
-            "byteLength" : 3200,
-            "byteOffset" : 116164
+            "byteLength" : 1600,
+            "byteOffset" : 114164
         },
         {
             "buffer" : 0,
-            "byteLength" : 3200,
-            "byteOffset" : 119364
+            "byteLength" : 1600,
+            "byteOffset" : 115764
         }
     ],
     "samplers" : [
@@ -1102,7 +1102,7 @@
     ],
     "buffers" : [
         {
-            "byteLength" : 122564,
+            "byteLength" : 117364,
             "uri" : "test2.bin"
         }
     ]

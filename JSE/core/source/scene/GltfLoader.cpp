@@ -8,6 +8,17 @@
 
 namespace jse {
 	
+    template<class T>
+    const T* GltfLoader_cast_array(uint8_t const* byte_ptr)
+    {
+        return reinterpret_cast<T const*>(byte_ptr);
+    }
+
+    template<class T>
+    inline float GltfLoader_cast_float(T a0)
+    {
+        return 1.0f * a0;
+    }
 
 	int GltfLoader::LoadScene(const String& aFilename)
 	{
@@ -62,51 +73,76 @@ namespace jse {
 
 			for (size_t j = 0; j < m.primitives.size(); j++)
 			{
-				VertexData vtx;
 				tinygltf::Primitive p = m.primitives[j];
 				tinygltf::Accessor indexAccessor = mModel.accessors[p.indices];
 
+                tinygltf::BufferView& ibv = mModel.bufferViews[indexAccessor.bufferView];
+                tinygltf::Buffer& ibuf = mModel.buffers[ibv.buffer];
 
+                if (indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT)
+                {
+                    uint8_t const* data = ibuf.data.data() + indexAccessor.byteOffset + ibv.byteOffset;
+                    uint16_t const* iIn = GltfLoader_cast_array<uint16_t>(data);
+                    for(int i1 = 0; i1 < indexAccessor.count; i1++)
+                    {
+                        dst->AddIndex(iIn[i1]);
+                    }
+                }
+                
 				for (auto& attrib : p.attributes)
 				{
 					tinygltf::Accessor access = mModel.accessors[attrib.second];
 					tinygltf::BufferView& bv = mModel.bufferViews[access.bufferView];
 					tinygltf::Buffer& buf = mModel.buffers[bv.buffer];
 
-					size_t byteStride = access.ByteStride(bv);
-
-					const uint8_t* buffer = buf.data.data() + access.byteOffset + bv.byteOffset;
 					
-					if (attrib.first.compare("POSITION") == 0 && access.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT)
+                    if (access.componentType != TINYGLTF_COMPONENT_TYPE_FLOAT)
+                    {
+                        Error("Only float component type implemented !");
+                        return -1;
+                    }
+                    
+                    const size_t byteStride = access.ByteStride(bv) / sizeof(float);
+
+                    const uint8_t* buffer = buf.data.data() + access.byteOffset + bv.byteOffset;
+
+                    float const * vIn = GltfLoader_cast_array<float>(buffer);
+                    
+                    size_t offset = 0;
+					if (attrib.first.compare("POSITION") == 0)
 					{
 						for (size_t l = 0; l < access.count; l++)
 						{
-							vec3 _v = glm::make_vec3(reinterpret_cast<float const*>(buffer + l * byteStride));
+                            vec3 _v = glm::make_vec3( &vIn[ offset ] );
 							verts.push_back(_v);
-						}
+                            offset += byteStride;
+                        }
 					}
-					else if (attrib.first.compare("NORMAL") == 0 && access.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT)
+					else if (attrib.first.compare("NORMAL") == 0)
 					{
 						for (size_t l = 0; l < access.count; l++)
 						{
-							vec3 _v = glm::make_vec3(reinterpret_cast<float const*>(buffer + l * byteStride));
+                            vec3 _v = glm::make_vec3( &vIn[ offset ] );
 							norms.push_back(_v);
+                            offset += byteStride;
 						}
 					}
-					else if (attrib.first.compare("TEXCOORD_0") == 0 && access.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT)
+					else if (attrib.first.compare("TEXCOORD_0") == 0)
 					{
 						for (size_t l = 0; l < access.count; l++)
 						{
-							vec2 _v = glm::make_vec2(reinterpret_cast<float const*>(buffer + l * byteStride));
+                            vec2 _v = glm::make_vec2( &vIn[ offset ] );
 							texco.push_back(_v);
+                            offset += byteStride;
 						}
 					}
-					else if (attrib.first.compare("TANGENT") == 0 && access.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT)
+					else if (attrib.first.compare("TANGENT") == 0)
 					{
 						for (size_t l = 0; l < access.count; l++)
 						{
-							vec4 _v = glm::make_vec4(reinterpret_cast<float const*>(buffer + l * byteStride));
+							vec4 _v = glm::make_vec4( &vIn[ offset ]);
 							tangs.push_back(_v);
+                            offset += byteStride;
 						}
 					}
 				}
