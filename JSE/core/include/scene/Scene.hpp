@@ -25,6 +25,7 @@ namespace jse {
 	class Node3d;
 	class Mesh3d;
 	class GraphicsDriver;
+	class GltfLoader;
 
 	enum RenderPass
 	{
@@ -71,6 +72,7 @@ namespace jse {
 	class Scene
 	{
 		friend class AssimpLoader;
+		friend class GltfLoader;
 
 	public:
 		Scene(const String& aName, ShaderManager* aShaderManager, GraphicsDriver* aGraphDrv, FileSystem* aFileSystem);

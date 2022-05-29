@@ -42,17 +42,32 @@ namespace jse {
 		friend class Scene;
 	public:
 		Mesh3d(const String& aName);
+		~Mesh3d();
 		void SetName(const String& aName);
 		void AddVertex(const VertexData& a0);
 		void AddIndex(const unsigned short aIdx);
 		void SetMaterial(const Material& aMat) { mMaterial = aMat; }
+		void ClearData();
+		void SetData(const float* aPositions, const float* aNormals, const float* aTangents, const float* aTexcoords, const size_t aCount);
+
+		void CompileFromData();
+
 		virtual void Draw() {};
 
 	private:
+
+
 		String mName;
 		VertexDataVec vertices;
 		ShortPrimitiveIndices indices;
 		Material mMaterial;
+
+		size_t mDataCount{};
+		float* mPositionData{};
+		float* mNormalData{};
+		float* mTangentData{};
+		float* mTexcoordData{};
+
 	};
 
 }

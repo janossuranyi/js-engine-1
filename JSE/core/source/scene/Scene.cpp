@@ -119,7 +119,7 @@ namespace jse {
 
 	bool Scene::LoadScene(const String& aFileName, const bool aToYUp)
 	{
-		std::unique_ptr<SceneLoader> loader = std::make_unique<GltfLoader>(*this);
+		std::unique_ptr<SceneLoader> loader = std::make_unique<AssimpLoader>(*this);
 
 		return loader->LoadScene(aFileName);
 	}

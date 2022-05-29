@@ -5,6 +5,7 @@
 #include "system/Logger.hpp"
 #include "graphics/GraphicsTypes.hpp"
 #include "scene/SceneLoader.hpp"
+#include "scene/Node3d.hpp"
 #include <tiny_gltf.h>
 
 namespace jse {
@@ -16,6 +17,8 @@ namespace jse {
 		~GltfLoader() { Info("GltfLoader destroyed"); }
 		int LoadScene(const String& aFilename);
 	private:
+
+		void RecursiveProcessNode(const tinygltf::Node& aNode, Node3d* aParent, const Matrix& accTransform, int level = 0);
 
 		Scene& mScene;
 		tinygltf::Model mModel;
