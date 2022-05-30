@@ -36,7 +36,7 @@ namespace jse {
     struct AnyValue
     {
         AnyValue(const float a0) :type(FLOAT_TYPE), floatVal(a0) {}
-        AnyValue(const int a0) :type(INT_TYPE), floatVal(a0) {}
+        AnyValue(const int a0) :type(INT_TYPE), intVal(a0) {}
         AnyValue() :type(INT_TYPE), intVal(0) {}
 
         int type;

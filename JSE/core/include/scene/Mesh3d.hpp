@@ -50,7 +50,7 @@ namespace jse {
 		void AddIndex(const unsigned short aIdx);
 		void SetMaterial(const Material& aMat) { mMaterial = aMat; }
 		void ClearData();
-		void SetData(const float* aPositions, const float* aNormals, const float* aTangents, const float* aTexcoords, const size_t aCount);
+		void SetData(const vec3* aPositions, const vec3* aNormals, const vec4* aTangents, const vec2* aTexcoords, const size_t aCount);
 
 		void CompileFromData();
 
@@ -65,10 +65,10 @@ namespace jse {
 		Material mMaterial;
 
 		size_t mDataCount{};
-		float* mPositionData{};
-		float* mNormalData{};
-		float* mTangentData{};
-		float* mTexcoordData{};
+		vec3* mPositionData{};
+		vec3* mNormalData{};
+		vec4* mTangentData{};
+		vec2* mTexcoordData{};
 
 	};
 

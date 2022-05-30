@@ -134,7 +134,7 @@ int main(int argc, char** argv)
 	bool running = true;
 	InputService* input = new InputServiceSDL();
 
-	float vX = 0.0f, vY = 18.0f, vZ = 5.0f;
+	float vX = -20.0f, vY = 00.0f, vZ = 0.0f;
 
 	input->SetRelativeMouseMode(true);
 
@@ -211,11 +211,11 @@ int main(int argc, char** argv)
 
 		if (input->IsWheelDownMoved())
 		{
-			vZ -= 10.f * dt;
+			vZ -= 50.f * dt;
 		}
 		else if (input->IsWheelUpMoved())
 		{
-			vZ += 10.f * dt;
+			vZ += 50.f * dt;
 		}
 
 		vX += mPos.x * dt;

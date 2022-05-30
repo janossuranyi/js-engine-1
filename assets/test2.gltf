@@ -67,9 +67,9 @@
             "mesh" : 0,
             "name" : "Cube",
             "translation" : [
-                -4,
-                1,
-                -2
+                -8,
+                3,
+                -9
             ]
         },
         {
@@ -350,7 +350,7 @@
             "name" : "Camera",
             "perspective" : {
                 "aspectRatio" : 1.7777777777777777,
-                "yfov" : 0.39959648408210363,
+                "yfov" : 0.39959652046304894,
                 "zfar" : 100,
                 "znear" : 0.10000000149011612
             },
@@ -358,6 +358,37 @@
         }
     ],
     "animations" : [
+        {
+            "channels" : [
+                {
+                    "sampler" : 0,
+                    "target" : {
+                        "node" : 0,
+                        "path" : "translation"
+                    }
+                },
+                {
+                    "sampler" : 1,
+                    "target" : {
+                        "node" : 0,
+                        "path" : "rotation"
+                    }
+                }
+            ],
+            "name" : "CubeAction",
+            "samplers" : [
+                {
+                    "input" : 35,
+                    "interpolation" : "LINEAR",
+                    "output" : 36
+                },
+                {
+                    "input" : 35,
+                    "interpolation" : "LINEAR",
+                    "output" : 37
+                }
+            ]
+        },
         {
             "channels" : [
                 {
@@ -373,7 +404,7 @@
                 {
                     "input" : 35,
                     "interpolation" : "LINEAR",
-                    "output" : 36
+                    "output" : 38
                 }
             ]
         },
@@ -392,7 +423,7 @@
                 {
                     "input" : 35,
                     "interpolation" : "LINEAR",
-                    "output" : 37
+                    "output" : 39
                 }
             ]
         },
@@ -411,7 +442,7 @@
                 {
                     "input" : 35,
                     "interpolation" : "LINEAR",
-                    "output" : 38
+                    "output" : 40
                 }
             ]
         }
@@ -882,7 +913,7 @@
             "bufferView" : 36,
             "componentType" : 5126,
             "count" : 100,
-            "type" : "VEC4"
+            "type" : "VEC3"
         },
         {
             "bufferView" : 37,
@@ -892,6 +923,18 @@
         },
         {
             "bufferView" : 38,
+            "componentType" : 5126,
+            "count" : 100,
+            "type" : "VEC4"
+        },
+        {
+            "bufferView" : 39,
+            "componentType" : 5126,
+            "count" : 100,
+            "type" : "VEC4"
+        },
+        {
+            "bufferView" : 40,
             "componentType" : 5126,
             "count" : 100,
             "type" : "VEC4"
@@ -1080,18 +1123,28 @@
         },
         {
             "buffer" : 0,
-            "byteLength" : 1600,
+            "byteLength" : 1200,
             "byteOffset" : 112564
         },
         {
             "buffer" : 0,
             "byteLength" : 1600,
-            "byteOffset" : 114164
+            "byteOffset" : 113764
         },
         {
             "buffer" : 0,
             "byteLength" : 1600,
-            "byteOffset" : 115764
+            "byteOffset" : 115364
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 1600,
+            "byteOffset" : 116964
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 1600,
+            "byteOffset" : 118564
         }
     ],
     "samplers" : [
@@ -1102,7 +1155,7 @@
     ],
     "buffers" : [
         {
-            "byteLength" : 117364,
+            "byteLength" : 120164,
             "uri" : "test2.bin"
         }
     ]

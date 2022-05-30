@@ -18,12 +18,14 @@ namespace jse {
 		int LoadScene(const String& aFilename);
 	private:
 
-		void RecursiveProcessNode(const tinygltf::Node& aNode, Node3d* aParent, const Matrix& accTransform, int level = 0);
+		Node3d* ImportNode(const tinygltf::Node& aNode);
+		template<class T>
+		void ExtractData(const tinygltf::Accessor& aAccessor, std::unique_ptr<T>& aDest);
 
 		Scene& mScene;
 		tinygltf::Model mModel;
 		tinygltf::TinyGLTF mLoader;
-
+		std::vector<unsigned int> meshOffsets;
 	};
 }
 #endif // !JSE_ASSIMP_LOADER_H
