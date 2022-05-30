@@ -173,10 +173,9 @@ namespace jse {
 		if (!mAnimation)
 		{
 			mAnimation = new Animation(aName);
-			return mAnimation;
 		}
 
-		return nullptr;
+		return mAnimation;
 	}
 
 	void Node3d::SetTransformUpdated()

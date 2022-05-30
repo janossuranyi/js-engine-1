@@ -80,12 +80,18 @@ add_library(stb_image STATIC
   external/stb/stb_image.c
 )
 
+add_library(tinygltf STATIC
+  external/tinygltf/tiny_gltf.h
+  external/tinygltf/tiny_gltf.cpp
+)
+
 include_directories(
   JSE/core/include/  
   external/glew-2.1.0/include/
   external/glm/
   external/stb/
   external/soil2/incs/
+  external/tinygltf/
   ${ASSIMP_INCLUDE_DIRS}
   ${SDL2_INCLUDE_DIR}
 )
@@ -109,6 +115,7 @@ target_link_libraries(demo
   engine
   glew
   stb_image
+  tinygltf
   ${OPENGL_LIBRARY}
   ${ASSIMP_LIBRARIES}
   ${SDL2_LIBRARIES}

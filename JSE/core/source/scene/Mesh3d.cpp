@@ -6,6 +6,8 @@
 #include <assimp/Importer.hpp>      // C++ importer interface
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing flags
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/glm.hpp>
 
 namespace jse {
 
@@ -89,6 +91,21 @@ namespace jse {
 	{
 	}
 
+	Mesh3d::~Mesh3d()
+	{
+		ClearData();
+	}
+
+	void Mesh3d::ClearData()
+	{
+		if (mPositionData) delete[] mPositionData;
+		if (mNormalData) delete[] mNormalData;
+		if (mTexcoordData) delete[] mTexcoordData;
+		if (mTangentData) delete[] mTangentData;
+
+		mPositionData = mNormalData = mTexcoordData = mTangentData = nullptr;
+	}
+
 	void Mesh3d::SetName(const String& aName)
 	{
 		mName = aName;
@@ -104,5 +121,51 @@ namespace jse {
 		indices.push_back(aIdx);
 	}
 
+	void Mesh3d::SetData(const float* aPositions, const float* aNormals, const float* aTangents, const float* aTexcoords, const size_t aCount)
+	{
+		ClearData();
+		mDataCount = aCount;
+
+		if (aPositions)
+		{
+			mPositionData = new float[aCount * 3];
+			std::memcpy(mPositionData, aPositions, aCount * 3 * sizeof(float));
+		}
+		if (aNormals)
+		{
+			mNormalData = new float[aCount * 3];
+			std::memcpy(mNormalData, aNormals, aCount * 3 * sizeof(float));
+		}
+		if (aTangents)
+		{
+			mTangentData = new float[aCount * 4];
+			std::memcpy(mTangentData, aTangents, aCount * 4 * sizeof(float));
+		}
+		if (aTexcoords)
+		{
+			mTexcoordData = new float[aCount * 2];
+			std::memcpy(mTexcoordData, aTexcoords, aCount * 2 * sizeof(float));
+		}
+	}
+
+	void Mesh3d::CompileFromData()
+	{
+		vertices.resize(0);
+		for (size_t i = 0; i < mDataCount; i++)
+		{
+			VertexData v;
+			if (mPositionData)		v.position	= glm::make_vec3(&mPositionData[i * 3]);
+			if (mNormalData)		v.normal	= glm::make_vec3(&mNormalData[i * 3]);
+			if (mTexcoordData)		v.texcoord	= glm::make_vec2(&mTexcoordData[i * 2]);
+			if (mTangentData)
+			{
+				v.tangent	= glm::make_vec3(&mTangentData[i * 4]);
+				v.bitangent	= glm::cross(v.normal, v.tangent) * mTangentData[i * 4 + 3];
+			}
+			vertices.push_back(v);
+		}
+
+		ClearData();
+	}
 
 }
