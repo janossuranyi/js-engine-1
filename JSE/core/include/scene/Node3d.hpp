@@ -6,12 +6,10 @@
 #include "graphics/GraphicsTypes.hpp"
 #include "system/SystemTypes.hpp"
 #include "scene/Mesh3d.hpp"
+#include "scene/Light.hpp"
 #include "scene/Animation.hpp"
 
 namespace jse {
-
-	class Mesh3d;
-	class Node3d;
 
 	typedef std::vector<Node3d*> Node3dPtrVec;
 	typedef std::vector<unsigned int> MeshIdxVec;
@@ -41,12 +39,14 @@ namespace jse {
 
 		void AddChildNode(Node3d* aOther);
 		void AddMesh(const unsigned int aMesh);
+		void AddLight(const unsigned int aLight);
 		inline bool GetTransformUpdated() const { return mTransformUpdated; }
 		void UpdateWorldTransform(const bool aUpdateChildren);
 		void UpdateMatrix(const bool aUpdateChildren);
 		inline const Matrix& GetWorldTransform() const { return m_mtxWorld; };
 		inline unsigned int GetMesh(const unsigned aIdx) { return mMeshes[aIdx]; }
 		inline const Node3dPtrVec& GetChildren() const { return mChildNodes; }
+		inline const std::vector<unsigned int>& GetLights() const { return mLights; }
 		inline bool HasChildren() const { return !mChildNodes.empty(); }
 		inline const MeshIdxVec& GetMeshes() const { return mMeshes; }
 		const String& GetName() const { return mName; }
@@ -72,6 +72,9 @@ namespace jse {
 		Node3dPtrVec mChildNodes;
 
 		MeshIdxVec mMeshes;
+		
+		std::vector<unsigned int> mLights;
+
 		bool mTransformUpdated;
 		bool mVisible;
 		bool mAnimated;

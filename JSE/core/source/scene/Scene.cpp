@@ -119,7 +119,7 @@ namespace jse {
 
 	bool Scene::LoadScene(const String& aFileName, const bool aToYUp)
 	{
-		std::unique_ptr<SceneLoader> loader = std::make_unique<AssimpLoader>(*this);
+		std::unique_ptr<SceneLoader> loader = std::make_unique<GltfLoader>(*this);
 
 		return loader->LoadScene(aFileName);
 	}
@@ -316,7 +316,7 @@ namespace jse {
 
 	void Scene::BuildDrawList(Node3d* node)
 	{
-		if (!node->IsVisible())
+		if (!node->IsVisible() || node->GetMeshes().empty())
 			return;
 
 		node->UpdateWorldTransform(false);

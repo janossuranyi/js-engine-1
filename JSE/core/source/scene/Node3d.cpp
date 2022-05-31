@@ -129,6 +129,11 @@ namespace jse {
 		mMeshes.push_back(aMesh);
 	}
 
+	void Node3d::AddLight(const Light* aLight)
+	{
+		mLights.push_back(aLight);
+	}
+
 	void Node3d::UpdateWorldTransform(const bool aUpdateChildren)
 	{
 		UpdateMatrix(aUpdateChildren);
@@ -146,20 +151,9 @@ namespace jse {
 		m_mtxModel = glm::scale(m_mtxModel, mScale);
 		m_mtxModel = m_mtxModel * glm::mat4_cast(mRotation);
 
-#if 0
-		if (!mAnimated)
-		{
-			m_mtxWorld = mParentNode
-				? mParentNode->m_mtxWorld * m_mtxLocal * m_mtxModel
-				: m_mtxLocal * m_mtxModel;
-		}
-		else
-#endif
-		{
-			m_mtxWorld = mParentNode
-				? mParentNode->m_mtxWorld * m_mtxModel
-				: m_mtxModel;
-		}
+		m_mtxWorld = mParentNode
+			? mParentNode->m_mtxWorld * m_mtxModel
+			: m_mtxModel;
 
 		if (aUpdateChildren)
 		{

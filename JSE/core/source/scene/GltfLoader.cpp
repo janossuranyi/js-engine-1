@@ -244,7 +244,12 @@ namespace jse {
 				const Vector3f ldiff = Color3(light.color[0], light.color[1], light.color[2]) * float(light.intensity);
 				const Vector3f lspec = ldiff;;
 				// Fatt = 1 / (1 + 2/r * d + 1/r2 * d2)
-				PointLight* p = new PointLight(light.name, lpos, ldiff, lspec, 2.0f / mScene.mDefaultLightRadius, 1.0f / mScene.mDefaultLightRadius2, 0.0001f);
+				PointLight* p = new PointLight(
+					light.name,
+					lpos,
+					ldiff, lspec,
+					2.0f / mScene.mDefaultLightRadius, 1.0f / mScene.mDefaultLightRadius2, 0.0001f);
+
 				mScene.mLights.push_back(p);
 
 			}
@@ -366,8 +371,7 @@ namespace jse {
 			{
 				mtmp[i] = float(aNode.matrix[i]);
 			}
-			M = glm::make_mat4(mtmp);
-
+			nNode->SetTransform(glm::make_mat4(mtmp), true);
 		}
 		else {
 
