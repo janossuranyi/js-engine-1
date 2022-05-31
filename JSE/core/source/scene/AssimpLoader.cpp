@@ -20,9 +20,8 @@ namespace jse {
 	static inline Vector2f vec2_cast(const aiVector3D& v) { return Vector2f(v.x, v.y); } // it's aiVector3D because assimp's texture coordinates use that
 	static inline Matrix mat4_cast(const aiMatrix4x4& m) { return glm::transpose(glm::make_mat4(&m.a1)); }
 
-	void AssimpLoader::processNodesRecursive(const aiNode* node, Node3d* aParent, Matrix accTransform)
+	void AssimpLoader::processNodesRecursive(const aiNode* node, Node3d* aParent)
 	{
-		Matrix transform(1.0f);
 		Node3d* parent;
 		if (node->mNumMeshes > 0)
 		{
@@ -41,8 +40,7 @@ namespace jse {
 			mScene.mNodeByName.insert(Scene::tNodeByNamePair(name, nNode));
 
 			const Matrix M = mat4_cast(node->mTransformation);
-			nNode->SetWorldTransform(M * accTransform);
-			nNode->SetTransform(M, false);
+			nNode->SetTransform(M, true);
 			nNode->SetVisible(visible);
 
 			aParent->AddChildNode(nNode);
@@ -52,18 +50,15 @@ namespace jse {
 			}
 
 			parent = nNode;
-			transform = Matrix(1.0f);
-
 		}
 		else
 		{
 			parent = aParent;
-			transform = mat4_cast(node->mTransformation) * accTransform;
 		}
 
 		for (int k = 0; k < node->mNumChildren; k++)
 		{
-			processNodesRecursive(node->mChildren[k], parent, transform);
+			processNodesRecursive(node->mChildren[k], parent);
 		}
 
 	}
@@ -205,7 +200,7 @@ namespace jse {
 		}
 
 
-		processNodesRecursive(scene->mRootNode, &mScene.mRootNode, Matrix(1.0f));
+		processNodesRecursive(scene->mRootNode, &mScene.mRootNode);
 
 		/*
 		* processing lights
@@ -251,6 +246,11 @@ namespace jse {
 				aiAnimation* e = scene->mAnimations[a];
 				Info("name: %s, dur: %.2f, chan: %d, mesh.chan: %d, ticks/sec: %.2f", e->mName.C_Str(), e->mDuration, e->mNumChannels, e->mNumMeshChannels, e->mTicksPerSecond);
 
+				Animation* myAnim = new Animation(e->mName.C_Str());
+				myAnim->SetTicksPerSec(float(e->mTicksPerSecond));
+				myAnim->SetLength(float(e->mDuration));
+				mScene.mAnimMgr.AddAnimation(myAnim);
+
 				for (int i = 0; i < e->mNumChannels; i++)
 				{
 					aiNodeAnim* anim = e->mChannels[i];
@@ -258,17 +258,13 @@ namespace jse {
 					Node3d* myNode = search != mScene.mNodeByName.end() ? search->second : nullptr;
 
 					if (myNode == nullptr) continue;
+					myNode->SetAnimated(true);
 
-					Animation* myAnim = myNode->CreateAnimation(e->mName.C_Str());
-					myAnim->SetTicksPerSec(float(e->mTicksPerSecond));
-					myAnim->SetLength(float(e->mDuration));
-					myAnim->SetNode(myNode);
-					mScene.mAnimMgr.AddAnimation(myAnim);
 
 					Info("channel %d, nodeName: %s, pos-keys: %d, rot-keys: %d", i, anim->mNodeName.C_Str(), anim->mNumPositionKeys, anim->mNumRotationKeys);
 					if (anim->mNumPositionKeys > 0)
 					{
-						AnimationTrack& track = myAnim->CreateTrack("Position");
+						AnimationTrack& track = myAnim->CreateTrack(anim->mNodeName.C_Str(), AnimationTrackType_Position, myNode);
 
 						for (int k = 0; k < anim->mNumPositionKeys; k++)
 						{
@@ -280,14 +276,14 @@ namespace jse {
 							//	p_key.mValue.z);
 
 							Keyframe& kf = track.CreateKeyframe(float(p_key.mTime));
-							kf.position = vec3_cast(p_key.mValue);
-							kf.rotation = Quat(1, 0, 0, 0);
+							kf.v = vec3_cast(p_key.mValue);
 						}
 					}
 
 					if (anim->mNumRotationKeys > 0)
 					{
-						AnimationTrack& track = myAnim->CreateTrack("Rotation");
+						AnimationTrack& track = myAnim->CreateTrack(anim->mNodeName.C_Str(), AnimationTrackType_Rotation, myNode);
+
 						for (int k = 0; k < anim->mNumRotationKeys; k++)
 						{
 							aiQuatKey q_key = anim->mRotationKeys[k];
@@ -299,8 +295,7 @@ namespace jse {
 							//	q_key.mValue.z);
 
 							Keyframe& kf = track.CreateKeyframe(q_key.mTime);
-							kf.position = Vector3f(0.0f);
-							kf.rotation = quat_cast(q_key.mValue);
+							kf.q = quat_cast(q_key.mValue);
 						}
 					}
 				}

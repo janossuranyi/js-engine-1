@@ -317,11 +317,20 @@ namespace jse {
 		};
 	};
 
-	class Keyframe
+	enum AnimationTrackType
 	{
-	public:
-		Vector3f position;
-		Quat rotation;
+		AnimationTrackType_Position,
+		AnimationTrackType_Rotation,
+		AnimationTrackType_LastEnum
+	};
+
+	struct Keyframe
+	{
+		union {
+			Vector3f v;;
+			Quat q;
+			float value[4];
+		};
 		float time;
 	};
 }

@@ -37,6 +37,7 @@ namespace jse {
 		void SetTransform(const Matrix& aTransform, const bool aUpdate);
 		void SetWorldTransform(const Matrix& aTransform);
 		void SetVisible(const bool a0);
+		void SetAnimated(const bool a0) { mAnimated = a0; }
 		const Matrix& GetTransform() const;
 		void AddChildNode(Node3d* aOther);
 		void AddMesh(const unsigned int aMesh);
@@ -53,10 +54,7 @@ namespace jse {
 		inline const Vector3f& GetScale() const { return mScale; }
 		inline const Quaternion& GetRotation() const { return mRotation; }
 		inline const bool IsVisible() const { return mVisible; }
-
-		Animation* CreateAnimation(const String& aName);
-		bool HasAnimation() const { return mAnimation != nullptr; }
-		Animation* GetAnimation() const { return mAnimation; }
+		inline const bool IsAnimated() const { return mAnimated; }
 
 	private:
 		void SetTransformUpdated();
@@ -74,10 +72,10 @@ namespace jse {
 		Node3d* mParentNode;
 		Node3dPtrVec mChildNodes;
 
-		Animation* mAnimation;
 		MeshIdxVec mMeshes;
 		bool mTransformUpdated;
 		bool mVisible;
+		bool mAnimated;
 
 	};
 

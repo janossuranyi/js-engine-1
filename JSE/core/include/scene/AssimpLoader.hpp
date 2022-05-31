@@ -21,7 +21,7 @@ namespace jse {
 		~AssimpLoader() { Info("AssimpLoader destroyed"); }
 		int LoadScene(const String& aFilename);
 	private:
-		void processNodesRecursive(const aiNode* node, Node3d* aParent, Matrix accTransform);
+		void processNodesRecursive(const aiNode* node, Node3d* aParent);
 
 		Scene& mScene;
 	};

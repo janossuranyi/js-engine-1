@@ -11,40 +11,29 @@
 
 namespace jse 
 {
-	AnimationTrack::AnimationTrack(const String& aName, Animation* aParent)
+	AnimationTrack::AnimationTrack(const String& aName, Animation* aParent, const AnimationTrackType aType)
 	{
+		mType = aType;
 		mName = aName;
 		mParent = aParent;
 		mMaxFrameTime = 0.0f;
 		mUseLinearInterp = true;
+		mNode = nullptr;
 	}
 	
 	Keyframe& AnimationTrack::CreateKeyframe(const float aTime)
 	{
+		assert(mMaxFrameTime <= aTime);
+
 		Keyframe n;
 
 		n.time = aTime;
 
-		if (aTime > mMaxFrameTime || mKeyframes.empty())
-		{
-			mKeyframes.push_back(n);
-			mMaxFrameTime = aTime;
 
-			return mKeyframes.back();
-		}
-		else
-		{
-			auto it = mKeyframes.begin();
-			for (; it != mKeyframes.end(); it++)
-			{
-				if ((it)->time > aTime)
-				{
-					break;
-				}
-			}
-			auto e = mKeyframes.insert(it, n);
-			return *e;
-		}
+		mKeyframes.push_back(n);
+		mMaxFrameTime = aTime;
+
+		return mKeyframes.back();
 	}
 
 	void AnimationTrack::Clear()
@@ -59,9 +48,9 @@ namespace jse
 		return mKeyframes[aIndex];
 	}
 
-	void AnimationTrack::ApplyOnNode(Node3d* aNode, const float aTime, const float aWeight, const bool aLoop)
+	void AnimationTrack::ApplyOnNode(const float aTime, const float aWeight, const bool aLoop)
 	{
-		if (mKeyframes.empty())
+		if (mKeyframes.empty() || !mNode)
 			return;
 
 		Keyframe Frame = GetInterpolatedKeyframe(aTime, aLoop);
@@ -69,8 +58,16 @@ namespace jse
 		//Quat rot = glm::normalize( glm::slerp(Quat(), Frame.rotation, aWeight) );
 		//Vector3f trans = aWeight * Frame.position;
 
-		aNode->AddPosition(Frame.position);
-		aNode->AddRotation(Frame.rotation);
+		if (mType == AnimationTrackType_Position)
+		{
+			mNode->SetPosition(Vector3f(0.0f));
+			mNode->AddPosition(Frame.v);
+		}
+		else if (mType == AnimationTrackType_Rotation)
+		{
+			mNode->SetRotation(Quat(1, 0, 0, 0));
+			mNode->AddRotation(Frame.q);
+		}
 
 		//Info("Time: %.2f, Pos: [%.2f,%.2f,%.2f]", aTime, Frame.position.x, Frame.position.y, Frame.position.z);
 	}
@@ -80,52 +77,75 @@ namespace jse
 		Keyframe r;
 		r.time = aTime;
 
-		if (mKeyframes.empty())
-		{
-			r.position = Vector3f(0.0f);
-			r.rotation = Quat(1, 0, 0, 0);
-			return r;
-		}
-
 		Keyframe kA, kB;
 		size_t keyIndex = -1;
 
 		const float T = GetKeyframesAtTime(aTime, kA, kB, keyIndex, aLoop);
 
-
-		if (T == 0.0f)
+		if (mType == AnimationTrackType_Position)
 		{
-			r.rotation = kA.rotation;
-			r.position = kA.position;
-		}
-		else
-		{
-			//Info("T != 0.0 (%.4f)", T);
-			if (!mUseLinearInterp)
+			if (mKeyframes.empty())
 			{
-				if (keyIndex == 0 || keyIndex == mKeyframes.size() - 1)
-				{
-					r.rotation = glm::slerp(kA.rotation, kB.rotation, T);
-					r.position = LinearInterp(kA.position, kB.position, T);
-				}
-				else
-				{
-					r.rotation = HermiteInterp(mKeyframes[keyIndex - 1].rotation, kA.rotation, kB.rotation, mKeyframes[keyIndex + 1].rotation, T, 0.f,0.f);
-					r.position = HermiteInterp(mKeyframes[keyIndex - 1].position, kA.position, kB.position, mKeyframes[keyIndex + 1].position, T, 0.f,0.f);
-				}
+				r.v = vec3(0.f);
+				return r;
+			}
+
+			if (T == 0.0f)
+			{
+				r.v = kA.v;
 			}
 			else
 			{
-				r.rotation = glm::slerp(kA.rotation, kB.rotation, T);
-				r.position = LinearInterp(kA.position, kB.position, T);
+				//Info("T != 0.0 (%.4f)", T);
+				if (!mUseLinearInterp)
+				{
+					if (keyIndex == 0 || keyIndex == mKeyframes.size() - 1)
+					{
+						r.v = LinearInterp(kA.v, kB.v, T);
+					}
+					else
+					{
+						r.v = HermiteInterp(mKeyframes[keyIndex - 1].v, kA.v, kB.v, mKeyframes[keyIndex + 1].v, T, 0.f, 0.f);
+					}
+				}
+				else
+				{
+					r.v = LinearInterp(kA.v, kB.v, T);
+				}
+			}
+		}
+		else if (mType == AnimationTrackType_Rotation)
+		{
+			//Info("T != 0.0 (%.4f)", T);
+			if (T == 0.0f)
+			{
+				r.q = kA.q;
+			}
+			else
+			{
+				if (!mUseLinearInterp)
+				{
+					if (keyIndex == 0 || keyIndex == mKeyframes.size() - 1)
+					{
+						r.q = glm::slerp(kA.q, kB.q, T);
+					}
+					else
+					{
+						r.q = HermiteInterp(mKeyframes[keyIndex - 1].q, kA.q, kB.q, mKeyframes[keyIndex + 1].q, T, 0.f, 0.f);
+					}
+				}
+				else
+				{
+					r.q = glm::slerp(kA.q, kB.q, T);
+				}
+
+				r.q = glm::normalize(r.q);
 			}
 		}
 
-		r.rotation = glm::normalize(r.rotation);
-
 		return r;
 	}
-	
+
 	float AnimationTrack::GetKeyframesAtTime(const float aTime, Keyframe& aKeyframeA, Keyframe& aKeyframeB, size_t& aIndex, const bool aLoop)
 	{
 		const float animLength = mParent->GetLength();

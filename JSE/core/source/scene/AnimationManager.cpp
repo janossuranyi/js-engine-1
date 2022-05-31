@@ -23,12 +23,11 @@ namespace jse {
 	void AnimationManager::UpdateState(const float aFrameStep)
 	{
 
-
 		AnimVecIt it = mAnimVec.begin();
 
-		for (; it != mAnimVec.end(); it++)
+		for (auto it : mAnimVec)
 		{
-			if ((*it)->GetLength() >= mFrame) (*it)->ApplyFrame(mFrame);
+			if (it->GetLength() >= mFrame) it->ApplyFrame(mFrame);
 		}
 
 		mFrame += aFrameStep * mTicksPerSec;

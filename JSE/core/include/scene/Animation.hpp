@@ -15,7 +15,7 @@ namespace jse {
 		inline float GetLength() const { return mLength; }
 		void SetLength(const float aLength) { mLength = aLength; }
 		void SetTicksPerSec(const float a0);
-		AnimationTrack& CreateTrack(const String& aName);
+		AnimationTrack& CreateTrack(const String& aName, const AnimationTrackType aType, Node3d* aNode);
 		AnimationTrack& GetTrack(const size_t aIdx);
 		const AnimationTrack* GetTrackByName(const String& aName) const;
 		size_t GetTrackNum() const { return mTracks.size(); };
@@ -23,11 +23,7 @@ namespace jse {
 		inline const String& GetName() const { return mName; }
 		void ApplyFrame(const float aTime);
 
-		void SetNode(Node3d* aNode);
-		Node3d* GetNode();
-
 	private:
-		Node3d* mNode;
 		float mLength;
 		float mTicksPerSec;
 		String mName;

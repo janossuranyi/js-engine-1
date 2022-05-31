@@ -63,7 +63,7 @@ void X_add_light_cube(Scene& aScene, const Vector3f& aPos, const Color3 aColor, 
 
 		customNode->AddMesh(idx);
 		customNode->SetPosition(aPos);
-		customNode->SetScale(.5f);
+		customNode->SetScale(.2f);
 		customNode->SetVisible(true);
 
 		aScene.AddNode(customNode);

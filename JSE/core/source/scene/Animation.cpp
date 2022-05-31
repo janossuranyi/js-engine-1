@@ -25,11 +25,14 @@ namespace jse {
 		mTicksPerSec = a0;
 	}
 
-	AnimationTrack& Animation::CreateTrack(const String& aName)
+	AnimationTrack& Animation::CreateTrack(const String& aName, const AnimationTrackType aType, Node3d* aNode)
 	{
-		mTracks.emplace_back(aName, this);
+		mTracks.emplace_back(aName, this, aType);
 
-		return mTracks.back();
+		AnimationTrack& t = mTracks.back();
+		t.SetNode(aNode);
+
+		return t;
 
 	}
 
@@ -55,23 +58,9 @@ namespace jse {
 
 	void Animation::ApplyFrame(const float aTime)
 	{
-		mNode->SetPosition(Vector3f(0.0f));
-		mNode->SetRotation(Quat(1, 0, 0, 0));
-
-		std::for_each(mTracks.begin(), mTracks.end(), [&](AnimationTrack& t)
+		for (auto& it : mTracks)
 		{
-			t.ApplyOnNode(mNode, aTime, 1.0f);
-		});
+			it.ApplyOnNode(aTime, 1.0f);
+		}
 	}
-
-	void Animation::SetNode(Node3d* aNode)
-	{
-		mNode = aNode;
-	}
-
-	Node3d* Animation::GetNode()
-	{
-		return mNode;
-	}
-
 }

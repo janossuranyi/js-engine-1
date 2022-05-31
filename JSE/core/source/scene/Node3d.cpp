@@ -26,8 +26,8 @@ namespace jse {
 		mScale = Vector3f(1.f, 1.f, 1.f);
 		mTransformUpdated = false;
 		mVisible = false;
-		mParentNode = NULL;
-		mAnimation = NULL;
+		mAnimated = false;
+		mParentNode = nullptr;
 	}
 
 	Node3d::Node3d(const String& aName, const unsigned int aMesh) : Node3d(aName)
@@ -147,13 +147,13 @@ namespace jse {
 		m_mtxModel = glm::scale(m_mtxModel, mScale);
 		m_mtxModel = m_mtxModel * glm::mat4_cast(mRotation);
 
-		if (!HasAnimation())
+		if (!mAnimated)
 		{
 			m_mtxWorld = mParentNode
 				? mParentNode->m_mtxWorld * m_mtxLocal * m_mtxModel
 				: m_mtxLocal * m_mtxModel;
 		}
-		else
+		else 
 		{
 			m_mtxWorld = mParentNode
 				? mParentNode->m_mtxWorld * m_mtxModel
@@ -162,30 +162,21 @@ namespace jse {
 
 		if (aUpdateChildren)
 		{
-			std::for_each(mChildNodes.begin(), mChildNodes.end(), [&](Node3d* const it) {
-				it->UpdateMatrix(aUpdateChildren); 
-			});
+			for (auto it : mChildNodes)
+			{
+				it->UpdateMatrix(aUpdateChildren);
+			}
 		}
-	}
-
-	Animation* Node3d::CreateAnimation(const String& aName)
-	{
-		if (!mAnimation)
-		{
-			mAnimation = new Animation(aName);
-		}
-
-		return mAnimation;
 	}
 
 	void Node3d::SetTransformUpdated()
 	{
 		mTransformUpdated = true;
+
 		if (!mChildNodes.empty())
 		{
-			std::for_each(mChildNodes.begin(), mChildNodes.end(), [&](Node3d* const it) {
+			for(auto it : mChildNodes)
 				it->SetTransformUpdated();
-			});
 		}
 	}
 
