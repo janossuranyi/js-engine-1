@@ -327,7 +327,7 @@ namespace jse {
 	struct Keyframe
 	{
 		union {
-			Vector3f v;;
+			Vector3f v;
 			Quat q;
 			float value[4];
 		};

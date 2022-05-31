@@ -18,7 +18,6 @@ namespace jse {
 	{
 		mName = aName;
 
-		m_mtxLocal = Matrix(1.0f);
 		m_mtxWorld = Matrix(1.0f);
 		m_mtxModel = Matrix(1.0f);
 		mPosition = Vector3f(0.f, 0.f, 0.f);
@@ -98,15 +97,15 @@ namespace jse {
 
 	void Node3d::SetTransform(const Matrix& aTransform, const bool aUpdate)
 	{
-		m_mtxLocal = aTransform;
+		m_mtxModel = aTransform;
+
+		vec3 tmp1;
+		vec4 tmp2;
+
+		glm::decompose(m_mtxModel, mScale, mRotation, mPosition, tmp1, tmp2);
 
 		if (aUpdate)
 			SetTransformUpdated();
-	}
-
-	void Node3d::SetWorldTransform(const Matrix& aTransform)
-	{
-		m_mtxWorld = aTransform;
 	}
 
 	void Node3d::SetVisible(const bool a0)
@@ -116,7 +115,7 @@ namespace jse {
 	
 	const Matrix& Node3d::GetTransform() const
 	{
-		return m_mtxLocal;
+		return m_mtxModel;
 	}
 
 	void Node3d::AddChildNode(Node3d* aOther)
@@ -147,13 +146,15 @@ namespace jse {
 		m_mtxModel = glm::scale(m_mtxModel, mScale);
 		m_mtxModel = m_mtxModel * glm::mat4_cast(mRotation);
 
+#if 0
 		if (!mAnimated)
 		{
 			m_mtxWorld = mParentNode
 				? mParentNode->m_mtxWorld * m_mtxLocal * m_mtxModel
 				: m_mtxLocal * m_mtxModel;
 		}
-		else 
+		else
+#endif
 		{
 			m_mtxWorld = mParentNode
 				? mParentNode->m_mtxWorld * m_mtxModel

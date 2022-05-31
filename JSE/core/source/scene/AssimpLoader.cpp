@@ -258,7 +258,7 @@ namespace jse {
 					Node3d* myNode = search != mScene.mNodeByName.end() ? search->second : nullptr;
 
 					if (myNode == nullptr) continue;
-					myNode->SetAnimated(true);
+					//myNode->SetAnimated(true);
 
 
 					Info("channel %d, nodeName: %s, pos-keys: %d, rot-keys: %d", i, anim->mNodeName.C_Str(), anim->mNumPositionKeys, anim->mNumRotationKeys);

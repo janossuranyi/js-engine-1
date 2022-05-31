@@ -35,10 +35,10 @@ namespace jse {
 		void SetScale(const float aUniformScale);
 		void SetScale(const float aX, const float aY, const float aZ);
 		void SetTransform(const Matrix& aTransform, const bool aUpdate);
-		void SetWorldTransform(const Matrix& aTransform);
 		void SetVisible(const bool a0);
 		void SetAnimated(const bool a0) { mAnimated = a0; }
 		const Matrix& GetTransform() const;
+
 		void AddChildNode(Node3d* aOther);
 		void AddMesh(const unsigned int aMesh);
 		inline bool GetTransformUpdated() const { return mTransformUpdated; }
@@ -61,7 +61,6 @@ namespace jse {
 
 		String mName;
 
-		Matrix m_mtxLocal;
 		Matrix m_mtxWorld;
 		Matrix m_mtxModel;
 

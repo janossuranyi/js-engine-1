@@ -22,14 +22,16 @@ namespace jse {
 		void Clear();
 		Keyframe& GetKey(const int aIndex);
 		void ApplyOnNode(const float aTime, const float aWeight, const bool aLoop = true);
-		Keyframe GetInterpolatedKeyframe(const float aTime, bool aLoop = true);
-		float GetKeyframesAtTime(const float aTime, Keyframe& aKeyframeA, Keyframe& aKeyframeB, size_t& aIndex, const bool aLoop = true);
+		float GetKeyframesAtTime(const float aTime, Keyframe& aKeyframeA, Keyframe& aKeyframeB, int& aIndex, const bool aLoop = true);
 		const String& GetName() const { return mName; }
 		const tKeyframeVec& GetKeyframes() const { return mKeyframes; }
 		void SetNode(Node3d* aNode) { mNode = aNode; }
 		Node3d* GetNode() const { return mNode; }
 
 	private:
+		Keyframe GetInterpolatedKeyframe(const float aTime, bool aLoop = true);
+		Keyframe GetInterpolatedKeyframe_Linear(const float aTime, bool aLoop);
+
 		AnimationTrackType mType;
 		String mName;
 		Animation* mParent;
@@ -38,6 +40,7 @@ namespace jse {
 		bool mUseLinearInterp;
 
 		Node3d* mNode;
+
 	};
 }
 

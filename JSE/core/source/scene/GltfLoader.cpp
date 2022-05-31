@@ -165,7 +165,7 @@ namespace jse {
 
 				/* Copy position data */
 
-				tinygltf::Accessor posAccessor = mModel.accessors[findPos->second];
+				tinygltf::Accessor& posAccessor = mModel.accessors[findPos->second];
 				const size_t numPrimitives = posAccessor.count;
 
 				std::unique_ptr<vec3> v_pos;
@@ -254,12 +254,76 @@ namespace jse {
 		{
 			Info("Animation: %s", anim.name.c_str());
 
+			Animation* myAnim = new Animation(anim.name.c_str());
+			myAnim->SetTicksPerSec(1000.f);
+			myAnim->SetLength(0.0f);
+			float length = 0.0f;
 
 			for (auto channel : anim.channels)
 			{
-				Info("\\__ Channel: %s, target: %d", channel.target_path.c_str(), channel.target_node);
+				const tinygltf::AnimationSampler& sampler = anim.samplers[channel.sampler];
+				const tinygltf::Accessor& input = mModel.accessors[sampler.input];
+				const tinygltf::Accessor& output = mModel.accessors[sampler.output];
+				const tinygltf::Node& target = mModel.nodes[channel.target_node];
+
+				Info("\\__ Channel: %s, target: %d, Interpolation: %s", channel.target_path.c_str(), channel.target_node, sampler.interpolation.c_str());
+				
 				//tinygltf::Node& node = mModel.nodes[channel.target_node];
+
+
+				auto search = mScene.mNodeByName.find(target.name);
+				Node3d* myNode = search != mScene.mNodeByName.end() ? search->second : nullptr;
+
+				if (myNode == nullptr) continue;
+
+				AnimationTrackType trackType = AnimationTrackType_LastEnum;
+
+				if (channel.target_path == "translation")
+				{
+					trackType = AnimationTrackType_Position;
+				}
+				else if (channel.target_path == "rotation")
+				{
+					trackType = AnimationTrackType_Rotation;
+				}
+				else 
+				{
+					continue;
+				}
+
+				AnimationTrack& track = myAnim->CreateTrack(target.name, trackType, myNode);
+
+				const tinygltf::BufferView inbv = mModel.bufferViews[input.bufferView];
+				const tinygltf::Buffer inbuf = mModel.buffers[inbv.buffer];
+
+				const float* timestamps = reinterpret_cast<float const*>(inbv.byteOffset + input.byteOffset + inbuf.data.data());
+
+				const tinygltf::BufferView outbv = mModel.bufferViews[output.bufferView];
+				const tinygltf::Buffer outbuf = mModel.buffers[outbv.buffer];
+
+				const float* values = reinterpret_cast<float const*>(outbv.byteOffset + output.byteOffset + outbuf.data.data());
+
+				for (unsigned i = 0; i < input.count; ++i)
+				{
+					Keyframe& kf = track.CreateKeyframe(timestamps[i] * 1000.f);
+
+					if (trackType == AnimationTrackType_Position)
+					{
+						kf.v = glm::make_vec3(&values[i * 3]);
+					}
+					else 
+					{
+						kf.q = Quat(values[i * 4 + 3], values[i * 4 + 0], values[i * 4 + 1], values[i * 4 + 2]);
+					}
+				}
+				if (length < timestamps[input.count - 1])
+				{
+					length = timestamps[input.count - 1];
+				}
 			}
+			myAnim->SetLength(1000.f * length);
+			mScene.mAnimMgr.AddAnimation(myAnim);
+			
 		}
 
 		return 0;
@@ -303,36 +367,36 @@ namespace jse {
 				mtmp[i] = float(aNode.matrix[i]);
 			}
 			M = glm::make_mat4(mtmp);
+
 		}
 		else {
 
 			if (aNode.translation.size() == 3)
 			{
-				M = glm::translate(M, vec3(
+				nNode->SetPosition(vec3(
 					float(aNode.translation[0]),
 					float(aNode.translation[1]),
 					float(aNode.translation[2])));
 			}
 			if (aNode.rotation.size() == 4)
 			{
-				const Quat q(
+				nNode->SetRotation(Quat(
 					float(aNode.rotation[3]),
 					float(aNode.rotation[0]),
 					float(aNode.rotation[1]),
-					float(aNode.rotation[2]));
+					float(aNode.rotation[2])));
 
-				M = M * glm::mat4_cast(q);
 			}
 			if (aNode.scale.size() == 3)
 			{
-				M = glm::scale(M, vec3(
+				nNode->SetScale(vec3(
 					float(aNode.scale[0]),
 					float(aNode.scale[1]),
 					float(aNode.scale[2])));
 			}
 		}
 
-		nNode->SetTransform(M, true);
+		// nNode->SetTransform(M, true);
 
 		if (aNode.mesh > -1)
 		{
