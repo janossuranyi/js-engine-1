@@ -129,7 +129,7 @@ namespace jse {
 		mMeshes.push_back(aMesh);
 	}
 
-	void Node3d::AddLight(const Light* aLight)
+	void Node3d::AddLight(const unsigned int aLight)
 	{
 		mLights.push_back(aLight);
 	}
