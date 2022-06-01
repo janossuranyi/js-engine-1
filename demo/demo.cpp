@@ -4,6 +4,7 @@
 #include <list>
 #include <iostream>
 #include <string>
+#include <functional>
 #include "SDL.h"
 
 #include "graphics/GraphicsTypes.hpp"
@@ -61,7 +62,7 @@ void X_add_light_cube(Scene& aScene, const Vector3f& aPos, const Color3 aColor, 
 		m.SetMaterial(custMat);
 		int idx = aScene.AddMesh(m);
 
-		customNode->AddMesh(idx);
+		customNode->AddRenderable(aScene.GetMeshByIndex(idx));
 		customNode->SetPosition(aPos);
 		customNode->SetScale(.2f);
 		customNode->SetVisible(true);
@@ -145,15 +146,19 @@ int main(int argc, char** argv)
 	Node3d* Torus02 = scene.GetNodeByName("Torus02");
 	Node3d* Torus01 = scene.GetNodeByName("Torus01");
 
-	const LightVec& lights = scene.GetLights();
-
 	int ln = 1;
-	std::for_each(lights.begin(), lights.end(), [&](const Light* it) {
+	scene.WalkNodeHiearchy([&](const Node3d* n) {
 
-		const PointLight* light = reinterpret_cast<const PointLight*>(it);
-		const Vector3f color = light->GetDiffuse();
+		for (auto it : n->GetRenderables())
+		{
+			if (it->GetType() == RenderableType::Light)
+			{
+				const PointLight* light = reinterpret_cast<const PointLight*>(it.get());
+				const Vector3f color = light->GetDiffuse();
 
-		X_add_light_cube(scene, light->GetPosition(), glm::normalize(color), ln++);
+				X_add_light_cube(scene, light->GetPosition(), glm::normalize(color), ln++);
+			}
+		}
 	});
 
 	scene.Compile();

@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <vector>
+#include <stack>
 #include <memory>
+#include <functional>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing flags
@@ -22,7 +24,7 @@
 
 #include "graphics/GraphicsDriver.hpp"
 #include "graphics/GpuShader.hpp"
-
+#include "graphics/Renderable.hpp"
 
 #define SCENE_ALIGN16(x) (((x) + 15) & ~15)
 
@@ -55,22 +57,6 @@ namespace jse {
 
 	Scene::~Scene()
 	{
-
-		if (!mMeshes.empty())
-		{
-			for (auto it = mMeshes.begin(); it != mMeshes.end(); it++)
-			{
-				delete* it;
-			}
-		}
-
-		if (!mLights.empty())
-		{
-			for (auto it = mLights.begin(); it != mLights.end(); it++)
-			{
-				delete* it;
-			}
-		}
 	}
 
 	void Scene::SetCameraPos(const Vector3f& aPos, const Vector3f& aTarget, const Vector3f& aUp)
@@ -96,18 +82,20 @@ namespace jse {
 
 	size_t Scene::AddMesh(const Mesh3d& aSrc)
 	{
-		Mesh3d* newMesh = new Mesh3d(aSrc.mName);
+		auto newMesh = std::make_shared<Mesh3d>(aSrc.mName);
 		newMesh->vertices = aSrc.vertices;
 		newMesh->indices = aSrc.indices;
 		newMesh->mMaterial = aSrc.mMaterial;
 
 		const size_t res = mMeshes.size();
+		newMesh->SetIndex(res);
+
 		mMeshes.push_back(newMesh);
 
 		return res;
 	}
 
-	Mesh3d* Scene::GetMeshByIndex(const int aIdx)
+	std::shared_ptr<Mesh3d> Scene::GetMeshByIndex(const int aIdx)
 	{
 		if (mMeshes.size() > aIdx)
 		{
@@ -159,7 +147,7 @@ namespace jse {
 
 		for (int i = 0; i < mMeshes.size(); i++)
 		{
-			const Mesh3d* m = mMeshes[i];
+			auto m = mMeshes[i];
 			FlatBufferHandle_t vtxH, idxH;
 
 			vtxH.size = m->vertices.size() * kVertexDataSize;
@@ -247,14 +235,35 @@ namespace jse {
 		mGd->SetDepthTestFunc(DepthTestFunc_Equal);
 		mRPass = RenderPass_Light;
 
-		for (auto it = mLights.begin(); it != mLights.end(); it++)
-		{
-			if ((*it)->GetType() == LightType_Point)
-			{
-				mCurrentLight = *it;
-				DrawList();
-			}
 
+		std::stack<Node3d*> nodestack;
+		nodestack.push(&mRootNode);
+
+		while (!nodestack.empty())
+		{
+			Node3d* n = nodestack.top();
+
+						
+			for (auto r : n->GetRenderables())
+			{
+				if (r->GetType() != RenderableType::Light)
+					continue;
+
+				Light* light = reinterpret_cast<Light*>(r.get());
+				if (light->GetLightType() == LightType_Point)
+				{
+					mCurrentLight = light;
+					DrawList();
+				}
+			}
+			nodestack.pop();
+
+			if (n->HasChildren()) {
+				for (auto e : n->GetChildren())
+				{
+					nodestack.push(e);
+				}
+			}
 		}
 
 		mGd->UseShader(NULL);
@@ -307,40 +316,61 @@ namespace jse {
 		for (int i = 0; i < mMeshes.size(); i++)
 		{
 			if (mMeshes[i]->mName == aName)
-				return MeshQueryResult(mMeshes[i], i);
+				return MeshQueryResult(mMeshes[i].get(), i);
 		}
 
 		return MeshQueryResult(nullptr, -1);
 	}
 
+	void Scene::WalkNodeHiearchy(std::function<void(Node3d*)> func)
+	{
+		std::stack<Node3d*> stk;
+
+		stk.push(&mRootNode);
+
+		while (!stk.empty())
+		{
+			Node3d* n = stk.top();
+
+			func(n);
+
+			stk.pop();
+
+			for (auto e : n->GetChildren())
+			{
+				stk.push(e);
+			}
+		}
+	}
+
 
 	void Scene::BuildDrawList(Node3d* node)
 	{
-		if (!node->IsVisible() || node->GetMeshes().empty())
+		if (!node->IsVisible())
 			return;
 
 		node->UpdateWorldTransform(false);
 
 		if (node->HasChildren())
 		{
-			const Node3dPtrVec& children = node->GetChildren();
-			for (auto it = children.begin(); it != children.end(); it++)
+			for (auto& it : node->GetChildren())
 			{
-				BuildDrawList(*it);
+				BuildDrawList(it);
 			}
 		}
 
-
-		const MeshIdxVec& list = node->GetMeshes();
-		const Matrix M = node->GetWorldTransform();
+		const Matrix& M = node->GetWorldTransform();
 		const Matrix NM = Matrix3x3(glm::transpose(glm::inverse(M)));
 		const Matrix MVP = mP * mV * M;
 
-		for (auto it = list.begin(); it != list.end(); it++)
+		for (auto renderable : node->GetRenderables())
 		{
-			const Mesh3d* mesh = mMeshes[*it];
+			if (renderable->GetType() != RenderableType::Mesh)
+				continue;
 
-			mDrawList.emplace_back(*it, mesh->mMaterial.type, NM, M, MVP);
+			Mesh3d* mesh = reinterpret_cast<Mesh3d*>(renderable.get());
+
+			mDrawList.emplace_back(mesh, mesh->mMaterial.type, NM, M, MVP);
 		}
 	}
 
@@ -396,17 +426,17 @@ namespace jse {
 			mCurrentShader->SetMatrix("MVP", &ent.mMVP[0][0]);
 
 
-			DrawMesh(ent.mMeshIndex);
+			DrawMesh(ent.mPtr);
 		}
 	}
 
-	void Scene::DrawMesh(const unsigned aMesh)
+	void Scene::DrawMesh(const Mesh3d* aMesh)
 	{
-		const Mesh3d* m = mMeshes[aMesh];
+		const Mesh3d* m = aMesh;
 		const Vector3f kBlack(0.0f);
 
-		FlatBufferHandle_t vtxH = mVertexBufferHandles[aMesh];
-		FlatBufferHandle_t idxH = mIndexBufferHandles[aMesh];
+		FlatBufferHandle_t vtxH = mVertexBufferHandles[aMesh->GetIndex()];
+		FlatBufferHandle_t idxH = mIndexBufferHandles[aMesh->GetIndex()];
 		size_t baseVert = vtxH.offset / sizeof(VertexData);
 
 		if (mRPass == RenderPass_Light)
@@ -462,5 +492,6 @@ namespace jse {
 
 		return NULL;
 	}
+
 
 }

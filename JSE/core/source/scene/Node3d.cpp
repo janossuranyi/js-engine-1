@@ -25,23 +25,12 @@ namespace jse {
 		mScale = Vector3f(1.f, 1.f, 1.f);
 		mTransformUpdated = false;
 		mVisible = false;
-		mAnimated = false;
 		mParentNode = nullptr;
-	}
-
-	Node3d::Node3d(const String& aName, const unsigned int aMesh) : Node3d(aName)
-	{
-		mMeshes.push_back(aMesh);
 	}
 
 	Node3d::Node3d(const String& aName, Node3d* aParent) : Node3d(aName)
 	{
 		mParentNode = aParent;
-	}
-
-	Node3d::Node3d(const String& aName, Node3d* aParent, const unsigned int aMesh) : Node3d(aName, aParent)
-	{
-		mMeshes.push_back(aMesh);
 	}
 
 	void Node3d::SetPosition(const Vector3f& aPos)
@@ -124,14 +113,9 @@ namespace jse {
 		mChildNodes.push_back(aOther);
 	}
 
-	void Node3d::AddMesh(const unsigned int aMesh)
+	void Node3d::AddRenderable(std::shared_ptr<Renderable> a0)
 	{
-		mMeshes.push_back(aMesh);
-	}
-
-	void Node3d::AddLight(const unsigned int aLight)
-	{
-		mLights.push_back(aLight);
+		mRenderableVec.push_back(a0);
 	}
 
 	void Node3d::UpdateWorldTransform(const bool aUpdateChildren)

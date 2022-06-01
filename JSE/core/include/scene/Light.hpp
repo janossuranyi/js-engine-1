@@ -2,6 +2,7 @@
 #define JSE_LIGHT_H
 
 #include "graphics/GraphicsTypes.hpp"
+#include "graphics/Renderable.hpp"
 
 namespace jse {
 
@@ -13,12 +14,15 @@ namespace jse {
 		LightType_LastEnum
 	};
 
-	class Light
+	class Light : public Renderable
 	{
 	public:
 		Light(const String& aName, const LightType aType) : mName(aName), mType(aType) {};
+		~Light() {}
+		void Draw() {}
 		const String& GetName() const { return mName; }
-		LightType GetType() const { return mType; }
+		LightType GetLightType() const { return mType; }
+		RenderableType GetType() const { return RenderableType::Light; }
 	private:
 		String mName;
 		LightType mType;
@@ -34,6 +38,8 @@ namespace jse {
 			const float aLinearAtt = 1,
 			const float aQuadraticAtt = 1,
 			const float aCutoff = 0.0005);
+
+		~PointLight() {}
 
 		void SetPosition(const Vector3f& aPosition);
 		void SetDiffuse(const Vector3f& aDiffuse);

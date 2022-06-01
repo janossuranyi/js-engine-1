@@ -46,7 +46,7 @@ namespace jse {
 			aParent->AddChildNode(nNode);
 			for (int k = 0; k < node->mNumMeshes; k++)
 			{
-				nNode->AddMesh(node->mMeshes[k]);
+				nNode->AddRenderable(mScene.GetMeshByIndex(node->mMeshes[k]));
 			}
 
 			parent = nNode;
@@ -97,7 +97,7 @@ namespace jse {
 		for (int i = 0; i < numMeshes; i++)
 		{
 			aiMesh* src = scene->mMeshes[i];
-			Mesh3d* dst = new Mesh3d(src->mName.C_Str());
+			Mesh3d dst(src->mName.C_Str());
 
 			const auto numVerts = src->mNumVertices;
 			const auto numFaces = src->mNumFaces;
@@ -116,7 +116,7 @@ namespace jse {
 				vtx.SetTangent(src->mTangents[v].x, src->mTangents[v].y, src->mTangents[v].y);
 				vtx.SetBiTangent(src->mBitangents[v].x, src->mBitangents[v].y, src->mBitangents[v].z);
 
-				dst->AddVertex(vtx);
+				dst.AddVertex(vtx);
 			}
 
 			for (int j = 0; j < numFaces; j++)
@@ -125,7 +125,7 @@ namespace jse {
 
 				for (int k = 0; k < src->mFaces[j].mNumIndices; k++)
 				{
-					dst->AddIndex(src->mFaces[j].mIndices[k]);
+					dst.AddIndex(src->mFaces[j].mIndices[k]);
 				}
 			}
 
@@ -194,9 +194,9 @@ namespace jse {
 				//m.specularIntesity = f > 0.0001f ? f : 1.0f;
 				Info("%s: roughness = %f", material->GetName().C_Str(), f);
 			}
-			dst->SetMaterial(m);
+			dst.SetMaterial(m);
 
-			mScene.mMeshes.push_back(dst);
+			mScene.AddMesh(dst);
 		}
 
 
@@ -227,13 +227,17 @@ namespace jse {
 				const Vector3f ldiff = color3_cast(light->mColorDiffuse);
 				const Vector3f lspec = color3_cast(light->mColorSpecular);
 				// Fatt = 1 / (1 + 2/r * d + 1/r2 * d2)
-				PointLight* p = new PointLight(light->mName.C_Str(), lpos, ldiff, lspec, 2.0f / mScene.mDefaultLightRadius, 1.0f / mScene.mDefaultLightRadius2, 0.0001);
+				auto p = std::make_shared<PointLight>(light->mName.C_Str(), lpos, ldiff, lspec, 2.0f / mScene.mDefaultLightRadius, 1.0f / mScene.mDefaultLightRadius2, 0.0001);
 
 				Info("light %s  diffuse color: %.2f %.2f %.2f", p->GetName().c_str(), ldiff.r, ldiff.g, ldiff.b);
 				Info("Light %s attenuation: %.2f %.2f %.2f", p->GetName().c_str(), p->GetConstantAtt(), p->GetLinearAtt(), p->GetQuadraticAtt());
 				Info("Light %s radius: %.2f", p->GetName().c_str(), mScene.mDefaultLightRadius);
 
-				mScene.mLights.push_back(p);
+				Node3d* nNode = new Node3d(p->GetName());
+				nNode->AddRenderable(p);
+				nNode->SetPosition(lpos);
+
+				mScene.AddNode(nNode);
 
 			}
 		}

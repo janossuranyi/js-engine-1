@@ -129,7 +129,7 @@ namespace jse {
 
 			for (unsigned int j = 0; j < m.primitives.size(); j++)
 			{
-				Mesh3d* dst = new Mesh3d(m.name);
+				Mesh3d dst(m.name);
 
 				tinygltf::Primitive p = m.primitives[j];
 				tinygltf::Accessor indexAccessor = mModel.accessors[p.indices];
@@ -146,12 +146,12 @@ namespace jse {
 				if (indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT)
 				{
 					auto const* iIn = GltfLoader_cast_array<uint16_t>(ibuf.data.data() + indexAccessor.byteOffset + ibv.byteOffset);
-					GltfLoader_Extract_scalar(iIn, indexAccessor.count, indexAccessor.ByteStride(ibv) / sizeof(uint16_t), [dst](uint16_t const val) {dst->AddIndex(val); });
+					GltfLoader_Extract_scalar(iIn, indexAccessor.count, indexAccessor.ByteStride(ibv) / sizeof(uint16_t), [&dst](uint16_t const val) {dst.AddIndex(val); });
 				}
 				else if (indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_INT)
 				{
 					auto const* iIn = GltfLoader_cast_array<uint32_t>(ibuf.data.data() + indexAccessor.byteOffset + ibv.byteOffset);
-					GltfLoader_Extract_scalar(iIn, indexAccessor.count, indexAccessor.ByteStride(ibv) / sizeof(uint32_t), [dst](uint32_t const val) {dst->AddIndex(val); });
+					GltfLoader_Extract_scalar(iIn, indexAccessor.count, indexAccessor.ByteStride(ibv) / sizeof(uint32_t), [&dst](uint32_t const val) {dst.AddIndex(val); });
 				}
 
 
@@ -197,9 +197,8 @@ namespace jse {
 					}
 				}
 
-				dst->SetData(v_pos.get(), v_norm.get(), v_tan.get(), v_tex.get(), numPrimitives);
-				dst->CompileFromData();
-				mScene.mMeshes.push_back(dst);
+				dst.SetData(v_pos.get(), v_norm.get(), v_tan.get(), v_tex.get(), numPrimitives);
+				dst.CompileFromData();
 
 				if (p.material > -1)
 				{
@@ -210,9 +209,9 @@ namespace jse {
 					xm.specular = Color3(0.2f);
 					xm.specularIntesity = float(mat.pbrMetallicRoughness.roughnessFactor * 100.0);
 					xm.ambient = Color3(.1f);
-					dst->SetMaterial(xm);
+					dst.SetMaterial(xm);
 				}
-
+				mScene.AddMesh(dst);
 			}
 		}
 		meshOffsets.push_back(k);
@@ -244,13 +243,19 @@ namespace jse {
 				const Vector3f ldiff = Color3(light.color[0], light.color[1], light.color[2]) * float(light.intensity);
 				const Vector3f lspec = ldiff;;
 				// Fatt = 1 / (1 + 2/r * d + 1/r2 * d2)
-				PointLight* p = new PointLight(
+
+				auto p = std::make_shared<PointLight>(
 					light.name,
 					lpos,
 					ldiff, lspec,
 					2.0f / mScene.mDefaultLightRadius, 1.0f / mScene.mDefaultLightRadius2, 0.0001f);
 
-				mScene.mLights.push_back(p);
+				Node3d* nNode = new Node3d(light.name);
+				nNode->AddRenderable(p);
+				nNode->SetPosition(lpos);
+				mScene.AddNode(nNode);
+
+				//mScene.mLights.push_back(p);
 
 			}
 		}
@@ -407,7 +412,7 @@ namespace jse {
 			const int mesh_idx = aNode.mesh;
 
 			for (unsigned int j = meshOffsets[mesh_idx]; j < meshOffsets[mesh_idx + 1]; ++j) {
-				nNode->AddMesh(j);
+				nNode->AddRenderable(mScene.GetMeshByIndex(j));
 			}
 		}
 

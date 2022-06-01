@@ -15,6 +15,8 @@
 
 #include <list>
 #include <map>
+#include <memory>
+#include <functional>
 #include <assimp/Importer.hpp>
 
 struct aiNode;
@@ -38,14 +40,14 @@ namespace jse {
 
 	struct DrawEntityDef_t
 	{
-		DrawEntityDef_t(const int aIndex, const MaterialType aMaterial, const Matrix& aNormalTrans, const Matrix& aModelTrans, const Matrix& aMVP) :
-			mMeshIndex(aIndex),
+		DrawEntityDef_t(Mesh3d* aPtr, const MaterialType aMaterial, const Matrix& aNormalTrans, const Matrix& aModelTrans, const Matrix& aMVP) :
+			mPtr(aPtr),
 			mMaterial(aMaterial),
 			mNormalTrans(aNormalTrans),
 			mModelTrans(aModelTrans),
 			mMVP(aMVP) {}
 
-		int mMeshIndex;
+		Mesh3d* mPtr;
 		MaterialType mMaterial;
 		Matrix mNormalTrans;
 		Matrix mModelTrans;
@@ -64,7 +66,7 @@ namespace jse {
 	};
 
 	typedef std::vector<FlatBufferHandle_t> GpuBufferHandleVec;
-	typedef std::vector<Mesh3d*> Mesh3dVec;
+	typedef std::vector<std::shared_ptr<Mesh3d>> Mesh3dVec;
 	typedef std::list<Light*> LightVec;
 	typedef std::vector<DrawEntityDef_t> DrawEntityVec;
 	typedef std::pair<const Mesh3d*, int> MeshQueryResult;
@@ -82,25 +84,25 @@ namespace jse {
 		void SetPerspectiveCameraLens(const float aFOV, const float aAspect, const float aZNear, const float aZFar);
 		void AddNode(Node3d* aNode, Node3d* aParent = nullptr);
 		size_t AddMesh(const Mesh3d& aSrc);
-		Mesh3d* GetMeshByIndex(const int aIdx);
+		std::shared_ptr<Mesh3d> GetMeshByIndex(const int aIdx);
 		bool LoadScene(const String& aFileName, const bool aToYUp = false);
 		bool Compile();
 		void Draw();
 		inline float GetDefaultLightRadius() const { return mDefaultLightRadius; }
 		float SetDefaultLightRadius(const float a0);
 		Node3d* GetNodeByName(const String& aName);
-		const LightVec& GetLights() const { return mLights; }
 
 		void UpdateAnimation(const float aFrameStep);
 
 		MeshQueryResult GetMeshByName(const String& aName);
 
+		void WalkNodeHiearchy(std::function<void(Node3d*)> func);
+
 	private:
 
-		void processNodesRecursive(const aiNode* node, Node3d* parent, Matrix aMatrix);
 		void BuildDrawList(Node3d* node);
 		void DrawList();
-		void DrawMesh(const unsigned aMesh);
+		void DrawMesh(const Mesh3d* aMesh);
 		void Init();
 		aiNode* FindAINodeByName(const aiString& aName, aiNode* aNode, aiMatrix4x4& aTrans);
 
@@ -109,7 +111,6 @@ namespace jse {
 		String mName;
 		Node3d mRootNode;
 		Mesh3dVec mMeshes;
-		LightVec mLights;
 		Light* mCurrentLight;
 
 		GpuBufferHandleVec mVertexBufferHandles;

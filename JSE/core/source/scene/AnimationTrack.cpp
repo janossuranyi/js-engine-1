@@ -53,8 +53,6 @@ namespace jse
 		if (mKeyframes.empty() || !mNode)
 			return;
 
-		mNode->SetAnimated(true);
-
 		Keyframe Frame = GetInterpolatedKeyframe(aTime, aLoop);
 
 		//Quat rot = glm::normalize( glm::slerp(Quat(), Frame.rotation, aWeight) );

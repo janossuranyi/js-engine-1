@@ -4,6 +4,7 @@
 #include "system/SystemTypes.hpp"
 #include "graphics/GraphicsTypes.hpp"
 #include "graphics/Material.hpp"
+#include "graphics/Renderable.hpp"
 
 namespace jse {
 
@@ -39,7 +40,7 @@ namespace jse {
 	typedef std::vector<unsigned short> ShortPrimitiveIndices;
 	typedef std::vector<unsigned int> LongPrimitiveIndices;
 
-	class Mesh3d
+	class Mesh3d : public Renderable
 	{
 		friend class Scene;
 	public:
@@ -53,8 +54,12 @@ namespace jse {
 		void SetData(const vec3* aPositions, const vec3* aNormals, const vec4* aTangents, const vec2* aTexcoords, const size_t aCount);
 
 		void CompileFromData();
+		void SetIndex(const unsigned int a0) { mIndex = a0; }
+		unsigned int GetIndex() const { return mIndex; }
+		
+		RenderableType GetType() const { return RenderableType::Mesh; }
 
-		virtual void Draw() {};
+		void Draw() {};
 
 	private:
 
@@ -63,6 +68,7 @@ namespace jse {
 		VertexDataVec vertices;
 		ShortPrimitiveIndices indices;
 		Material mMaterial;
+		unsigned int mIndex;
 
 		size_t mDataCount{};
 		vec3* mPositionData{};

@@ -87,7 +87,7 @@ namespace jse {
 	}
 
 
-	Mesh3d::Mesh3d(const String& aName) : mName(aName)
+	Mesh3d::Mesh3d(const String& aName) : mName(aName), mIndex(0)
 	{
 	}
 
