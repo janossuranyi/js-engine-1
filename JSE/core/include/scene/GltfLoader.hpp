@@ -1,6 +1,9 @@
 #ifndef JSE_GLTF_LOADER_H
 #define JSE_GLTF_LOADER_H
 
+#include <vector>
+#include <map>
+
 #include "system/SystemTypes.hpp"
 #include "system/Logger.hpp"
 #include "graphics/GraphicsTypes.hpp"
@@ -18,6 +21,8 @@ namespace jse {
 		int LoadScene(const String& aFilename);
 	private:
 
+		void IndexLights();
+
 		Node3d* ImportNode(const tinygltf::Node& aNode);
 		template<class T>
 		void ExtractData(const tinygltf::Accessor& aAccessor, std::unique_ptr<T>& aDest);
@@ -26,6 +31,7 @@ namespace jse {
 		tinygltf::Model mModel;
 		tinygltf::TinyGLTF mLoader;
 		std::vector<unsigned int> meshOffsets;
+		std::map<String, int> mNodeNameLigntIndexMap;
 	};
 }
 #endif // !JSE_ASSIMP_LOADER_H

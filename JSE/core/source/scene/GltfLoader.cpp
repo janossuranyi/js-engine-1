@@ -81,6 +81,26 @@ namespace jse {
 		}
 	}
 
+	void GltfLoader::IndexLights()
+	{
+		tinygltf::Scene& scene = mModel.scenes[mModel.defaultScene];
+		for (int i = 0; i < mModel.lights.size(); i++)
+		{
+			tinygltf::Light& light = mModel.lights[i];
+
+			if (light.type == "point")
+			{
+				for (auto n : scene.nodes)
+				{
+					const tinygltf::Node& node = mModel.nodes[n];
+					if (node.name == light.name) {
+						mNodeNameLigntIndexMap.insert(std::make_pair(node.name, i));
+					}
+				}
+			}
+		}
+	}
+
 	int GltfLoader::LoadScene(const String& aFilename)
 	{
 		bool isAscii = true;
@@ -216,17 +236,17 @@ namespace jse {
 		}
 		meshOffsets.push_back(k);
 
+		IndexLights();
+
 		for (size_t i : scene.nodes)
 		{
 			tinygltf::Node& xnode = mModel.nodes[i];
-			if (xnode.mesh > -1)
-			{
-				Node3d* nNode = ImportNode(xnode);
-				mScene.AddNode(nNode, nullptr);
-			}
+
+			Node3d* nNode = ImportNode(xnode);
+			if (nNode) mScene.AddNode(nNode, nullptr);
 		}
 
-		for (int i = 0; i < mModel.lights.size(); i++)
+		for (int i = 0; i > mModel.lights.size(); i++)
 		{
 			tinygltf::Light& light = mModel.lights[i];
 			Vector3f lpos = vec3(0.f);
@@ -344,11 +364,21 @@ namespace jse {
 		String name = aNode.name;
 		std::vector<String> nameVec = split(name, "_");
 		bool visible = true;
+		int light = -1;
 
 		for (int i = 1; i < nameVec.size(); i++)
 		{
 			if (nameVec[i] == "i")
 				visible = false;
+		}
+
+		if (aNode.mesh == -1)
+		{
+			auto search = mNodeNameLigntIndexMap.find(aNode.name);
+			if (search == mNodeNameLigntIndexMap.end())
+				return nullptr;
+
+			light = search->second;
 		}
 
 		// create node
@@ -361,7 +391,8 @@ namespace jse {
 			for (auto i : aNode.children)
 			{
 				Node3d* cNode = ImportNode(mModel.nodes[i]);
-				nNode->AddChildNode(cNode);				
+				
+				if (cNode) nNode->AddChildNode(cNode);
 			}
 		}
 
@@ -415,7 +446,37 @@ namespace jse {
 				nNode->AddRenderable(mScene.GetMeshByIndex(j));
 			}
 		}
+		else if (light > -1)
+		{
+			/* not mesh */
+			tinygltf::Light& tlight = mModel.lights[light];
+			Vector3f lpos = vec3(0.f);
+			tinygltf::Scene& scene = mModel.scenes[mModel.defaultScene];
 
+			if (tlight.type == "point")
+			{
+				for (auto n : scene.nodes)
+				{
+					const tinygltf::Node& node = mModel.nodes[n];
+					if (node.name == tlight.name) {
+						lpos = vec3(node.translation[0], node.translation[1], node.translation[2]);
+					}
+				}
+				const Vector3f ldiff = Color3(tlight.color[0], tlight.color[1], tlight.color[2]) * float(tlight.intensity);
+				const Vector3f lspec = ldiff;;
+				// Fatt = 1 / (1 + 2/r * d + 1/r2 * d2)
+
+				auto p = std::make_shared<PointLight>(
+					tlight.name,
+					lpos,
+					ldiff, lspec,
+					2.0f / mScene.mDefaultLightRadius, 1.0f / mScene.mDefaultLightRadius2, 0.0001f);
+
+				nNode->AddRenderable(p);
+				nNode->SetPosition(lpos);
+
+			}
+		}
 		return nNode;
 	}
 }

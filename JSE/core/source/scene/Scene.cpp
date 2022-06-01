@@ -249,7 +249,10 @@ namespace jse {
 				if (r->GetType() != RenderableType::Light)
 					continue;
 
-				Light* light = reinterpret_cast<Light*>(r.get());
+				PointLight* light = reinterpret_cast<PointLight*>(r.get());
+				
+				light->SetPosition(n->GetPostion());
+
 				if (light->GetLightType() == LightType_Point)
 				{
 					mCurrentLight = light;
