@@ -236,14 +236,17 @@ namespace jse {
 		}
 		meshOffsets.push_back(k);
 
-		IndexLights();
-
 		for (size_t i : scene.nodes)
 		{
 			tinygltf::Node& xnode = mModel.nodes[i];
 
 			Node3d* nNode = ImportNode(xnode);
-			if (nNode) mScene.AddNode(nNode, nullptr);
+			if (nNode) 
+			{
+				mScene.AddNode(nNode, nullptr);
+				nNode->UpdateWorldTransform(true);
+			}
+			
 		}
 
 		for (int i = 0; i > mModel.lights.size(); i++)
@@ -359,7 +362,7 @@ namespace jse {
 		return 0;
 	}
 
-	Node3d* GltfLoader::ImportNode(const tinygltf::Node& aNode)
+	Node3d* GltfLoader::ImportNode(const tinygltf::Node& aNode, unsigned aLevel)
 	{
 		String name = aNode.name;
 		std::vector<String> nameVec = split(name, "_");
@@ -372,29 +375,27 @@ namespace jse {
 				visible = false;
 		}
 
-		if (aNode.mesh == -1)
+		char cbuf[200];
+		std::memset(cbuf, 0, 200);
+		unsigned cc = 0;
+		while (cc <= aLevel*2)
 		{
-			auto search = mNodeNameLigntIndexMap.find(aNode.name);
-			if (search == mNodeNameLigntIndexMap.end())
-				return nullptr;
+			cbuf[cc++] = '_';
+		}
 
-			light = search->second;
+		if (aNode.mesh == -1 && !aNode.extensions.empty())
+		{
+			auto findLight = aNode.extensions.find("KHR_lights_punctual");
+			if (findLight != aNode.extensions.end())
+			{
+				light = findLight->second.Get("light").GetNumberAsInt();
+			}
 		}
 
 		// create node
-		Node3d* nNode = new Node3d(nameVec[0]);
+		Node3d* nNode = new Node3d(name);
 		nNode->SetVisible(visible);
 		mScene.mNodeByName.insert(Scene::tNodeByNamePair(name, nNode));
-
-		if (!aNode.children.empty())
-		{
-			for (auto i : aNode.children)
-			{
-				Node3d* cNode = ImportNode(mModel.nodes[i]);
-				
-				if (cNode) nNode->AddChildNode(cNode);
-			}
-		}
 
 		/* Get node transform */
 
@@ -437,6 +438,25 @@ namespace jse {
 		}
 
 		// nNode->SetTransform(M, true);
+		Info("\\%s %s Pos:[%.2f, %.2f, %.2f] Rot: [%.2f, %.2f, %.2f, %.2f]", cbuf, name.c_str(),
+			nNode->GetPosition().x,
+			nNode->GetPosition().y,
+			nNode->GetPosition().z,
+			nNode->GetRotation().w,
+			nNode->GetRotation().x,
+			nNode->GetRotation().y,
+			nNode->GetRotation().z);
+
+		if (!aNode.children.empty())
+		{
+			for (auto i : aNode.children)
+			{
+				Node3d* cNode = ImportNode(mModel.nodes[i], aLevel + 1);
+
+				if (cNode) nNode->AddChildNode(cNode);
+			}
+		}
+
 
 		if (aNode.mesh > -1)
 		{
@@ -450,30 +470,24 @@ namespace jse {
 		{
 			/* not mesh */
 			tinygltf::Light& tlight = mModel.lights[light];
+			Info("\\%s light %s", cbuf, tlight.name.c_str());
 			Vector3f lpos = vec3(0.f);
 			tinygltf::Scene& scene = mModel.scenes[mModel.defaultScene];
 
 			if (tlight.type == "point")
-			{
-				for (auto n : scene.nodes)
-				{
-					const tinygltf::Node& node = mModel.nodes[n];
-					if (node.name == tlight.name) {
-						lpos = vec3(node.translation[0], node.translation[1], node.translation[2]);
-					}
-				}
+			{				
 				const Vector3f ldiff = Color3(tlight.color[0], tlight.color[1], tlight.color[2]) * float(tlight.intensity);
 				const Vector3f lspec = ldiff;;
 				// Fatt = 1 / (1 + 2/r * d + 1/r2 * d2)
 
 				auto p = std::make_shared<PointLight>(
 					tlight.name,
-					lpos,
+					vec3(0.0f),
 					ldiff, lspec,
 					2.0f / mScene.mDefaultLightRadius, 1.0f / mScene.mDefaultLightRadius2, 0.0001f);
 
 				nNode->AddRenderable(p);
-				nNode->SetPosition(lpos);
+				//nNode->SetPosition(lpos);
 
 			}
 		}

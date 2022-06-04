@@ -23,7 +23,7 @@ namespace jse {
 
 		void IndexLights();
 
-		Node3d* ImportNode(const tinygltf::Node& aNode);
+		Node3d* ImportNode(const tinygltf::Node& aNode, unsigned aLevel = 0);
 		template<class T>
 		void ExtractData(const tinygltf::Accessor& aAccessor, std::unique_ptr<T>& aDest);
 

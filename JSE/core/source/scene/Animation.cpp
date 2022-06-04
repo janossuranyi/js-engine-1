@@ -4,7 +4,7 @@
 #include "scene/Animation.hpp"
 #include "scene/AnimationTrack.hpp"
 #include "scene/Node3d.hpp"
-
+#include "graphics/GraphicsTypes.hpp"
 
 namespace jse {
 

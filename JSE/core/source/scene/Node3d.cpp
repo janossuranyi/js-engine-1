@@ -88,13 +88,18 @@ namespace jse {
 	{
 		m_mtxModel = aTransform;
 
+		UpdateRTS();
+
+		if (aUpdate)
+			SetTransformUpdated();
+	}
+
+	void Node3d::UpdateRTS()
+	{
 		vec3 tmp1;
 		vec4 tmp2;
 
 		glm::decompose(m_mtxModel, mScale, mRotation, mPosition, tmp1, tmp2);
-
-		if (aUpdate)
-			SetTransformUpdated();
 	}
 
 	void Node3d::SetVisible(const bool a0)

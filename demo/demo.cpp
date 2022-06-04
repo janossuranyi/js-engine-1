@@ -43,7 +43,7 @@ using namespace std::chrono;
 const float TicksPerFrame = 1000.f;
 
 
-void X_add_light_cube(Scene& aScene, const Vector3f& aPos, const Color3 aColor, int aLightNum)
+void X_add_light_cube(Scene& aScene, Node3d* aNode, const Color3 aColor, int aLightNum)
 {
 	MeshQueryResult cubeMesh = aScene.GetMeshByName("Cube");
 	Node3d* customNode = new Node3d("Custom" + std::to_string(aLightNum));
@@ -63,11 +63,10 @@ void X_add_light_cube(Scene& aScene, const Vector3f& aPos, const Color3 aColor, 
 		int idx = aScene.AddMesh(m);
 
 		customNode->AddRenderable(aScene.GetMeshByIndex(idx));
-		customNode->SetPosition(aPos);
 		customNode->SetScale(.2f);
 		customNode->SetVisible(true);
 
-		aScene.AddNode(customNode);
+		aNode->AddChildNode(customNode);
 
 		customNode->UpdateWorldTransform(true);
 	}
@@ -147,7 +146,7 @@ int main(int argc, char** argv)
 	Node3d* Torus01 = scene.GetNodeByName("Torus01");
 
 	int ln = 1;
-	scene.WalkNodeHiearchy([&](const Node3d* n) {
+	scene.WalkNodeHiearchy([&](Node3d* n) {
 
 		for (auto it : n->GetRenderables())
 		{
@@ -156,7 +155,7 @@ int main(int argc, char** argv)
 				const PointLight* light = reinterpret_cast<const PointLight*>(it.get());
 				const Vector3f color = light->GetDiffuse();
 
-				X_add_light_cube(scene, light->GetPosition(), glm::normalize(color), ln++);
+				X_add_light_cube(scene, n, glm::normalize(color), ln++);
 			}
 		}
 	});

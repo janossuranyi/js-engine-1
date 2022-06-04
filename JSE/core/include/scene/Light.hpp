@@ -41,7 +41,7 @@ namespace jse {
 
 		~PointLight() {}
 
-		void SetPosition(const Vector3f& aPosition);
+//		void SetPosition(const Vector3f& aPosition);
 		void SetDiffuse(const Vector3f& aDiffuse);
 		void SetSpecular(const Vector3f& aSpecular);
 		void SetCutOff(const float aCutoff);
@@ -49,7 +49,7 @@ namespace jse {
 			const float aLinearAtt,
 			const float aQuadraticAtt);
 
-		const Vector3f& GetPosition() const;
+//		const Vector3f& GetPosition() const;
 		const Vector3f& GetDiffuse() const;
 		const Vector3f& GetSpecular() const;
 

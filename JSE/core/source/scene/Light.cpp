@@ -14,10 +14,10 @@ namespace jse {
 		mCutoff = aCutoff;
 	}
 
-	void PointLight::SetPosition(const Vector3f& aPosition)
-	{
-		mPosition = aPosition;
-	}
+	//void PointLight::SetPosition(const Vector3f& aPosition)
+	//{
+	//	mPosition = aPosition;
+	//}
 
 	void PointLight::SetDiffuse(const Vector3f& aDiffuse)
 	{
@@ -40,10 +40,10 @@ namespace jse {
 		mQuadraticAtt = aQuadraticAtt;
 	}
 
-	const Vector3f& PointLight::GetPosition() const
-	{
-		return mPosition;
-	}
+	//const Vector3f& PointLight::GetPosition() const
+	//{
+	//	return mPosition;
+	//}
 	const Vector3f& PointLight::GetDiffuse() const
 	{
 		return mDiffuse;

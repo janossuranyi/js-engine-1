@@ -242,20 +242,19 @@ namespace jse {
 		while (!nodestack.empty())
 		{
 			Node3d* n = nodestack.top();
+			
 
-						
 			for (auto r : n->GetRenderables())
 			{
 				if (r->GetType() != RenderableType::Light)
 					continue;
 
 				PointLight* light = reinterpret_cast<PointLight*>(r.get());
-				
-				light->SetPosition(n->GetPostion());
 
 				if (light->GetLightType() == LightType_Point)
 				{
 					mCurrentLight = light;
+					mCurrentNode = n;
 					DrawList();
 				}
 			}
@@ -414,8 +413,8 @@ namespace jse {
 				{
 					PointLight* p = reinterpret_cast<PointLight*> (mCurrentLight);
 					p->SetAttenuation(2.0f / mDefaultLightRadius, 1.0f / mDefaultLightRadius2);
-
-					mCurrentShader->SetVector3("light.position", &(p->GetPosition())[0]);
+					vec3 lpos = mCurrentNode->GetWorldPosition();
+					mCurrentShader->SetVector3("light.position", &lpos[0]);
 					mCurrentShader->SetVector3("light.diffuse", &(p->GetDiffuse())[0]);
 					mCurrentShader->SetVector3("light.specular", &(p->GetSpecular())[0]);
 					mCurrentShader->SetFloat("light.kl", p->GetLinearAtt());

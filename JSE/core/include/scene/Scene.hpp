@@ -112,6 +112,7 @@ namespace jse {
 		Node3d mRootNode;
 		Mesh3dVec mMeshes;
 		Light* mCurrentLight;
+		Node3d* mCurrentNode;
 
 		GpuBufferHandleVec mVertexBufferHandles;
 		GpuBufferHandleVec mIndexBufferHandles;
