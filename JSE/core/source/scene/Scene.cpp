@@ -351,7 +351,7 @@ namespace jse {
 		if (!node->IsVisible())
 			return;
 
-		node->UpdateWorldTransform(false);
+		node->UpdateWorldTransform();
 
 		if (node->HasChildren())
 		{
@@ -361,7 +361,7 @@ namespace jse {
 			}
 		}
 
-		const Matrix& M = node->GetWorldTransform();
+		const Matrix& M = node->GetWorldMatrix();
 		const Matrix NM = Matrix3x3(glm::transpose(glm::inverse(M)));
 		const Matrix MVP = mP * mV * M;
 
@@ -413,7 +413,7 @@ namespace jse {
 				{
 					PointLight* p = reinterpret_cast<PointLight*> (mCurrentLight);
 					p->SetAttenuation(2.0f / mDefaultLightRadius, 1.0f / mDefaultLightRadius2);
-					vec3 lpos = mCurrentNode->GetWorldPosition();
+					const vec3 lpos = mCurrentNode->GetWorldPosition();
 					mCurrentShader->SetVector3("light.position", &lpos[0]);
 					mCurrentShader->SetVector3("light.diffuse", &(p->GetDiffuse())[0]);
 					mCurrentShader->SetVector3("light.specular", &(p->GetSpecular())[0]);

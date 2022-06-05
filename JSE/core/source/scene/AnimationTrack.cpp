@@ -66,8 +66,10 @@ namespace jse
 		else if (mType == AnimationTrackType_Rotation)
 		{
 			//mNode->SetRotation(Quat(1, 0, 0, 0));
-			mNode->SetRotation(Frame.q);
+			mNode->AddRotation(Frame.q);
+			mNode->UpdateMatrix();
 		}
+		
 
 		//Info("Time: %.2f, Pos: [%.2f,%.2f,%.2f]", aTime, Frame.position.x, Frame.position.y, Frame.position.z);
 	}

@@ -63,12 +63,11 @@ void X_add_light_cube(Scene& aScene, Node3d* aNode, const Color3 aColor, int aLi
 		int idx = aScene.AddMesh(m);
 
 		customNode->AddRenderable(aScene.GetMeshByIndex(idx));
-		customNode->SetScale(.2f);
+		customNode->AddScale(vec3(.2f));
 		customNode->SetVisible(true);
+		customNode->UpdateMatrix();
 
 		aNode->AddChildNode(customNode);
-
-		customNode->UpdateWorldTransform(true);
 	}
 }
 

@@ -31,64 +31,37 @@ namespace jse {
 	Node3d::Node3d(const String& aName, Node3d* aParent) : Node3d(aName)
 	{
 		mParentNode = aParent;
+		SetTransformUpdated();
 	}
 
 	void Node3d::SetPosition(const Vector3f& aPos)
 	{
-		mPosition = aPos;
+		m_mtxModel[3].x = aPos.x;
+		m_mtxModel[3].y = aPos.y;
+		m_mtxModel[3].z = aPos.z;
+
 		SetTransformUpdated();
 	}
 
 	void Node3d::AddPosition(const Vector3f& aPos)
 	{
-		mPosition += aPos;
-		SetTransformUpdated();
-	}
-
-	void Node3d::SetRotation(const Quaternion& aRot)
-	{
-		mRotation = aRot;
-		SetTransformUpdated();
+		vec3 vpos = GetModelPosition();
+		mPosition += (aPos - vpos);
 	}
 
 	void Node3d::AddRotation(const Quaternion& aRot)
 	{
-		mRotation *= aRot;
-		SetTransformUpdated();
-	}
-
-	void Node3d::SetScale(const Vector3f& aScale)
-	{
-		mScale = aScale;
-		SetTransformUpdated();
+		mRotation = aRot * mRotation;
 	}
 
 	void Node3d::AddScale(const Vector3f& aScale)
 	{
 		mScale *= aScale;
-		SetTransformUpdated();
-	}
-
-	void Node3d::SetScale(const float aUniformScale)
-	{
-		mScale = vec3(aUniformScale);
-		SetTransformUpdated();
-	}
-
-	void Node3d::SetScale(const float aX, const float aY, const float aZ)
-	{
-		mScale.x = aX;
-		mScale.y = aY;
-		mScale.z = aZ;
-
-		SetTransformUpdated();
 	}
 
 	void Node3d::SetTransform(const Matrix& aTransform, const bool aUpdate)
 	{
 		m_mtxModel = aTransform;
-
-		UpdateRTS();
 
 		if (aUpdate)
 			SetTransformUpdated();
@@ -107,15 +80,21 @@ namespace jse {
 		mVisible = a0;
 	}
 	
-	const Matrix& Node3d::GetTransform() const
+	const Matrix& Node3d::GetModelMatrix() const
 	{
 		return m_mtxModel;
 	}
 
 	void Node3d::AddChildNode(Node3d* aOther)
 	{
-		aOther->mParentNode = this;
+		aOther->SetParent(this);
 		mChildNodes.push_back(aOther);
+	}
+
+	void Node3d::SetParent(Node3d* aParent)
+	{
+		mParentNode = aParent;
+		SetTransformUpdated();
 	}
 
 	void Node3d::AddRenderable(std::shared_ptr<Renderable> a0)
@@ -123,34 +102,40 @@ namespace jse {
 		mRenderableVec.push_back(a0);
 	}
 
-	void Node3d::UpdateWorldTransform(const bool aUpdateChildren)
+	void Node3d::UpdateWorldTransform()
 	{
-		UpdateMatrix(aUpdateChildren);
-	}
-
-	void Node3d::UpdateMatrix(const bool aUpdateChildren)
-	{
-		if (!mTransformUpdated)
-			return;
-
-		mTransformUpdated = false;
-
-		m_mtxModel = Matrix(1.0f);
-		m_mtxModel = glm::translate(m_mtxModel, mPosition);
-		m_mtxModel = glm::scale(m_mtxModel, mScale);
-		m_mtxModel = m_mtxModel * glm::mat4_cast(mRotation);
-
-		m_mtxWorld = mParentNode
-			? mParentNode->m_mtxWorld * m_mtxModel
-			: m_mtxModel;
-
-		if (aUpdateChildren)
+		if (mTransformUpdated)
 		{
-			for (auto it : mChildNodes)
+			mTransformUpdated = false;
+			if (mParentNode)
 			{
-				it->UpdateMatrix(aUpdateChildren);
+				m_mtxWorld = mParentNode->GetWorldMatrix() * m_mtxModel;
+			}
+			else
+			{
+				m_mtxWorld = m_mtxModel;
 			}
 		}
+	}
+
+	void Node3d::UpdateMatrix()
+	{
+
+		vec3 vPos = m_mtxModel[3];
+
+		Matrix mtxModel = Matrix(1.f);
+
+		mtxModel = glm::translate(mtxModel, vPos + mPosition);
+		mtxModel = mtxModel * glm::mat4_cast(mRotation);
+
+		mtxModel = glm::scale(mtxModel, mScale);
+
+
+		SetTransform(mtxModel, true);
+
+		mRotation = Quat(1, 0, 0, 0);
+		mPosition = vec3(0.0f);
+		mScale = vec3(1.0f);
 	}
 
 	void Node3d::SetTransformUpdated()

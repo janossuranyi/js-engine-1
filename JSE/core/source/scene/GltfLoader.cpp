@@ -81,26 +81,6 @@ namespace jse {
 		}
 	}
 
-	void GltfLoader::IndexLights()
-	{
-		tinygltf::Scene& scene = mModel.scenes[mModel.defaultScene];
-		for (int i = 0; i < mModel.lights.size(); i++)
-		{
-			tinygltf::Light& light = mModel.lights[i];
-
-			if (light.type == "point")
-			{
-				for (auto n : scene.nodes)
-				{
-					const tinygltf::Node& node = mModel.nodes[n];
-					if (node.name == light.name) {
-						mNodeNameLigntIndexMap.insert(std::make_pair(node.name, i));
-					}
-				}
-			}
-		}
-	}
-
 	int GltfLoader::LoadScene(const String& aFilename)
 	{
 		bool isAscii = true;
@@ -244,43 +224,9 @@ namespace jse {
 			if (nNode) 
 			{
 				mScene.AddNode(nNode, nullptr);
-				nNode->UpdateWorldTransform(true);
+				nNode->UpdateWorldTransform();
 			}
 			
-		}
-
-		for (int i = 0; i > mModel.lights.size(); i++)
-		{
-			tinygltf::Light& light = mModel.lights[i];
-			Vector3f lpos = vec3(0.f);
-
-			if (light.type == "point")
-			{
-				for (auto n : scene.nodes)
-				{
-					const tinygltf::Node& node = mModel.nodes[n];
-					if (node.name == light.name) {
-						lpos = vec3(node.translation[0], node.translation[1], node.translation[2]);
-					}
-				}
-				const Vector3f ldiff = Color3(light.color[0], light.color[1], light.color[2]) * float(light.intensity);
-				const Vector3f lspec = ldiff;;
-				// Fatt = 1 / (1 + 2/r * d + 1/r2 * d2)
-
-				auto p = std::make_shared<PointLight>(
-					light.name,
-					lpos,
-					ldiff, lspec,
-					2.0f / mScene.mDefaultLightRadius, 1.0f / mScene.mDefaultLightRadius2, 0.0001f);
-
-				Node3d* nNode = new Node3d(light.name);
-				nNode->AddRenderable(p);
-				nNode->SetPosition(lpos);
-				mScene.AddNode(nNode);
-
-				//mScene.mLights.push_back(p);
-
-			}
 		}
 
 		for (auto anim : mModel.animations)
@@ -421,7 +367,7 @@ namespace jse {
 			}
 			if (aNode.rotation.size() == 4)
 			{
-				nNode->SetRotation(Quat(
+				nNode->AddRotation(Quat(
 					float(aNode.rotation[3]),
 					float(aNode.rotation[0]),
 					float(aNode.rotation[1]),
@@ -430,22 +376,21 @@ namespace jse {
 			}
 			if (aNode.scale.size() == 3)
 			{
-				nNode->SetScale(vec3(
+				nNode->AddScale(vec3(
 					float(aNode.scale[0]),
 					float(aNode.scale[1]),
 					float(aNode.scale[2])));
 			}
 		}
 
+		nNode->UpdateMatrix();
+
 		// nNode->SetTransform(M, true);
-		Info("\\%s %s Pos:[%.2f, %.2f, %.2f] Rot: [%.2f, %.2f, %.2f, %.2f]", cbuf, name.c_str(),
-			nNode->GetPosition().x,
-			nNode->GetPosition().y,
-			nNode->GetPosition().z,
-			nNode->GetRotation().w,
-			nNode->GetRotation().x,
-			nNode->GetRotation().y,
-			nNode->GetRotation().z);
+		const vec3 mp = nNode->GetModelPosition();
+		Info("\\%s %s Pos:[%.2f, %.2f, %.2f]", cbuf, name.c_str(),
+			mp.x,
+			mp.y,
+			mp.z);
 
 		if (!aNode.children.empty())
 		{
