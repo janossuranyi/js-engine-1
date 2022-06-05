@@ -17,7 +17,6 @@
 #include <map>
 #include <memory>
 #include <functional>
-#include <assimp/Importer.hpp>
 
 struct aiNode;
 struct aiString;
@@ -104,7 +103,6 @@ namespace jse {
 		void DrawList();
 		void DrawMesh(const Mesh3d* aMesh);
 		void Init();
-		aiNode* FindAINodeByName(const aiString& aName, aiNode* aNode, aiMatrix4x4& aTrans);
 
 		AnimationManager mAnimMgr;
 

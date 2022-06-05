@@ -6,7 +6,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 find_package(OpenGL REQUIRED)
 find_package(SDL2 REQUIRED)
-find_package(assimp REQUIRED HINTS ${ASSIMP_DIR}) 
+# find_package(assimp REQUIRED HINTS ${ASSIMP_DIR}) 
 
 add_definitions(
   -DGLEW_STATIC
@@ -92,15 +92,15 @@ include_directories(
   external/stb/
   external/soil2/incs/
   external/tinygltf/
-  ${ASSIMP_INCLUDE_DIRS}
+#  ${ASSIMP_INCLUDE_DIRS}
   ${SDL2_INCLUDE_DIR}
 )
 
 link_directories(
-  ${ASSIMP_LIBRARY_DIRS}
+#  ${ASSIMP_LIBRARY_DIRS}
 )
 
-message(STATUS "Assimp lib path: ${ASSIMP_LIBRARY_DIRS}")
+#message(STATUS "Assimp lib path: ${ASSIMP_LIBRARY_DIRS}")
 
 file(GLOB SHADERS assets/shaders/*.glsl)
 
@@ -129,10 +129,10 @@ if(WIN32)
     set(ARCH "x86")
   endif()
 
-  add_custom_command(TARGET demo POST_BUILD
-     COMMAND ${CMAKE_COMMAND} -E copy
-     "${assimp_DIR}/../../../bin/assimp${ASSIMP_LIBRARY_SUFFIX}.dll"
-     $<TARGET_FILE_DIR:demo>)
+#  add_custom_command(TARGET demo POST_BUILD
+#     COMMAND ${CMAKE_COMMAND} -E copy
+#     "${assimp_DIR}/../../../bin/assimp${ASSIMP_LIBRARY_SUFFIX}.dll"
+#     $<TARGET_FILE_DIR:demo>)
 
   add_custom_command(TARGET demo POST_BUILD
      COMMAND ${CMAKE_COMMAND} -E copy

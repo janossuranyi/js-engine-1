@@ -3,10 +3,6 @@
 #include <stack>
 #include <memory>
 #include <functional>
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>           // Output data structure
-#include <assimp/postprocess.h>     // Post processing flags
-#include <assimp/pbrmaterial.h>
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/ext/quaternion_float.hpp>
@@ -17,7 +13,6 @@
 #include "scene/Node3d.hpp"
 #include "scene/Animation.hpp"
 #include "scene/AnimationTrack.hpp"
-#include "scene/AssimpLoader.hpp"
 #include "scene/GltfLoader.hpp"
 #include "system/Logger.hpp"
 #include "system/Strings.hpp"
@@ -464,36 +459,4 @@ namespace jse {
 	void Scene::Init()
 	{
 	}
-
-	aiNode* Scene::FindAINodeByName(const aiString& aName, aiNode* aNode, aiMatrix4x4& aTrans)
-	{
-
-		if (aNode->mName == aName)
-		{
-			aiMatrix4x4 m = aNode->mTransformation;
-			for (aiNode* parent = aNode->mParent; parent != NULL; parent = parent->mParent)
-			{
-				m = parent->mTransformation * m;
-			}
-
-			aTrans = m;
-			return aNode;
-		}
-
-		if (aNode->mNumChildren > 0)
-		{
-			for (int i = 0; i < aNode->mNumChildren; i++)
-			{
-				aiNode* xnode = FindAINodeByName(aName, aNode->mChildren[i], aTrans);
-				if (xnode != NULL) {
-					aTrans = aTrans;
-					return xnode;
-				}
-			}
-		}
-
-		return NULL;
-	}
-
-
 }
