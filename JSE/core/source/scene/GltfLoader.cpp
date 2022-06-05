@@ -63,10 +63,10 @@ namespace jse {
 		const unsigned elemSize = size * aAccessor.type;
 		const unsigned stride = aAccessor.ByteStride(view);
 		const unsigned targetElemSize = sizeof(T);
-		const size_t totalSize = size * aAccessor.type * elemCount;
+		const size_t totalSize = elemSize * elemCount;
 		const uint8_t* data = buf.data.data() + aAccessor.byteOffset + view.byteOffset;
 
-		T* tmp = new T[aAccessor.count];
+		T* tmp = new T[elemCount];
 		aDest = std::unique_ptr<T>(tmp);
 
 		if (stride == elemSize && targetElemSize == elemSize)

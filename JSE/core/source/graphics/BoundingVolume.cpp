@@ -7,8 +7,9 @@ namespace jse {
 	// compute frustum planes from view and projection matrices
 	Frustum::Frustum(const Matrix& v, const Matrix& p) : BoundingVolume()
 	{
-		Matrix clipMatrix;
+		Matrix clipMatrix = v * p;
 
+		/*
 		clipMatrix[0][0] = v[0][0] * p[0][0] + v[0][1] * p[1][0] + v[0][2] * p[2][0] + v[0][3] * p[3][0];
 		clipMatrix[1][0] = v[0][0] * p[0][1] + v[0][1] * p[1][1] + v[0][2] * p[2][1] + v[0][3] * p[3][1];
 		clipMatrix[2][0] = v[0][0] * p[0][2] + v[0][1] * p[1][2] + v[0][2] * p[2][2] + v[0][3] * p[3][2];
@@ -25,7 +26,7 @@ namespace jse {
 		clipMatrix[1][3] = v[3][0] * p[0][1] + v[3][1] * p[1][1] + v[3][2] * p[2][1] + v[3][3] * p[3][1];
 		clipMatrix[2][3] = v[3][0] * p[0][2] + v[3][1] * p[1][2] + v[3][2] * p[2][2] + v[3][3] * p[3][2];
 		clipMatrix[3][3] = v[3][0] * p[0][3] + v[3][1] * p[1][3] + v[3][2] * p[2][3] + v[3][3] * p[3][3];
-
+		*/
 		m_planes[PLANE_RIGHT].x = clipMatrix[3][0] - clipMatrix[0][0];
 		m_planes[PLANE_RIGHT].y = clipMatrix[3][1] - clipMatrix[0][1];
 		m_planes[PLANE_RIGHT].z = clipMatrix[3][2] - clipMatrix[0][2];
