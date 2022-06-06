@@ -178,6 +178,8 @@ int main(int argc, char** argv)
 
 	float pitch = 0.f, yaw = -90.f;
 
+	bool srgb = true;
+
 	while (running && !runOnce)
 	{
 		float now = float(SDL_GetTicks64()) / 1000.f;
@@ -201,7 +203,12 @@ int main(int argc, char** argv)
 			running = false;
 		}
 
-		if (input->IsKeyDown(Key_I))
+		if (input->IsKeyDown(Key_Space))
+		{
+			srgb = !srgb;
+			gl->SetsRGBFrameBufferEnabled(srgb);
+		}
+		else if (input->IsKeyDown(Key_I))
 		{
 			//Rl = std::fmaf(-0.2f, dt, Rl);
 			Rl = -0.2f * dt + Rl;
