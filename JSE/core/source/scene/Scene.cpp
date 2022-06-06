@@ -52,12 +52,58 @@ namespace jse {
 
 	Scene::~Scene()
 	{
+		delete mLightsBuffer;
+		if (mBuffers[0]) delete mBuffers[0];
+		if (mBuffers[1]) delete mBuffers[1];
+		if (mVA) delete mVA;
 	}
 
-	void Scene::SetCameraPos(const Vector3f& aPos, const Vector3f& aTarget, const Vector3f& aUp)
+	void Scene::UpdateLights()
 	{
-		mV = glm::lookAt(aPos, aTarget, aUp);
-		mViewPos = aPos;
+		// indexing lights
+		mUniformLights.clear();
+		mLights.clear();
+		mLightIndexMap.clear();
+
+		WalkNodeHiearchy([&](Node3d* n) {
+
+			n->UpdateWorldTransform();
+
+			for (auto r : n->GetRenderables())
+			{
+				if (r->GetType() == RenderableType::Light)
+				{
+					unsigned idx = mLights.size();
+					auto light = std::dynamic_pointer_cast<Light>(r);
+					const PointLight* pl = reinterpret_cast<PointLight*>(light.get());
+
+					mLights.push_back(r);
+
+					UniformLight ul{
+						vec4(n->GetWorldPosition(), 1.f),
+						vec4(pl->GetDiffuse(), 1.f),
+						vec4(pl->GetSpecular(), 1.0f),
+						pl->GetLinearAtt(),
+						pl->GetQuadraticAtt(),
+						pl->GetCutOff() };
+
+					mUniformLights.push_back(ul);
+					mLightIndexMap.insert(std::make_pair(r, idx));
+				}
+			}
+		});
+
+		mLightsBuffer->BindToIndex(0);
+		mLightsBuffer->Reset();
+		mLightsBuffer->Alloc(mUniformLights.size() * sizeof(UniformLight), mUniformLights.data());
+		mLightsBuffer->BindToIndex(0);
+
+	}
+
+	void Scene::UpdateCamera()
+	{
+		mV = mCamera.GetViewMatrix();
+		mViewPos = mCamera.GetPosition();
 		mVP = mP * mV;
 	}
 
@@ -104,7 +150,13 @@ namespace jse {
 	{
 		std::unique_ptr<SceneLoader> loader = std::make_unique<GltfLoader>(*this);
 
-		return loader->LoadScene(aFileName);
+		int res = loader->LoadScene(aFileName);
+		if (res != 0) return res;
+
+		
+		UpdateLights();
+
+		Info("Scene loaded!");
 	}
 
 	bool Scene::Compile()
@@ -125,7 +177,7 @@ namespace jse {
 		size_t l_requiredVertexBufferSize = 0;
 		size_t l_requiredIndexBufferSize = 0;
 
-		for (int i = 0; i < mMeshes.size(); i++)
+		for (unsigned int i = 0; i < mMeshes.size(); i++)
 		{
 			l_requiredVertexBufferSize += (mMeshes[i]->vertices.size() * kVertexDataSize);
 			l_requiredIndexBufferSize += SCENE_ALIGN16(mMeshes[i]->indices.size() * sizeof(unsigned short));
@@ -169,6 +221,8 @@ namespace jse {
 		mVA = mGd->CreateVertexArray(ib, vAttr);
 
 		mVA->Compile();
+
+
 		mCompiled = true;
 
 		return true;
@@ -210,58 +264,16 @@ namespace jse {
 		DrawList();
 
 		/************************************
-		Render Ambient
+		Render Lights
 		*************************************/
 
 		mGd->SetDepthMask(false);
-		mGd->SetDepthTestFunc(DepthTestFunc_LessOrEqual);
 		mGd->SetColorMask(ColorMask_RGBA);
 		mGd->ClearFrameBuffer(ClearFBFlags_Color);
-
-		mRPass = RenderPass_Ambient;
-
-		DrawList();
-
-		/************************************
-		Render Lights
-		*************************************/
-		mGd->SetBlendEnabled(true);
-		mGd->SetBlendFunc(BlendFunc_One, BlendFunc_One);
 		mGd->SetDepthTestFunc(DepthTestFunc_Equal);
 		mRPass = RenderPass_Light;
 
-
-		std::stack<Node3d*> nodestack;
-		nodestack.push(&mRootNode);
-
-		while (!nodestack.empty())
-		{
-			Node3d* n = nodestack.top();
-			
-
-			for (auto r : n->GetRenderables())
-			{
-				if (r->GetType() != RenderableType::Light)
-					continue;
-
-				PointLight* light = reinterpret_cast<PointLight*>(r.get());
-
-				if (light->GetLightType() == LightType_Point)
-				{
-					mCurrentLight = light;
-					mCurrentNode = n;
-					DrawList();
-				}
-			}
-			nodestack.pop();
-
-			if (n->HasChildren()) {
-				for (auto e : n->GetChildren())
-				{
-					nodestack.push(e);
-				}
-			}
-		}
+		DrawList();
 
 		mGd->UseShader(NULL);
 
@@ -274,6 +286,12 @@ namespace jse {
 		mDefaultLightRadius2 = a0 * a0;
 
 		Info("Light attenuation: %.2f %.2f %.2f", 1.0f, 2.0f / mDefaultLightRadius, 1.0f / mDefaultLightRadius2);
+
+		for (auto l : mLights)
+		{
+			auto light = std::dynamic_pointer_cast<PointLight>(l);
+			light->SetAttenuation(2.0f / mDefaultLightRadius, 1.0f / mDefaultLightRadius2);
+		}
 
 		return prev;
 	}
@@ -306,6 +324,7 @@ namespace jse {
 	void Scene::UpdateAnimation(const float aFrameStep)
 	{
 		mAnimMgr.UpdateState(aFrameStep);
+		UpdateLights();
 	}
 
 	MeshQueryResult Scene::GetMeshByName(const String& aName)
@@ -381,8 +400,9 @@ namespace jse {
 		if (mRPass == RenderPass_Z)
 		{
 			mCurrentShader = mSm->GetShaderByMaterial(mtCurrent);
-			mCurrentShader->SetVector3("viewPos", &mViewPos[0]);
 			mCurrentShader->Use();
+			mCurrentShader->SetInt("numLights", 0);
+			mCurrentShader->SetVector3("viewPos", &mViewPos[0]);
 		}
 
 		for (auto it = mDrawList.begin(); it != mDrawList.end(); it++)
@@ -397,24 +417,11 @@ namespace jse {
 				mCurrentShader = mSm->GetShaderByMaterial(mtCurrent);
 				mCurrentShader->Use();
 				mCurrentShader->SetVector3("viewPos", &mViewPos[0]);
+				mCurrentShader->BindUniformBlock("LightBuffer", 0);
 
-				if (mRPass == RenderPass_Ambient)
+				if (mRPass == RenderPass_Light)
 				{
-					mCurrentShader->SetVector3("light.position", &cBlack[0]);
-					mCurrentShader->SetVector3("light.diffuse", &cBlack[0]);
-					mCurrentShader->SetVector3("light.specular", &cBlack[0]);
-				}
-				else if (mRPass == RenderPass_Light)
-				{
-					PointLight* p = reinterpret_cast<PointLight*> (mCurrentLight);
-					p->SetAttenuation(2.0f / mDefaultLightRadius, 1.0f / mDefaultLightRadius2);
-					const vec3 lpos = mCurrentNode->GetWorldPosition();
-					mCurrentShader->SetVector3("light.position", &lpos[0]);
-					mCurrentShader->SetVector3("light.diffuse", &(p->GetDiffuse())[0]);
-					mCurrentShader->SetVector3("light.specular", &(p->GetSpecular())[0]);
-					mCurrentShader->SetFloat("light.kl", p->GetLinearAtt());
-					mCurrentShader->SetFloat("light.kq", p->GetQuadraticAtt());
-					mCurrentShader->SetFloat("light.cutoff", p->GetCutOff());
+					mCurrentShader->SetInt("numLights", mUniformLights.size());
 				}
 			}
 
@@ -438,7 +445,7 @@ namespace jse {
 
 		if (mRPass == RenderPass_Light)
 		{
-			mCurrentShader->SetVector3("material.ambient", &kBlack[0]);
+			mCurrentShader->SetVector3("material.ambient", &m->mMaterial.ambient[0]);
 			mCurrentShader->SetVector3("material.diffuse", &m->mMaterial.diffuse[0]);
 			mCurrentShader->SetVector3("material.specular", &m->mMaterial.specular[0]);
 			mCurrentShader->SetFloat("material.shininess", m->mMaterial.specularIntesity);
@@ -458,5 +465,6 @@ namespace jse {
 
 	void Scene::Init()
 	{
+		mLightsBuffer = mGd->CreateBuffer(BufferTarget_Uniform, BufferUsage_DynaDraw, 256ULL*64);
 	}
 }

@@ -3,8 +3,8 @@
 
 namespace jse {
 
-	PointLight::PointLight(const String& aName, const Vector3f& aPosition, const Vector3f& aDiffuse, const Vector3f& aSpecular, const float aLinearAtt, const float aQuadraticAtt, const float aCutoff)
-		: Light(aName, LightType_Point)
+	PointLight::PointLight(const String& aName, Node3d* aParent, const Vector3f& aPosition, const Vector3f& aDiffuse, const Vector3f& aSpecular, const float aLinearAtt, const float aQuadraticAtt, const float aCutoff)
+		: Light(aName, LightType_Point, aParent)
 	{
 		mPosition = aPosition;
 		mDiffuse = aDiffuse;

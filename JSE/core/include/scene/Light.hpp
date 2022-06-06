@@ -6,6 +6,8 @@
 
 namespace jse {
 
+	class Node3d;
+
 	enum LightType
 	{
 		LightType_Point,
@@ -17,21 +19,23 @@ namespace jse {
 	class Light : public Renderable
 	{
 	public:
-		Light(const String& aName, const LightType aType) : mName(aName), mType(aType) {};
+		Light(const String& aName, const LightType aType, Node3d* aParent) : mName(aName), mType(aType), mParent(aParent) {};
 		~Light() {}
 		void Draw() {}
 		const String& GetName() const { return mName; }
 		LightType GetLightType() const { return mType; }
 		RenderableType GetType() const { return RenderableType::Light; }
+		Node3d* GetParent() const { return mParent; }
 	private:
 		String mName;
 		LightType mType;
+		Node3d* mParent;
 	};
 
 	class PointLight : public Light
 	{
 	public:
-		PointLight(const String& aName,
+		PointLight(const String& aName, Node3d* aParent,
 			const Vector3f& aPosition = Vector3f(0.0f),
 			const Vector3f& aDiffuse = Vector3f(0.0f),
 			const Vector3f& aSpecular = Vector3f(0.0f),

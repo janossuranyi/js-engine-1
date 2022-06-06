@@ -20,7 +20,7 @@
 #include "scene/Node3d.hpp"
 #include "scene/Animation.hpp"
 #include "scene/AnimationTrack.hpp"
-#include "scene/Scene.hpp"
+#include "scene/scene.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -56,6 +56,8 @@ void X_add_light_cube(Scene& aScene, Node3d* aNode, const Color3 aColor, int aLi
 		custMat.ambient = aColor;
 		custMat.diffuse = Color3(0.f);
 		custMat.specular = Color3(0.f);
+		custMat.specularIntesity = 100.0f;
+
 		custMat.type = MaterialType_Specular;
 
 		m.SetName("LightCube" + std::to_string(aLightNum));
@@ -104,11 +106,14 @@ int main(int argc, char** argv)
 		return 255;
 	}
 
-	Scene scene("Scene1", &sm, gl, &fs);
+	Scene* scene = new Scene("Scene1", &sm, gl, &fs);
 
-	scene.LoadScene(fs.Resolve("test2.gltf"));
-	//scene.LoadScene(fs.Resolve("test2.gltf"));
-	scene.Compile();
+	float Rl = .3f;
+	scene->SetDefaultLightRadius(Rl);
+
+	scene->LoadScene(fs.Resolve("test2.gltf"));
+	//scene->LoadScene(fs.Resolve("test2.gltf"));
+	scene->Compile();
 
 
 	n = gl->GetCaps(GraphicsCaps_MaxTextureImageUnits);
@@ -118,7 +123,7 @@ int main(int argc, char** argv)
 	Info("AutoGenerateMipMaps: %d", n);
 
 	gl->SetClearColor(clearColor);
-	gl->SetVSyncEnabled(1, false);
+	gl->SetVSyncEnabled(1, true);
 
 	bool runOnce = false;
 
@@ -128,7 +133,6 @@ int main(int argc, char** argv)
 
 	
 	//float lPower = 100.f;
-	float Rl = 0.2f;
 
 	bool running = true;
 	InputService* input = new InputServiceSDL();
@@ -137,15 +141,14 @@ int main(int argc, char** argv)
 
 	input->SetRelativeMouseMode(true);
 
-	scene.SetPerspectiveCameraLens(glm::radians(45.0f), WINDOW_ASPECT, 0.1f, 100.0f);
-	scene.SetDefaultLightRadius(Rl);
+	scene->SetPerspectiveCameraLens(glm::radians(45.0f), WINDOW_ASPECT, 0.1f, 100.0f);
 	
-	Node3d* Icosphere = scene.GetNodeByName("Icosphere");
-	Node3d* Torus02 = scene.GetNodeByName("Torus02");
-	Node3d* Torus01 = scene.GetNodeByName("Torus01");
+	Node3d* Icosphere = scene->GetNodeByName("Icosphere");
+	Node3d* Torus02 = scene->GetNodeByName("Torus02");
+	Node3d* Torus01 = scene->GetNodeByName("Torus01");
 
 	int ln = 1;
-	scene.WalkNodeHiearchy([&](Node3d* n) {
+	scene->WalkNodeHiearchy([&](Node3d* n) {
 
 		for (auto it : n->GetRenderables())
 		{
@@ -154,12 +157,12 @@ int main(int argc, char** argv)
 				const PointLight* light = reinterpret_cast<const PointLight*>(it.get());
 				const Vector3f color = light->GetDiffuse();
 
-				X_add_light_cube(scene, n, glm::normalize(color), ln++);
+				X_add_light_cube(*scene, n, glm::normalize(color), ln++);
 			}
 		}
 	});
 
-	scene.Compile();
+	scene->Compile();
 
 	float f = 0.f;
 
@@ -171,6 +174,10 @@ int main(int argc, char** argv)
 	gl->SetFrontFace(FrontFace_CCW);
     gl->SetsRGBFrameBufferEnabled(true);
 
+	scene->GetCamera().SetSpeed(15);
+
+	float pitch = 0.f, yaw = -90.f;
+
 	while (running && !runOnce)
 	{
 		float now = float(SDL_GetTicks64()) / 1000.f;
@@ -178,13 +185,11 @@ int main(int argc, char** argv)
 
 		clock = now;
 
-		vec3 viewPos(vX, vY, vZ);
 
-		scene.SetCameraPos(viewPos, vec3(0.0f), vec3(0.0f, 1.0f, 0.0f));
+		scene->UpdateAnimation(dt);
+		scene->UpdateCamera();
 
-		scene.UpdateAnimation(dt);
-
-		scene.Draw();
+		scene->Draw();
 
 		gl->SwapBuffers();
 
@@ -200,29 +205,40 @@ int main(int argc, char** argv)
 		{
 			//Rl = std::fmaf(-0.2f, dt, Rl);
 			Rl = -0.2f * dt + Rl;
-			scene.SetDefaultLightRadius(Rl);
+			scene->SetDefaultLightRadius(Rl);
 			Info("R.light: %.2f", Rl);
 		}
 		else if (input->IsKeyDown(Key_O))
 		{
 			Rl = 0.2f * dt + Rl;
-			scene.SetDefaultLightRadius(Rl);
+			scene->SetDefaultLightRadius(Rl);
 			Info("R.light: %.2f", Rl);
 		}
+		else if (input->IsKeyDown(Key_W))
+		{
+			scene->GetCamera().MoveForward(dt);
+		}
+		else if (input->IsKeyDown(Key_S))
+		{
+			scene->GetCamera().MoveBackward(dt);
+		}
+		else if (input->IsKeyDown(Key_A))
+		{
+			scene->GetCamera().MoveRight(dt);
+		}
+		else if (input->IsKeyDown(Key_D))
+		{
+			scene->GetCamera().MoveLeft(dt);
+		}
+
 
 		Vector2l mPos = input->GetRelativeMousePosition();
+		scene->GetCamera().SetDirection(yaw, pitch);
+		yaw += mPos.x * dt * 1.2f;
+		pitch -= mPos.y * dt * 1.2f;
 
-		if (input->IsWheelDownMoved())
-		{
-			vZ -= 50.f * dt;
-		}
-		else if (input->IsWheelUpMoved())
-		{
-			vZ += 50.f * dt;
-		}
-
-		vX += mPos.x * dt;
-		vY += mPos.y * dt;
+		yaw = std::fmodf(yaw, 360.f);
+		pitch = std::fmodf(pitch, 360.f);
 
 		if (now - lastf > 1)
 		{
@@ -235,6 +251,7 @@ int main(int argc, char** argv)
 
 	gl->UseShader(nullptr);
 
+	delete scene;
 	delete input;
 	delete gl;
 	return 0;

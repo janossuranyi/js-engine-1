@@ -49,6 +49,7 @@ namespace jse {
 		void SetName(const String& aName);
 		void AddVertex(const VertexData& a0);
 		void AddIndex(const unsigned short aIdx);
+		void AddIndices(const unsigned short* aIndices, const unsigned aSize);
 		void SetMaterial(const Material& aMat) { mMaterial = aMat; }
 		void ClearData();
 		void SetData(const vec3* aPositions, const vec3* aNormals, const vec4* aTangents, const vec2* aTexcoords, const size_t aCount);

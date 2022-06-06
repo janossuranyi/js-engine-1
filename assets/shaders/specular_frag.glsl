@@ -19,54 +19,78 @@ struct Material {
 };
 
 struct Light {
-    vec3 position;
-    vec3 diffuse;
-    vec3 specular;
+    vec4 position;
+    vec4 diffuse;
+    vec4 specular;
 
     float kl;
     float kq;
     float cutoff;
+    float pad0;
+}; 
+// 4*16 = 64
+
+uniform int numLights;
+
+layout(std140) uniform LightBuffer {
+    Light lights[256];
 };
 
-uniform Light light;
 uniform vec3 viewPos;
 uniform Material material;
 
+vec3 N,E;
+const float gamma = 2.2;
+
+vec3 calcLight(Light light)
+{
+        vec3 L = light.position.xyz - vofi.worldPosition;
+  	    float distance = length( L );
+        float distance2 = distance*distance;
+
+        L /= distance;
+
+        //vec3 R = reflect(-L, N);  
+
+        // calculate basic attenuation
+        // 3.3-ban van ? float denom = fma(light.kq, distance2, fma(light.kl, distance, light.kc));
+
+        float attenuation = 1.0 / (1.0 + light.kl * distance + light.kq * distance2);
+        //float attenuation = 1.0 / (1.0 + distance2);
+
+        // scale and bias attenuation such that:
+        //   attenuation == 0 at extent of max influence
+        //   attenuation == 1 when d == 0
+
+        attenuation = (attenuation - light.cutoff) / (1.0 - light.cutoff);
+        attenuation = max(attenuation, 0);
+     
+        float diff = max(dot(L, N), 0);
+        vec3 H = normalize(L + E);
+        //float spec = pow(max(dot(E, R), 0), material.shininess);
+        float spec = pow(max(dot(N, H), 0), material.shininess);
+        vec3 diffuse = material.diffuse * light.diffuse.rgb * diff * attenuation;
+        vec3 specular = material.specular * light.specular.rgb * spec * attenuation;
+
+        return diffuse + specular;
+        
+}
+
 void main() {
 
-    vec3 N = normalize(vofi.normal);
-    vec3 L = light.position - vofi.worldPosition;
-    vec3 E = normalize(viewPos - vofi.worldPosition);
-  	float distance = length( L );
-    float distance2 = distance*distance;
+    N = normalize(vofi.normal);
+    E = normalize(viewPos - vofi.worldPosition);
+    vec3 result = material.ambient;
 
-    L /= distance;
+    if (numLights == 0) discard;
 
-    //vec3 R = reflect(-L, N);  
+    for(int i=0; i<numLights; ++i)
+    {
+        result += calcLight(lights[i]);
+    }
 
-    // calculate basic attenuation
-    // 3.3-ban van ? float denom = fma(light.kq, distance2, fma(light.kl, distance, light.kc));
+    //result = pow(result, vec3(1.0/gamma));
 
-    float attenuation = 1.0 / (1.0 + light.kl * distance + light.kq * distance2);
-
-    // scale and bias attenuation such that:
-    //   attenuation == 0 at extent of max influence
-    //   attenuation == 1 when d == 0
-    attenuation = (attenuation - light.cutoff) / (1.0 - light.cutoff);
-    attenuation = max(attenuation, 0.0);
-     
-    vec3 ambient = material.diffuse * 0.01;
-    float diff = max(dot(L, N), 0);
-    vec3 H = normalize(L + E);
-    //float spec = pow(max(dot(E, R), 0), material.shininess);
-    float spec = pow(max(dot(N, H), 0), material.shininess);
-    //float spec = 0.0;  
-    vec3 diffuse = max(ambient, material.diffuse * light.diffuse * diff * attenuation);
-    vec3 specular = material.specular * light.specular * spec * attenuation;
-
-
-    vec3 result = material.ambient + diffuse + specular;
-
-    FragColor = vec4(result, 1.0);
+    FragColor = vec4( result, 1.0 );
 
 }

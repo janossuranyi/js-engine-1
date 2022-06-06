@@ -27,6 +27,24 @@ namespace jse {
 		}
 	}
 
+	static unsigned int GltfLoader_GetTypeSize(int aType)
+	{
+		switch (aType)
+		{
+		case TINYGLTF_TYPE_MAT2:	return 4;
+		case TINYGLTF_TYPE_MAT3:	return 9;
+		case TINYGLTF_TYPE_MAT4:	return 16;
+		case TINYGLTF_TYPE_MATRIX:	return 16;
+		case TINYGLTF_TYPE_SCALAR:	return 1;
+		case TINYGLTF_TYPE_VEC2:	return 2;
+		case TINYGLTF_TYPE_VEC3:	return 3;
+		case TINYGLTF_TYPE_VEC4:	return 4;
+		case TINYGLTF_TYPE_VECTOR:	return 3;
+		default:
+			return 1;
+		}
+	}
+
 	static unsigned int GltfLoader_GetComponentSize(int aType)
 	{
 		unsigned size = 1;
@@ -60,7 +78,7 @@ namespace jse {
 		unsigned size = GltfLoader_GetComponentSize(aAccessor.componentType);
 
 		const size_t elemCount = aAccessor.count;
-		const unsigned elemSize = size * aAccessor.type;
+		const unsigned elemSize = size * GltfLoader_GetTypeSize( aAccessor.type );
 		const unsigned stride = aAccessor.ByteStride(view);
 		const unsigned targetElemSize = sizeof(T);
 		const size_t totalSize = elemSize * elemCount;
@@ -145,13 +163,18 @@ namespace jse {
 
 				if (indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT)
 				{
-					auto const* iIn = GltfLoader_cast_array<uint16_t>(ibuf.data.data() + indexAccessor.byteOffset + ibv.byteOffset);
-					GltfLoader_Extract_scalar(iIn, indexAccessor.count, indexAccessor.ByteStride(ibv) / sizeof(uint16_t), [&dst](uint16_t const val) {dst.AddIndex(val); });
+					std::unique_ptr<unsigned short> lPtr;
+					ExtractData(indexAccessor, lPtr);
+					dst.AddIndices(lPtr.get(), indexAccessor.count);
 				}
 				else if (indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_INT)
 				{
-					auto const* iIn = GltfLoader_cast_array<uint32_t>(ibuf.data.data() + indexAccessor.byteOffset + ibv.byteOffset);
-					GltfLoader_Extract_scalar(iIn, indexAccessor.count, indexAccessor.ByteStride(ibv) / sizeof(uint32_t), [&dst](uint32_t const val) {dst.AddIndex(val); });
+					std::unique_ptr<unsigned int> lPtr;
+					ExtractData(indexAccessor, lPtr);
+					for (unsigned _x = 0; _x < indexAccessor.count; ++_x)
+					{
+						dst.AddIndex(*(lPtr.get() + _x));
+					}
 				}
 
 
@@ -208,7 +231,7 @@ namespace jse {
 					xm.diffuse = Color3(mat.pbrMetallicRoughness.baseColorFactor[0], mat.pbrMetallicRoughness.baseColorFactor[1], mat.pbrMetallicRoughness.baseColorFactor[2]);
 					xm.specular = Color3(0.2f);
 					xm.specularIntesity = float(mat.pbrMetallicRoughness.roughnessFactor * 100.0);
-					xm.ambient = Color3(.1f);
+					xm.ambient = Color3(.0001f);
 					dst.SetMaterial(xm);
 				}
 				mScene.AddMesh(dst);
@@ -427,6 +450,7 @@ namespace jse {
 
 				auto p = std::make_shared<PointLight>(
 					tlight.name,
+					nNode,
 					vec3(0.0f),
 					ldiff, lspec,
 					2.0f / mScene.mDefaultLightRadius, 1.0f / mScene.mDefaultLightRadius2, 0.0001f);

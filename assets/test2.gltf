@@ -28,9 +28,19 @@
                         0,
                         0
                     ],
-                    "intensity" : 300,
+                    "intensity" : 30,
                     "type" : "point",
                     "name" : "Point"
+                },
+                {
+                    "color" : [
+                        1,
+                        0.03094347193837166,
+                        0.005095852538943291
+                    ],
+                    "intensity" : 1000,
+                    "type" : "point",
+                    "name" : "Point.002"
                 }
             ]
         }
@@ -46,7 +56,8 @@
                 9,
                 14,
                 19,
-                22
+                22,
+                24
             ]
         }
     ],
@@ -309,6 +320,31 @@
                 3,
                 -9
             ]
+        },
+        {
+            "extensions" : {
+                "KHR_lights_punctual" : {
+                    "light" : 2
+                }
+            },
+            "name" : "Point_Orientation",
+            "rotation" : [
+                -0.7071067690849304,
+                0,
+                0,
+                0.7071067690849304
+            ]
+        },
+        {
+            "children" : [
+                23
+            ],
+            "name" : "Point",
+            "translation" : [
+                8.015965461730957,
+                11.876501083374023,
+                6.491293907165527
+            ]
         }
     ],
     "cameras" : [
@@ -430,17 +466,16 @@
         },
         {
             "doubleSided" : true,
-            "name" : "Textured",
-            "normalTexture" : {
-                "index" : 0
-            },
+            "name" : "Material.001",
             "pbrMetallicRoughness" : {
-                "baseColorTexture" : {
-                    "index" : 1
-                },
-                "metallicRoughnessTexture" : {
-                    "index" : 2
-                }
+                "baseColorFactor" : [
+                    0.0930335521697998,
+                    0,
+                    0.15989935398101807,
+                    1
+                ],
+                "metallicFactor" : 0,
+                "roughnessFactor" : 0.9049079418182373
             }
         }
     ],
@@ -549,37 +584,6 @@
                     "material" : 1
                 }
             ]
-        }
-    ],
-    "textures" : [
-        {
-            "sampler" : 0,
-            "source" : 0
-        },
-        {
-            "sampler" : 0,
-            "source" : 1
-        },
-        {
-            "sampler" : 0,
-            "source" : 2
-        }
-    ],
-    "images" : [
-        {
-            "mimeType" : "image/png",
-            "name" : "space-crate1-normal-ogl.png",
-            "uri" : "plane/tex/space-crate1-normal-ogl.png"
-        },
-        {
-            "mimeType" : "image/png",
-            "name" : "space-crate1-albedo.png",
-            "uri" : "plane/tex/space-crate1-albedo.png"
-        },
-        {
-            "mimeType" : "image/png",
-            "name" : "space-crate1-metallic-space-crate1-roughness.png",
-            "uri" : "plane/tex/space-crate1-metallic-space-crate1-roughness.png"
         }
     ],
     "accessors" : [
@@ -1111,12 +1115,6 @@
             "buffer" : 0,
             "byteLength" : 1600,
             "byteOffset" : 118564
-        }
-    ],
-    "samplers" : [
-        {
-            "magFilter" : 9729,
-            "minFilter" : 9987
         }
     ],
     "buffers" : [

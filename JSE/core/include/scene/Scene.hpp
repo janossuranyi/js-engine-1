@@ -12,6 +12,7 @@
 #include "scene/Mesh3d.hpp"
 #include "scene/Light.hpp"
 #include "scene/AnimationManager.hpp"
+#include "scene/Camera.hpp"
 
 #include <list>
 #include <map>
@@ -53,6 +54,17 @@ namespace jse {
 		Matrix mMVP;
 	};
 
+	struct UniformLight
+	{
+		vec4 position;
+		vec4 diffuse;
+		vec4 specular;
+		float kl;
+		float kq;
+		float cutoff;
+		char pad4[4];
+	};
+
 	struct FlatBufferHandle_t
 	{
 		FlatBufferHandle_t() {
@@ -69,6 +81,7 @@ namespace jse {
 	typedef std::list<Light*> LightVec;
 	typedef std::vector<DrawEntityDef_t> DrawEntityVec;
 	typedef std::pair<const Mesh3d*, int> MeshQueryResult;
+	typedef std::vector<UniformLight> RenderLightVec;
 
 	class Scene
 	{
@@ -79,7 +92,8 @@ namespace jse {
 		Scene(const String& aName, ShaderManager* aShaderManager, GraphicsDriver* aGraphDrv, FileSystem* aFileSystem);
 		~Scene();
 
-		void SetCameraPos(const Vector3f& aPos, const Vector3f& aTarget, const Vector3f& aUp);
+		void UpdateLights();
+		void UpdateCamera();
 		void SetPerspectiveCameraLens(const float aFOV, const float aAspect, const float aZNear, const float aZFar);
 		void AddNode(Node3d* aNode, Node3d* aParent = nullptr);
 		size_t AddMesh(const Mesh3d& aSrc);
@@ -96,6 +110,8 @@ namespace jse {
 		MeshQueryResult GetMeshByName(const String& aName);
 
 		void WalkNodeHiearchy(std::function<void(Node3d*)> func);
+
+		Camera& GetCamera() { return mCamera; }
 
 	private:
 
@@ -121,6 +137,8 @@ namespace jse {
 		FileSystem* mFileSystem;
 		VertexArray* mVA;
 		BufferObject* mBuffers[2];
+		BufferObject* mLightsBuffer;
+
 		bool mCompiled;
 		float mDefaultLightRadius;
 		float mDefaultLightRadius2;
@@ -140,6 +158,12 @@ namespace jse {
 		int m_drawCallsPerFrame{ 0 };
 		int m_stateChangePerFrame{ 0 };
 		int m_sampleCount{ 0 };
+
+		Camera mCamera;
+		RenderLightVec mUniformLights;
+		std::vector<std::shared_ptr<Renderable>> mLights;
+		std::map<std::shared_ptr<Renderable>, int> mLightIndexMap;
+
 	};
 }
 #endif

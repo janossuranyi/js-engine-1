@@ -2,10 +2,6 @@
 #include "scene/Node3d.hpp"
 #include "system/Logger.hpp"
 
-
-#include <assimp/Importer.hpp>      // C++ importer interface
-#include <assimp/scene.h>           // Output data structure
-#include <assimp/postprocess.h>     // Post processing flags
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/glm.hpp>
 
@@ -122,6 +118,12 @@ namespace jse {
 	void Mesh3d::AddIndex(const unsigned short aIdx)
 	{
 		indices.push_back(aIdx);
+	}
+
+	void Mesh3d::AddIndices(const unsigned short* aIndices, const unsigned aSize)
+	{
+		indices.resize(aSize);
+		std::memcpy(indices.data(), aIndices, aSize * sizeof(unsigned short));
 	}
 
 	void Mesh3d::SetData(const vec3* aPositions, const vec3* aNormals, const vec4* aTangents, const vec2* aTexcoords, const size_t aCount)
