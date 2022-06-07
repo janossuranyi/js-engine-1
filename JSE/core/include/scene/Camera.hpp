@@ -14,7 +14,6 @@ namespace jse {
 		vec3 GetPosition() const { return position; }
 		vec3 GetDirection() const { return direction; }
 		vec3 GetUpVector() const { return up; }
-		vec3 GetTarget() const;
 		float GetSpeed() const { return speed; }
 		void SetSpeed(const float aSpeed) { speed = aSpeed; }
 

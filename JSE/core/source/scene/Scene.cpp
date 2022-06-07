@@ -80,8 +80,8 @@ namespace jse {
 					mLights.push_back(r);
 
 					UniformLight ul{
-						vec4(n->GetWorldPosition(), 1.f),
-						vec4(pl->GetDiffuse(), 1.f),
+						vec4(n->GetWorldPosition(), 1.0f),
+						vec4(pl->GetDiffuse(), 1.0f),
 						vec4(pl->GetSpecular(), 1.0f),
 						pl->GetLinearAtt(),
 						pl->GetQuadraticAtt(),
@@ -96,8 +96,6 @@ namespace jse {
 		mLightsBuffer->BindToIndex(0);
 		mLightsBuffer->Reset();
 		mLightsBuffer->Alloc(mUniformLights.size() * sizeof(UniformLight), mUniformLights.data());
-		mLightsBuffer->BindToIndex(0);
-
 	}
 
 	void Scene::UpdateCamera()

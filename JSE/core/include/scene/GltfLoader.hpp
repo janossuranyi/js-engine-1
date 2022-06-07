@@ -20,9 +20,6 @@ namespace jse {
 		~GltfLoader() { Info("GltfLoader destroyed"); }
 		int LoadScene(const String& aFilename);
 	private:
-
-		void IndexLights();
-
 		Node3d* ImportNode(const tinygltf::Node& aNode, unsigned aLevel = 0);
 		template<class T>
 		void ExtractData(const tinygltf::Accessor& aAccessor, std::unique_ptr<T>& aDest);

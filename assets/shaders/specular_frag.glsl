@@ -82,14 +82,12 @@ void main() {
     E = normalize(viewPos - vofi.worldPosition);
     vec3 result = material.ambient;
 
-    if (numLights == 0) discard;
+    //result = pow(result, vec3(1.0/gamma));
 
     for(int i=0; i<numLights; ++i)
     {
         result += calcLight(lights[i]);
     }
-
-    //result = pow(result, vec3(1.0/gamma));
 
     FragColor = vec4( result, 1.0 );
 

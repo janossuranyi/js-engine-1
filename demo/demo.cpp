@@ -174,7 +174,7 @@ int main(int argc, char** argv)
 	gl->SetFrontFace(FrontFace_CCW);
     gl->SetsRGBFrameBufferEnabled(true);
 
-	scene->GetCamera().SetSpeed(15);
+	scene->GetCamera().SetSpeed(35);
 
 	float pitch = 0.f, yaw = -90.f;
 
@@ -241,8 +241,8 @@ int main(int argc, char** argv)
 
 		Vector2l mPos = input->GetRelativeMousePosition();
 		scene->GetCamera().SetDirection(yaw, pitch);
-		yaw += mPos.x * dt * 1.2f;
-		pitch -= mPos.y * dt * 1.2f;
+		yaw += mPos.x * dt * 15.f;
+		pitch -= mPos.y * dt * 15.f;
 
 		yaw = std::fmodf(yaw, 360.f);
 		pitch = std::fmodf(pitch, 360.f);
