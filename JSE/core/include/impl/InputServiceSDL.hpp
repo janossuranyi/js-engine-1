@@ -6,6 +6,7 @@
 #include "graphics/GraphicsTypes.hpp"
 #include <list>
 #include <vector>
+#include <mutex>
 #include <SDL.h>
 
 namespace jse {
@@ -16,7 +17,7 @@ namespace jse {
         InputServiceSDL();
         ~InputServiceSDL();
 
-        bool IsKeyDown(const Key aKey) const;
+        bool IsKeyDown(const Key aKey);
         bool IsButtonDown(const MouseButton aButton) const;
         KeyPress GetKeyPressed();
         KeyPress GetKeyReleased();
@@ -50,6 +51,7 @@ namespace jse {
         std::list<KeyPress> mKeysReleased;
         std::vector<bool> mKeyState;
         std::vector<bool> mMouseState;
+        std::mutex mtx;
     };
 
 }

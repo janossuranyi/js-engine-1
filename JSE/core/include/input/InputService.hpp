@@ -13,7 +13,7 @@ namespace jse {
 		virtual ~InputService() {};
 
 		virtual void Update() = 0;
-		virtual bool IsKeyDown(const Key aKey) const = 0;
+		virtual bool IsKeyDown(const Key aKey) = 0;
 
 		virtual bool IsButtonDown(const MouseButton aButton) const = 0;
 		virtual KeyPress GetKeyPressed() = 0;
@@ -34,9 +34,13 @@ namespace jse {
 		bool IsKeyboardInputHandled() const { return mIsKeyboardInputHandled; }
 		void SetKeyboardInputHandled(const bool a0) { mIsKeyboardInputHandled = a0; }
 
+		float GetMouseSensitivity() const { return mMouseSensitivity; }
+		void SetMouseSensitivity(const float aX) { mMouseSensitivity = aX; }
+
 	private:
 		bool mIsMouseInputHandled;
 		bool mIsKeyboardInputHandled;
+		float mMouseSensitivity;
 	};
 
 }

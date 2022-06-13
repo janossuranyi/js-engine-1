@@ -41,8 +41,10 @@ uniform Material material;
 
 vec3 N,E;
 const float gamma = 2.2;
+const vec3 fogColor = vec3(0.5, 0.5, 1.0);
+float depth;
 
-vec3 calcLight(Light light)
+vec3 calcPointLight(Light light)
 {
         vec3 L = light.position.xyz - vofi.worldPosition;
   	    float distance = length( L );
@@ -76,6 +78,17 @@ vec3 calcLight(Light light)
         
 }
 
+float getFogFactor(float d)
+{
+    const float FogMax = 30.0;
+    const float FogMin = 20.0;
+
+    if (d>=FogMax) return 1;
+    if (d<=FogMin) return 0;
+
+    return 1 - (FogMax - d) / (FogMax - FogMin);
+}
+
 void main() {
 
     N = normalize(vofi.normal);
@@ -86,9 +99,12 @@ void main() {
 
     for(int i=0; i<numLights; ++i)
     {
-        result += calcLight(lights[i]);
+        result += calcPointLight(lights[i]);
     }
 
-    FragColor = vec4( result, 1.0 );
+    float d = distance(viewPos, vofi.worldPosition);
+    float alpha = getFogFactor(d);
+
+    FragColor = vec4(mix(result, fogColor, alpha), 1);
 
 }

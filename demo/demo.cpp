@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <functional>
+#include <thread>
 #include "SDL.h"
 
 #include "graphics/GraphicsTypes.hpp"
@@ -41,7 +42,7 @@ using namespace std::chrono;
 #define WINDOW_HEIGHT 900
 #define WINDOW_ASPECT (float(WINDOW_WIDTH)/float(WINDOW_HEIGHT))
 const float TicksPerFrame = 1000.f;
-
+const float mouseSensi = 0.05f;
 
 void X_add_light_cube(Scene& aScene, Node3d* aNode, const Color3 aColor, int aLightNum)
 {
@@ -89,12 +90,12 @@ int main(int argc, char** argv)
 #ifdef __APPLE__
     fs.SetWorkingDir("/Users/johnny/tmp/js-engine-1/assets");
 #else
-    fs.SetWorkingDir("d:/src/js-engine-1/assets");
+    fs.SetWorkingDir("d:\\src\\js-engine-1\\assets");
 #endif
 	GraphicsDriver* gl = new GraphicsDriverOGL();
 	
 	const Vector2l pos(0);
-	const Color clearColor(0.f, 0.f, 0.3f, 1.f);
+	const Color clearColor(.5f, .5f, 1.f, 1.f);
 	int n = 0;
 
 	gl->Init(WINDOW_WIDTH, WINDOW_HEIGHT, 0, 32, /*fullScreen*/0, /*MS*/4, GpuProgramFormat_GLSL, "Hello OpenGL", pos, true);
@@ -167,19 +168,23 @@ int main(int argc, char** argv)
 	float f = 0.f;
 
 //	double clock = SimpleTimer::GetTime(true);
-	float clock = float(SDL_GetTicks64()) / 1000.f;
+	float clock = 1.0f / float(SDL_GetTicks64());
 	float lastf = clock;
 
 	gl->SetCullFaceEnable(true);
 	gl->SetFrontFace(FrontFace_CCW);
     gl->SetsRGBFrameBufferEnabled(true);
 
-	scene->GetCamera().SetSpeed(35);
+	scene->GetCamera().SetSpeed(5.f);
 
 	float pitch = 0.f, yaw = -90.f;
 
 	bool srgb = true;
 
+	gl->SetBlendEnabled(false);
+	gl->SetBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+
+	
 	while (running && !runOnce)
 	{
 		float now = float(SDL_GetTicks64()) / 1000.f;
@@ -195,33 +200,24 @@ int main(int argc, char** argv)
 
 		gl->SwapBuffers();
 
-		input->Update();
 
+		while (input->IsKeyPressed())
+		{
+			KeyPress key = input->GetKeyPressed();
 
-		if (input->IsKeyDown(Key_Escape) || input->IsButtonDown(MB_Right))
-		{
-			running = false;
+			if (key.mKey == Key_Escape)
+			{
+				running = false;
+			}
+
+			if (key.mKey == Key_Space)
+			{
+				srgb = !srgb;
+				gl->SetsRGBFrameBufferEnabled(srgb);
+			}
 		}
 
-		if (input->IsKeyDown(Key_Space))
-		{
-			srgb = !srgb;
-			gl->SetsRGBFrameBufferEnabled(srgb);
-		}
-		else if (input->IsKeyDown(Key_I))
-		{
-			//Rl = std::fmaf(-0.2f, dt, Rl);
-			Rl = -0.2f * dt + Rl;
-			scene->SetDefaultLightRadius(Rl);
-			Info("R.light: %.2f", Rl);
-		}
-		else if (input->IsKeyDown(Key_O))
-		{
-			Rl = 0.2f * dt + Rl;
-			scene->SetDefaultLightRadius(Rl);
-			Info("R.light: %.2f", Rl);
-		}
-		else if (input->IsKeyDown(Key_W))
+		if (input->IsKeyDown(Key_W))
 		{
 			scene->GetCamera().MoveForward(dt);
 		}
@@ -237,12 +233,23 @@ int main(int argc, char** argv)
 		{
 			scene->GetCamera().MoveLeft(dt);
 		}
+		else if (input->IsKeyDown(Key_I))
+		{
+			//Rl = std::fmaf(-0.2f, dt, Rl);
+			Rl = -0.01f * dt + Rl;
+			scene->SetDefaultLightRadius(Rl);
+		}
+		else if (input->IsKeyDown(Key_O))
+		{
+			Rl = 0.01f * dt + Rl;
+			scene->SetDefaultLightRadius(Rl);
+		}
 
 
 		Vector2l mPos = input->GetRelativeMousePosition();
 		scene->GetCamera().SetDirection(yaw, pitch);
-		yaw += mPos.x * dt * 15.f;
-		pitch -= mPos.y * dt * 15.f;
+		yaw += mPos.x * mouseSensi;
+		pitch -= mPos.y *  mouseSensi;
 
 		yaw = std::fmodf(yaw, 360.f);
 		pitch = std::fmodf(pitch, 360.f);
@@ -253,6 +260,8 @@ int main(int argc, char** argv)
 			//Info("DT = %.4f", dt);
 			//timer.PrintElapsedTime("frame time");
 		}
+
+		input->Update();
 
 	}
 

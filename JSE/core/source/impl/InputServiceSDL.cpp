@@ -1,9 +1,10 @@
+#include <SDL.h>
+#include <mutex>
 #include "impl/InputServiceSDL.hpp"
 #include "input/InputTypes.hpp"
 #include "system/SystemTypes.hpp"
 #include "system/Logger.hpp"
 
-#include <SDL.h>
 
 namespace jse {
 
@@ -21,7 +22,7 @@ namespace jse {
 	{
 	}
 
-	bool InputServiceSDL::IsKeyDown(const Key aKey) const
+	bool InputServiceSDL::IsKeyDown(const Key aKey)
 	{
 		return mKeyState[aKey];
 	}
@@ -376,7 +377,7 @@ namespace jse {
 
 	void InputServiceSDL::UpdateKeyboard()
 	{
-		mKeyState.assign(mKeyState.size(), false);
+		//mKeyState.assign(mKeyState.size(), false);
 		mKeysPressed.clear();
 		mKeysReleased.clear();
 

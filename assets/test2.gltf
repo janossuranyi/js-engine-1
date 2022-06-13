@@ -15,16 +15,6 @@
                 {
                     "color" : [
                         1,
-                        1,
-                        1
-                    ],
-                    "intensity" : 1200,
-                    "type" : "point",
-                    "name" : "Point.001"
-                },
-                {
-                    "color" : [
-                        1,
                         0,
                         0
                     ],
@@ -34,13 +24,13 @@
                 },
                 {
                     "color" : [
-                        1,
-                        0.03094347193837166,
-                        0.005095852538943291
+                        0.9587295651435852,
+                        0.9490250945091248,
+                        1
                     ],
                     "intensity" : 1000,
                     "type" : "point",
-                    "name" : "Point.002"
+                    "name" : "Point.004"
                 }
             ]
         }
@@ -51,13 +41,12 @@
             "name" : "Scene",
             "nodes" : [
                 1,
-                3,
-                4,
-                9,
-                14,
-                19,
-                22,
-                24
+                2,
+                7,
+                12,
+                17,
+                20,
+                22
             ]
         }
     ],
@@ -87,31 +76,6 @@
                 -22.903039932250977,
                 11.044025421142578,
                 2.772552490234375
-            ]
-        },
-        {
-            "extensions" : {
-                "KHR_lights_punctual" : {
-                    "light" : 0
-                }
-            },
-            "name" : "Light01_Orientation",
-            "rotation" : [
-                -0.7071067690849304,
-                0,
-                0,
-                0.7071067690849304
-            ]
-        },
-        {
-            "children" : [
-                2
-            ],
-            "name" : "Light01",
-            "translation" : [
-                -8.304234504699707,
-                9.35194206237793,
-                -1.39408278465271
             ]
         },
         {
@@ -147,9 +111,9 @@
         },
         {
             "children" : [
-                5,
-                6,
-                7
+                3,
+                4,
+                5
             ],
             "mesh" : 4,
             "name" : "TurbineTengely",
@@ -161,7 +125,7 @@
         },
         {
             "children" : [
-                8
+                6
             ],
             "mesh" : 5,
             "name" : "TurbineTop"
@@ -195,9 +159,9 @@
         },
         {
             "children" : [
-                10,
-                11,
-                12
+                8,
+                9,
+                10
             ],
             "mesh" : 4,
             "name" : "TurbineTengely.001",
@@ -215,7 +179,7 @@
         },
         {
             "children" : [
-                13
+                11
             ],
             "mesh" : 5,
             "name" : "TurbineTop.001",
@@ -254,9 +218,9 @@
         },
         {
             "children" : [
-                15,
-                16,
-                17
+                13,
+                14,
+                15
             ],
             "mesh" : 4,
             "name" : "TurbineTengely.002",
@@ -274,7 +238,7 @@
         },
         {
             "children" : [
-                18
+                16
             ],
             "mesh" : 5,
             "name" : "TurbineTop.002",
@@ -287,7 +251,7 @@
         {
             "extensions" : {
                 "KHR_lights_punctual" : {
-                    "light" : 1
+                    "light" : 0
                 }
             },
             "name" : "CubeLight_Orientation",
@@ -300,7 +264,7 @@
         },
         {
             "children" : [
-                20
+                18
             ],
             "name" : "CubeLight",
             "translation" : [
@@ -311,7 +275,7 @@
         },
         {
             "children" : [
-                21
+                19
             ],
             "mesh" : 6,
             "name" : "Cube",
@@ -324,7 +288,7 @@
         {
             "extensions" : {
                 "KHR_lights_punctual" : {
-                    "light" : 2
+                    "light" : 1
                 }
             },
             "name" : "Point_Orientation",
@@ -337,13 +301,13 @@
         },
         {
             "children" : [
-                23
+                21
             ],
             "name" : "Point",
             "translation" : [
-                8.015965461730957,
-                11.876501083374023,
-                6.491293907165527
+                -6.196446895599365,
+                11.102620124816895,
+                0
             ]
         }
     ],
@@ -365,7 +329,7 @@
                 {
                     "sampler" : 0,
                     "target" : {
-                        "node" : 8,
+                        "node" : 6,
                         "path" : "rotation"
                     }
                 }
@@ -384,7 +348,7 @@
                 {
                     "sampler" : 0,
                     "target" : {
-                        "node" : 13,
+                        "node" : 11,
                         "path" : "rotation"
                     }
                 }
@@ -403,7 +367,7 @@
                 {
                     "sampler" : 0,
                     "target" : {
-                        "node" : 18,
+                        "node" : 16,
                         "path" : "rotation"
                     }
                 }
@@ -422,14 +386,14 @@
                 {
                     "sampler" : 0,
                     "target" : {
-                        "node" : 22,
+                        "node" : 20,
                         "path" : "translation"
                     }
                 },
                 {
                     "sampler" : 1,
                     "target" : {
-                        "node" : 22,
+                        "node" : 20,
                         "path" : "rotation"
                     }
                 }
@@ -455,9 +419,9 @@
             "name" : "Material",
             "pbrMetallicRoughness" : {
                 "baseColorFactor" : [
-                    0.1079021543264389,
-                    0.1640966236591339,
-                    0.20158004760742188,
+                    0.7004032731056213,
+                    0.6687695980072021,
+                    0.6359705328941345,
                     1
                 ],
                 "metallicFactor" : 0,

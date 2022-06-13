@@ -257,7 +257,6 @@ namespace jse {
 		mGd->SetClearDepth(1.0f);
 		mGd->ClearFrameBuffer(ClearFBFlags_Depth);
 		mGd->SetColorMask(ColorMask_None);
-		mGd->SetBlendEnabled(false);
 
 		DrawList();
 
@@ -283,7 +282,7 @@ namespace jse {
 		mDefaultLightRadius = a0;
 		mDefaultLightRadius2 = a0 * a0;
 
-		Info("Light attenuation: %.2f %.2f %.2f", 1.0f, 2.0f / mDefaultLightRadius, 1.0f / mDefaultLightRadius2);
+		//Info("Light attenuation: %.2f %.2f %.2f", 1.0f, 2.0f / mDefaultLightRadius, 1.0f / mDefaultLightRadius2);
 
 		for (auto l : mLights)
 		{

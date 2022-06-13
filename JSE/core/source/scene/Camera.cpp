@@ -23,19 +23,19 @@ namespace jse {
 	}
 	void Camera::TurnLeft(const float aTime)
 	{
-		yaw += -4 * speed * aTime;
+		yaw += -speed * aTime;
 	}
 	void Camera::TurnRight(const float aTime)
 	{
-		yaw += 4 * speed * aTime;
+		yaw += speed * aTime;
 	}
 	void Camera::TurnUp(const float aTime)
 	{
-		pitch += 4 * speed * aTime;
+		pitch += speed * aTime;
 	}
 	void Camera::TurnDown(const float aTime)
 	{
-		pitch += -4 * speed * aTime;
+		pitch += speed * aTime;
 	}
 	void Camera::AddPitch(const float aX)
 	{
