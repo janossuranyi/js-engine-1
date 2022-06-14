@@ -30,20 +30,18 @@ namespace jse {
 			mProgramId = glCreateProgram();
 		}
 
-		for (auto it = mStages.begin(); it != mStages.end(); it++)
+		for (auto it : mStages)
 		{
-			if (!(*it)->Compile()) {
+			if (!it->Compile()) {
 				return false;
 			}
 		}
 
 		GLint result = GL_FALSE;
 
-		for (auto it = mStages.begin(); it != mStages.end(); it++)
+		for (auto it : mStages)
 		{
-			GpuShaderStageOGL* const s = *it;
-
-			glAttachShader(mProgramId, s->GetApiId());
+			glAttachShader(mProgramId, it->GetApiId());
 		}
 
 		Info("Linking program...");

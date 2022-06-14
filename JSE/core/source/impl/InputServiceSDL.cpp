@@ -16,6 +16,9 @@ namespace jse {
 		mMousePos = Vector2l(0, 0);
 		mWheelDownMoved = false;
 		mWheelUpMoved = false;
+
+		mMouseState.assign(MB_LastEnum, false);
+		mKeyState.assign(mKeyState.size(), false);
 	}
 
 	InputServiceSDL::~InputServiceSDL()
@@ -377,23 +380,22 @@ namespace jse {
 
 	void InputServiceSDL::UpdateKeyboard()
 	{
-		//mKeyState.assign(mKeyState.size(), false);
 		mKeysPressed.clear();
 		mKeysReleased.clear();
 
-		for (auto it = mEvents.begin(); it != mEvents.end(); it++)
+		for (auto& it : mEvents)
 		{
-			if (it->type == SDL_KEYDOWN || it->type == SDL_KEYUP)
+			if (it.type == SDL_KEYDOWN || it.type == SDL_KEYUP)
 			{
-				Key key = SDLToKey(it->key.keysym.sym);
-				mKeyState[key] = it->type == SDL_KEYDOWN ? true : false;
-				if (it->type == SDL_KEYDOWN)
+				Key key = SDLToKey(it.key.keysym.sym);
+				mKeyState[key] = it.type == SDL_KEYDOWN ? true : false;
+				if (it.type == SDL_KEYDOWN)
 				{
-					AddKeyToList(it->key.keysym.mod, key, 0, mKeysPressed);
+					AddKeyToList(it.key.keysym.mod, key, 0, mKeysPressed);
 				}
 				else
 				{
-					AddKeyToList(it->key.keysym.mod, key, 0, mKeysReleased);
+					AddKeyToList(it.key.keysym.mod, key, 0, mKeysReleased);
 				}
 			}
 		}
@@ -431,7 +433,6 @@ namespace jse {
 
 	void InputServiceSDL::UpdateMouse()
 	{
-		mMouseState.assign(MB_LastEnum, false);
 		mWheelDownMoved = false;
 		mWheelUpMoved = false;
 

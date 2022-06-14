@@ -98,7 +98,7 @@ int main(int argc, char** argv)
 	const Color clearColor(.5f, .5f, 1.f, 1.f);
 	int n = 0;
 
-	gl->Init(WINDOW_WIDTH, WINDOW_HEIGHT, 0, 32, /*fullScreen*/0, /*MS*/4, GpuProgramFormat_GLSL, "Hello OpenGL", pos, true);
+	gl->Init(WINDOW_WIDTH, WINDOW_HEIGHT, 0, 32, /*fullScreen*/0, /*MS*/0, GpuProgramFormat_GLSL, "Hello OpenGL", pos, true);
 
 	ShaderManager sm(gl, &fs);
 
