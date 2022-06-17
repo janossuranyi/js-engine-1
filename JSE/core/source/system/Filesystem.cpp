@@ -15,9 +15,16 @@ namespace jse {
 		mWorkingPath = fs::current_path();
 	}
 
-	void FileSystem::SetWorkingDir(String const& aWorkingDir)
+	void FileSystem::SetWorkingDir( const String& aWorkingDir )
 	{
-		mWorkingPath = aWorkingDir;
+		String tmp = aWorkingDir;
+#ifdef WIN32
+		for (int i = 0; i < tmp.length(); ++i)
+		{
+			if (tmp[i] == '/') tmp[i] = '\\';
+		}
+#endif
+		mWorkingPath = tmp;
 	}
 
 	const String FileSystem::GetWorkingDir() const
@@ -27,7 +34,14 @@ namespace jse {
 
 	const String FileSystem::Resolve(const String& aPath) const
 	{
-		const fs::path p = mWorkingPath / aPath;
+		String tmp = aPath;
+#ifdef WIN32
+		for (int i = 0; i < tmp.length(); ++i)
+		{
+			if (tmp[i] == '/') tmp[i] = '\\';
+		}
+#endif
+		const fs::path p = mWorkingPath / tmp;
 		return p.string();
 	}
 

@@ -22,12 +22,12 @@ namespace jse {
     public:
         Updateable(const String& aName) : mName(aName) {}
         virtual ~Updateable() {}
-        virtual void PreUpdate(const float aTimeStep) {}
-        virtual void Update(const float aTimeStep) {}
-        virtual void PostUpdate(const float aTimeStep) {}
+        virtual void PreUpdate(float aTimeStep) {}
+        virtual void Update(float aTimeStep) {}
+        virtual void PostUpdate(float aTimeStep) {}
         virtual void OnStart() {}
         virtual void OnExit() {}
-        virtual void OnDraw(const float aFrameTime) {}
+        virtual void OnDraw(float aFrameTime) {}
         virtual void Reset() {}
         const String& GetName() const { return mName; }
 

@@ -90,7 +90,7 @@ int main(int argc, char** argv)
 #ifdef __APPLE__
     fs.SetWorkingDir("/Users/johnny/tmp/js-engine-1/assets");
 #else
-    fs.SetWorkingDir("d:\\src\\js-engine-1\\assets");
+    fs.SetWorkingDir("d:/src/js-engine-1/assets");
 #endif
 	GraphicsDriver* gl = new GraphicsDriverOGL();
 	
@@ -124,7 +124,7 @@ int main(int argc, char** argv)
 	Info("AutoGenerateMipMaps: %d", n);
 
 	gl->SetClearColor(clearColor);
-	gl->SetVSyncEnabled(1, true);
+	gl->SetVSyncEnabled(1, false);
 
 	bool runOnce = false;
 
